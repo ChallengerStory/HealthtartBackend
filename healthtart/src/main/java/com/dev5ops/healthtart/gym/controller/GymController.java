@@ -1,6 +1,5 @@
 package com.dev5ops.healthtart.gym.controller;
 
-import com.dev5ops.healthtart.gym.aggregate.Gym;
 import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
 import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
 import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseEditGymVO;
