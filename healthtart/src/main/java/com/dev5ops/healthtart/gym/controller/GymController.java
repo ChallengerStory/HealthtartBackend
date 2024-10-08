@@ -28,16 +28,33 @@ public class GymController {
     @Operation(summary = "관리자 - 헬스장 등록")
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterGymVO> registerGym(@RequestBody RequestRegisterGymVO request) {
-        ResponseRegisterGymVO registerGym = gymService.registerGym(request);
+        GymDTO gymDTO = modelMapper.map(request, GymDTO.class);
+        GymDTO registerGym = gymService.registerGym(gymDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(registerGym);
+        ResponseRegisterGymVO response = new ResponseRegisterGymVO(
+                registerGym.getGymCode(),
+                registerGym.getGymName(),
+                registerGym.getAddress(),
+                registerGym.getBusinessNumber(),
+                registerGym.getCreatedAt(),
+                registerGym.getUpdatedAt(),
+                registerGym.getEquipmentPerGyms()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "관리자 - 헬스장 정보 수정")
     @PatchMapping("/{gymCode}/edit")
     public ResponseEntity<ResponseEditGymVO> editGym(@PathVariable Long gymCode, @RequestBody RequestEditGymVO request) {
         GymDTO updatedGym = gymService.editGym(gymCode, request);
-        ResponseEditGymVO response = modelMapper.map(updatedGym, ResponseEditGymVO.class);
+        ResponseEditGymVO response = new ResponseEditGymVO(
+                updatedGym.getGymName(),
+                updatedGym.getAddress(),
+                updatedGym.getBusinessNumber(),
+                updatedGym.getUpdatedAt(),
+                updatedGym.getEquipmentPerGyms()
+        );
 
         return ResponseEntity.ok(response);
     }
