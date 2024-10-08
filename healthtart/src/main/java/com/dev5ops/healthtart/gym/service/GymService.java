@@ -49,4 +49,10 @@ public class GymService {
 
         return modelMapper.map(gym, GymDTO.class);
     }
+
+    public void deleteGym(Long gymCode) {
+        Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+
+        gymRepository.delete(gym);
+    }
 }

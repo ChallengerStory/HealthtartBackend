@@ -41,4 +41,12 @@ public class GymController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "관리자 - 헬스장 정보 삭제")
+    @DeleteMapping("/{gymCode}/delete")
+    public ResponseEntity<String> deleteGym(@PathVariable Long gymCode) {
+        gymService.deleteGym(gymCode);
+
+        return ResponseEntity.ok("헬스장이 성공적으로 삭제되었습니다.");
+    }
 }
