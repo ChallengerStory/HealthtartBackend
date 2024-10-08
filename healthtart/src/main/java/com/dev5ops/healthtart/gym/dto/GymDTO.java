@@ -24,6 +24,9 @@ public class GymDTO {
     @JsonProperty("address")
     private String address;
 
+    @JsonProperty("business_number")
+    private String businessNumber;
+
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
