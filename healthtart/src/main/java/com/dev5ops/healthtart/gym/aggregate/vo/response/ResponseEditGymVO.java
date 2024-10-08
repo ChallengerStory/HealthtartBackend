@@ -11,12 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ResponseRegisterGymVO {
-    private Long gymCode;
+public class ResponseEditGymVO {
     private String gymName;
     private String address;
     private String businessNumber;
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<EquipmentPerGym> equipmentPerGyms;
 }
