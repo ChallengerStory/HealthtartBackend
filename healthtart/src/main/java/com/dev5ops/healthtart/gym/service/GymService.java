@@ -3,8 +3,10 @@ package com.dev5ops.healthtart.gym.service;
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.gym.aggregate.Gym;
+import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
 import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
 import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseRegisterGymVO;
+import com.dev5ops.healthtart.gym.dto.GymDTO;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,5 +37,16 @@ public class GymService {
         return modelMapper.map(gym, ResponseRegisterGymVO.class);
     }
 
+    public GymDTO editGym(Long gymCode, RequestEditGymVO request) {
+        Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
 
+        gym.setGymName(request.getGymName());
+        gym.setAddress(request.getAddress());
+        gym.setBusinessNumber(request.getBusinessNumber());
+        gym.setUpdatedAt(LocalDateTime.now());
+
+        gymRepository.save(gym);
+
+        return modelMapper.map(gym, GymDTO.class);
+    }
 }
