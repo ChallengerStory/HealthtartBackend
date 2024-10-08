@@ -27,6 +27,9 @@ public class Gym {
     @Column(name = "address", nullable = false)
     private String address;
 
+    @Column(name = "business_number", nullable = false)
+    private String businessNumber;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
