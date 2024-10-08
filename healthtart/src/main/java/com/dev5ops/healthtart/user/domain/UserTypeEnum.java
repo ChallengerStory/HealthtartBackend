@@ -1,0 +1,21 @@
+package com.dev5ops.healthtart.user.domain;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+
+@Getter
+public enum UserTypeEnum {
+    MEMBER("MEMBER"),
+    ADMIN("ADMIN");
+
+    private final String userType;
+
+    UserTypeEnum(String userType) {
+        this.userType = userType;
+    }
+
+    @JsonValue
+    public String getType() {
+        return userType;
+    }
+}
