@@ -10,6 +10,7 @@ import com.dev5ops.healthtart.gym.service.GymService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class GymController {
     private final GymService gymService;
     private final ModelMapper modelMapper;
 
+    @Autowired
     public GymController(GymService gymService, ModelMapper modelMapper) {
         this.gymService = gymService;
         this.modelMapper = modelMapper;

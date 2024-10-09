@@ -4,6 +4,7 @@ import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity(name = "exercise_equipment")
@@ -34,6 +35,12 @@ public class ExerciseEquipment {
 
     @Column(name = "recommended_video")
     private String recommendedVideo;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "exerciseEquipment")
     private List<EquipmentPerGym> equipmentPerGyms;

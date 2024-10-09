@@ -24,14 +24,7 @@ public class GymService {
     private final ModelMapper modelMapper;
 
     public GymDTO registerGym(GymDTO gymDTO) {
-        Gym gym = Gym.builder()
-                .gymName(gymDTO.getGymName())
-                .address(gymDTO.getAddress())
-                .businessNumber(gymDTO.getBusinessNumber())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .equipmentPerGyms(new ArrayList<>())
-                .build();
+        Gym gym = modelMapper.map(gymDTO, Gym.class);
 
         if (gymRepository.findByBusinessNumber(gym.getBusinessNumber()).isPresent()) throw new CommonException(StatusEnum.GYM_DUPLICATE);
 
