@@ -57,7 +57,6 @@ class GymServiceTests {
                 request.getAddress(),
                 request.getBusinessNumber(),
                 null,
-                null,
                 null
         );
 
@@ -80,8 +79,7 @@ class GymServiceTests {
                 request.getAddress(),
                 request.getBusinessNumber(),
                 mockGym.getCreatedAt(),
-                mockGym.getUpdatedAt(),
-                null
+                mockGym.getUpdatedAt()
         ));
 
         // When
@@ -120,7 +118,6 @@ class GymServiceTests {
                 request.getGymName(),
                 request.getAddress(),
                 request.getBusinessNumber(),
-                null,
                 null,
                 null
         );
@@ -179,7 +176,6 @@ class GymServiceTests {
                 .businessNumber(request.getBusinessNumber())
                 .createdAt(existingGym.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
-                .equipmentPerGyms(request.getEquipmentPerGyms())
                 .build();
 
         when(gymRepository.save(existingGym)).thenReturn(updatedGym);
@@ -190,8 +186,7 @@ class GymServiceTests {
                 updatedGym.getAddress(),
                 updatedGym.getBusinessNumber(),
                 updatedGym.getCreatedAt(),
-                updatedGym.getUpdatedAt(),
-                updatedGym.getEquipmentPerGyms()
+                updatedGym.getUpdatedAt()
         );
 
         when(modelMapper.map(updatedGym, GymDTO.class)).thenReturn(updatedGymDTO);
@@ -295,8 +290,7 @@ class GymServiceTests {
                 existingGym.getAddress(),
                 existingGym.getBusinessNumber(),
                 existingGym.getCreatedAt(),
-                existingGym.getUpdatedAt(),
-                new ArrayList<>()
+                existingGym.getUpdatedAt()
         );
 
         when(gymRepository.findById(gymCode)).thenReturn(Optional.of(existingGym));
@@ -353,9 +347,9 @@ class GymServiceTests {
         when(gymRepository.findAll()).thenReturn(gymList);
 
         when(modelMapper.map(gymList.get(0), GymDTO.class)).thenReturn(
-                new GymDTO(1L, "testGymName1", "testAddress1", "000-00-00001", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                new GymDTO(1L, "testGymName1", "testAddress1", "000-00-00001", LocalDateTime.now(), LocalDateTime.now()));
         when(modelMapper.map(gymList.get(1), GymDTO.class)).thenReturn(
-                new GymDTO(2L, "testGymName2", "testAddress2", "000-00-00002", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                new GymDTO(2L, "testGymName2", "testAddress2", "000-00-00002", LocalDateTime.now(), LocalDateTime.now()));
 
         // When
         List<GymDTO> result = gymService.findAllGym();

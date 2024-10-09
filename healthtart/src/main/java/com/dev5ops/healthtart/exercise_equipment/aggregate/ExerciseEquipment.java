@@ -41,7 +41,4 @@ public class ExerciseEquipment {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "exerciseEquipment")
-    private List<EquipmentPerGym> equipmentPerGyms;
 }

@@ -52,7 +52,6 @@ class ExerciseEquipmentServiceTests {
                 "testImage",
                 "testVideo",
                 null,
-                null,
                 null
         );
 
@@ -65,13 +64,12 @@ class ExerciseEquipmentServiceTests {
                 .recommendedVideo("testVideo")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .equipmentPerGyms(new ArrayList<>())
                 .build();
 
         when(modelMapper.map(request, ExerciseEquipment.class)).thenReturn(mockEquipment);
         when(exerciseEquipmentRepository.save(any(ExerciseEquipment.class))).thenReturn(mockEquipment);
         when(modelMapper.map(mockEquipment, ExerciseEquipmentDTO.class)).thenReturn(new ExerciseEquipmentDTO(
-                1L, "testName", "testBodyPart", "testDescription", "testImage", "testVideo", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()
+                1L, "testName", "testBodyPart", "testDescription", "testImage", "testVideo", LocalDateTime.now(), LocalDateTime.now()
         ));
 
         // When
@@ -110,7 +108,7 @@ class ExerciseEquipmentServiceTests {
                 .thenReturn(Optional.of(existingEquipment));
 
         ExerciseEquipmentDTO mockEquipmentDTO = new ExerciseEquipmentDTO(
-                null, "testName", "testBodyPart", "testDescription", "testImage", "testVideo", null, null, null
+                null, "testName", "testBodyPart", "testDescription", "testImage", "testVideo", null, null
         );
 
         when(modelMapper.map(any(RequestRegisterEquipmentVO.class), eq(ExerciseEquipmentDTO.class)))
@@ -174,7 +172,6 @@ class ExerciseEquipmentServiceTests {
                 .recommendedVideo(request.getRecommendedVideo())
                 .createdAt(existingEquipment.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
-                .equipmentPerGyms(request.getEquipmentPerGyms())
                 .build();
 
         when(exerciseEquipmentRepository.save(existingEquipment)).thenReturn(updatedEquipment);
@@ -186,8 +183,7 @@ class ExerciseEquipmentServiceTests {
                 request.getExerciseImage(),
                 request.getRecommendedVideo(),
                 existingEquipment.getCreatedAt(),
-                LocalDateTime.now(),
-                request.getEquipmentPerGyms()
+                LocalDateTime.now()
         ));
 
         // When
@@ -268,8 +264,7 @@ class ExerciseEquipmentServiceTests {
                 existingEquipment.getExerciseImage(),
                 existingEquipment.getRecommendedVideo(),
                 existingEquipment.getCreatedAt(),
-                existingEquipment.getUpdatedAt(),
-                new ArrayList<>()
+                existingEquipment.getUpdatedAt()
         );
 
         when(modelMapper.map(existingEquipment, ExerciseEquipmentDTO.class)).thenReturn(mockDTO);
@@ -329,9 +324,9 @@ class ExerciseEquipmentServiceTests {
         when(exerciseEquipmentRepository.findAll()).thenReturn(equipmentList);
 
         when(modelMapper.map(equipmentList.get(0), ExerciseEquipmentDTO.class)).thenReturn(new ExerciseEquipmentDTO(
-                1L, "testName1", "testBodyPart1", "testDescription1", "testImage1", "testVideo1", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                1L, "testName1", "testBodyPart1", "testDescription1", "testImage1", "testVideo1", LocalDateTime.now(), LocalDateTime.now()));
         when(modelMapper.map(equipmentList.get(1), ExerciseEquipmentDTO.class)).thenReturn(new ExerciseEquipmentDTO(
-                2L, "testName2", "testBodyPart2", "testDescription2", "testImage2", "testVideo2", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                2L, "testName2", "testBodyPart2", "testDescription2", "testImage2", "testVideo2", LocalDateTime.now(), LocalDateTime.now()));
 
         // When
         List<ExerciseEquipmentDTO> result = exerciseEquipmentService.findAllEquipment();
