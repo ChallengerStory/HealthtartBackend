@@ -42,7 +42,6 @@ public class ExerciseEquipmentService {
         exerciseEquipment.setExerciseImage(request.getExerciseImage());
         exerciseEquipment.setRecommendedVideo(request.getRecommendedVideo());
         exerciseEquipment.setUpdatedAt(LocalDateTime.now());
-        exerciseEquipment.setEquipmentPerGyms(request.getEquipmentPerGyms());
 
         exerciseEquipment = exerciseEquipmentRepository.save(exerciseEquipment);
 

@@ -38,7 +38,6 @@ public class GymService {
         gym.setAddress(request.getAddress());
         gym.setBusinessNumber(request.getBusinessNumber());
         gym.setUpdatedAt(LocalDateTime.now());
-        gym.setEquipmentPerGyms(request.getEquipmentPerGyms());
 
         gym = gymRepository.save(gym);
 
