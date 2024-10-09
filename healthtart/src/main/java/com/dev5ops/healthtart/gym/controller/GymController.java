@@ -43,8 +43,7 @@ public class GymController {
                 registerGym.getAddress(),
                 registerGym.getBusinessNumber(),
                 registerGym.getCreatedAt(),
-                registerGym.getUpdatedAt(),
-                registerGym.getEquipmentPerGyms()
+                registerGym.getUpdatedAt()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -58,8 +57,7 @@ public class GymController {
                 updatedGym.getGymName(),
                 updatedGym.getAddress(),
                 updatedGym.getBusinessNumber(),
-                updatedGym.getUpdatedAt(),
-                updatedGym.getEquipmentPerGyms()
+                updatedGym.getUpdatedAt()
         );
 
         return ResponseEntity.ok(response);
@@ -81,8 +79,7 @@ public class GymController {
         ResponseFindGymVO response = new ResponseFindGymVO(
                 gymDTO.getGymName(),
                 gymDTO.getAddress(),
-                gymDTO.getBusinessNumber(),
-                gymDTO.getEquipmentPerGyms()
+                gymDTO.getBusinessNumber()
         );
 
         return ResponseEntity.ok(response);
@@ -98,8 +95,7 @@ public class GymController {
             ResponseFindGymVO response = new ResponseFindGymVO(
                     gymDTO.getGymName(),
                     gymDTO.getAddress(),
-                    gymDTO.getBusinessNumber(),
-                    gymDTO.getEquipmentPerGyms()
+                    gymDTO.getBusinessNumber()
             );
 
             responseList.add(response);

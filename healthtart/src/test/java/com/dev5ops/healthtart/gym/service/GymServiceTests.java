@@ -154,8 +154,7 @@ class GymServiceTests {
         RequestEditGymVO request = new RequestEditGymVO(
                 "수정된 헬스장 이름",
                 "수정된 주소",
-                "수정된 사업자번호",
-                new ArrayList<>()
+                "수정된 사업자번호"
         );
 
         Gym existingGym = Gym.builder()
@@ -211,8 +210,7 @@ class GymServiceTests {
         RequestEditGymVO request = new RequestEditGymVO(
                 "수정된 헬스장 이름",
                 "수정된 주소",
-                "수정된 사업자번호",
-                new ArrayList<>()
+                "수정된 사업자번호"
         );
 
         // 헬스장을 찾지 못했을 때, Optional.empty() 반환하도록 설정

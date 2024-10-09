@@ -146,8 +146,7 @@ class ExerciseEquipmentServiceTests {
                 "testBodyPart",
                 "updated testDescription",
                 "updated testImage",
-                "updated testVideo",
-                new ArrayList<>()
+                "updated testVideo"
         );
 
         ExerciseEquipment existingEquipment = ExerciseEquipment.builder()
