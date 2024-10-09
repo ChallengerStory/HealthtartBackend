@@ -1,6 +1,7 @@
 
-package com.dev5ops.healthtart.workout_routine.aggregate;
+package com.dev5ops.healthtart.routine.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.type.DateTime;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Getter
-public class WorkoutRoutine {
+public class Routine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="routine_code")
@@ -28,6 +29,9 @@ public class WorkoutRoutine {
 
     @Column(name = "link")
     private String link;
+
+    @JsonProperty("recommend_music")
+    private String recommendMusic;
 
     @Column(name = "created_at")
     private DateTime createdAt;

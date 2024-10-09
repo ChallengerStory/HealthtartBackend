@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.workout_per_routine.dto;
+package com.dev5ops.healthtart.workout_per_routine.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.type.DateTime;

@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.workout_per_routine.aggregate;
+package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
 import com.google.type.DateTime;
 import jakarta.persistence.*;
