@@ -44,4 +44,10 @@ public class ExerciseEquipmentService {
 
         return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
     }
+
+    public void deleteEquipment(Long exerciseEquipmentCode) {
+        ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+
+        exerciseEquipmentRepository.delete(exerciseEquipment);
+    }
 }

@@ -73,4 +73,12 @@ public class ExerciseEquipmentController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "관리자 - 운동기구 정보 삭제")
+    @DeleteMapping("/{exerciseEquipmentCode}/delete")
+    public ResponseEntity<String> deleteEquipment(@PathVariable("exerciseEquipmentCode") Long exerciseEquipmentCode) {
+        exerciseEquipmentService.deleteEquipment(exerciseEquipmentCode);
+
+        return ResponseEntity.ok("운동기구가 성공적으로 삭제되었습니다.");
+    }
 }
