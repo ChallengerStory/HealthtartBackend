@@ -7,12 +7,6 @@ import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseF
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseRegisterEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseFindGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseRegisterGymVO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
