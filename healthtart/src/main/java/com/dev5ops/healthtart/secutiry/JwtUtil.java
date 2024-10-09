@@ -1,5 +1,7 @@
 package com.dev5ops.healthtart.secutiry;
 
+import com.dev5ops.healthtart.user.domain.dto.GoogleUserDTO;
+import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +18,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -99,4 +102,31 @@ public class JwtUtil {
 //                .signWith(SignatureAlgorithm.HS512, secretKey)
 //                .compact();
 //    }
+
+    public String googleGenerateToken(GoogleUserDTO userDTO){
+        Claims claims = Jwts.claims().setSubject(userDTO.getUserCode());
+        claims.put("email", userDTO.getUserEmail());
+        claims.put("name", userDTO.getUserName());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
+    }
+
+    public String generateToken(JwtTokenDTO tokenDTO, List<String> roles){
+        Claims claims = Jwts.claims().setSubject(tokenDTO.getUserCode());
+        claims.put("email", tokenDTO.getUserEmail());
+        claims.put("name", tokenDTO.getUserName());
+        claims.put("roles", roles);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
+    }
 }

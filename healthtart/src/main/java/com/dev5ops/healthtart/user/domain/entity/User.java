@@ -55,6 +55,12 @@ public class User {
     @Column(name = "user_age")
     private Integer userAge;
 
+    @Column(name = "provider")
+    private String provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

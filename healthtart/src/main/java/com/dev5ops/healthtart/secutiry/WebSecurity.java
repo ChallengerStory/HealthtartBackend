@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.secutiry;
 
+import com.dev5ops.healthtart.user.service.CustomOAuth2UserService;
 import com.dev5ops.healthtart.user.service.UserService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurity {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private CustomOAuth2UserService customOAuth2UserService;
     private UserService userService;
     private Environment env;
     private JwtUtil jwtUtil;
 
     @Autowired
-    public WebSecurity(BCryptPasswordEncoder bCryptPasswordEncoder, UserService userService, Environment env, JwtUtil jwtUtil) {
+    public WebSecurity(BCryptPasswordEncoder bCryptPasswordEncoder, CustomOAuth2UserService customOAuth2UserService, UserService userService, Environment env, JwtUtil jwtUtil) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.customOAuth2UserService = customOAuth2UserService;
         this.userService = userService;
         this.env = env;
         this.jwtUtil = jwtUtil;
@@ -53,12 +56,23 @@ public class WebSecurity {
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
 
+                                        .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
+                                        .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
                                         .anyRequest().authenticated()
                 )
                 /* UserDetails를 상속받는 Service 계층 + BCrypt 암호화 */
                 .authenticationManager(authenticationManager)
+
+                /* OAuth2 로그인 설정 추가 */
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(new OAuth2AuthenticationSuccessHandler(jwtUtil))
+//                        .failureHandler(new OAuth2AuthenticationFailureHandler())
+                )
 
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -70,7 +84,6 @@ public class WebSecurity {
 
     /* Authentication 용 메소드(인증 필터 반환) */
     private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-        return new AuthenticationFilter(authenticationManager, userService, env);
+        return new AuthenticationFilter(authenticationManager, userService, env, jwtUtil);
     }
-
 }

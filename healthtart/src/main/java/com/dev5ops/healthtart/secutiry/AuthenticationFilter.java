@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.secutiry;
 
+import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestLoginVO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,11 +32,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private UserService userService;
     private Environment env;
+    private JwtUtil jwtUtil;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment env) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment env, JwtUtil jwtUtil) {
         super(authenticationManager);
         this.userService = userService;
         this.env = env;
+        this.jwtUtil = jwtUtil;
 
         // 커스텀 로그인 경로 설정
         setFilterProcessesUrl("/users/login");
@@ -75,16 +78,19 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .map(role -> role.getAuthority())
                 .collect(Collectors.toList());
 
-        /* 설명. 재료들로 토큰 만들기(Jwt Token 라이브러리 추가(3가지)하기) */
-        Claims claims = Jwts.claims().setSubject(userName);
-        claims.put("auth", roles);      // 비공개 클레임은 Claims에서 제공하는 put을 활용해 추가한다.
+//        /* 설명. 재료들로 토큰 만들기(Jwt Token 라이브러리 추가(3가지)하기) */
+//        Claims claims = Jwts.claims().setSubject(userName);
+//        claims.put("auth", roles);      // 비공개 클레임은 Claims에서 제공하는 put을 활용해 추가한다.
+//
+//        String token = Jwts.builder()
+//                .setClaims(claims)
+//                .setExpiration(new Date(System.currentTimeMillis()
+//                        + Long.parseLong(env.getProperty("token.expiration_time"))))
+//                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+//                .compact();
 
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(new Date(System.currentTimeMillis()
-                        + Long.parseLong(env.getProperty("token.expiration_time"))))
-                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-                .compact();
+        JwtTokenDTO tokenDTO = new JwtTokenDTO(userName, null, null);
+        String token = jwtUtil.generateToken(tokenDTO, roles);
 
 //        response.addHeader("token", token);
         response.addHeader(HttpHeaders.AUTHORIZATION, token);
