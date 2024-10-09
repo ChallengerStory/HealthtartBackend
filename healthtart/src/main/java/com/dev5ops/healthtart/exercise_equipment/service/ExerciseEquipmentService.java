@@ -6,6 +6,7 @@ import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +24,7 @@ public class ExerciseEquipmentService {
     private final ExerciseEquipmentRepository exerciseEquipmentRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional
     public ExerciseEquipmentDTO registerEquipment(ExerciseEquipmentDTO equipmentDTO) {
         ExerciseEquipment exerciseEquipment = modelMapper.map(equipmentDTO, ExerciseEquipment.class);
 
@@ -32,7 +34,7 @@ public class ExerciseEquipmentService {
         return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
     }
 
-
+    @Transactional
     public ExerciseEquipmentDTO editEquipment(Long exerciseEquipmentCode, RequestEditEquipmentVO request) {
         ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
 
@@ -48,6 +50,7 @@ public class ExerciseEquipmentService {
         return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
     }
 
+    @Transactional
     public void deleteEquipment(Long exerciseEquipmentCode) {
         ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
 

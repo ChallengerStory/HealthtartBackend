@@ -6,6 +6,7 @@ import com.dev5ops.healthtart.gym.aggregate.Gym;
 import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
 import com.dev5ops.healthtart.gym.dto.GymDTO;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,7 @@ public class GymService {
     private final GymRepository gymRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional
     public GymDTO registerGym(GymDTO gymDTO) {
         Gym gym = modelMapper.map(gymDTO, Gym.class);
 
@@ -31,6 +33,7 @@ public class GymService {
         return modelMapper.map(gym, GymDTO.class);
     }
 
+    @Transactional
     public GymDTO editGym(Long gymCode, RequestEditGymVO request) {
         Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
 
@@ -44,6 +47,7 @@ public class GymService {
         return modelMapper.map(gym, GymDTO.class);
     }
 
+    @Transactional
     public void deleteGym(Long gymCode) {
         Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
 
