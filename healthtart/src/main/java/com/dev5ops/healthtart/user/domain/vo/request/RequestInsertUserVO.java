@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 public class RequestInsertUserVO {
 
-    // Integer userCode;
+    // String userCode;
     String userType; // 이미 정해진 정보
     String userName;
     String userEmail;
