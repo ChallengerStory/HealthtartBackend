@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -55,5 +57,19 @@ public class GymService {
         Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
 
         gymRepository.delete(gym);
+    }
+
+    public GymDTO findGymByGymCode(Long gymCode) {
+        Gym gym = gymRepository.findById(gymCode).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+
+        return modelMapper.map(gym, GymDTO.class);
+    }
+
+    public List<GymDTO> findAllGym() {
+        List<Gym> gymList = gymRepository.findAll();
+
+        return gymList.stream()
+                .map(gym -> modelMapper.map(gym, GymDTO.class))
+                .collect(Collectors.toList());
     }
 }
