@@ -1,12 +1,16 @@
 package com.dev5ops.healthtart.record_per_user.dto;
 
+import com.dev5ops.healthtart.user.domain.entity.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.client.util.DateTime;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Getter
 @Setter
 public class RecordPerUserDTO {
@@ -15,27 +19,40 @@ public class RecordPerUserDTO {
     private Long userRecordCode;
 
     @JsonProperty("day_of_exercise")
-    private DateTime dayOfExercise;
+    private LocalDate dayOfExercise;
 
     @JsonProperty("exercise_duration")
-    private DateTime exerciseDuration;
-
-    @JsonProperty("ratings")
-    private int ratings;
+    private LocalTime exerciseDuration;
 
     @JsonProperty("record_flag")
     private boolean recordFlag;
 
     @JsonProperty("created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty("updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @JsonProperty("user_code")
-    private String userCode;
+    private User userCode;
 
     @JsonProperty("workout_per_routine_code")
     private Long workoutPerRoutineCode;
 
+    @Override
+    public String toString() {
+        return "RecordPerUser{" +
+                "userRecordCode=" + userRecordCode +
+                ", dayOfExercise=" + dayOfExercise +
+                ", exerciseDuration=" + exerciseDuration +
+                ", recordFlag=" + recordFlag +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", userCode=" + (userCode != null ? userCode.getUserCode() : null) +
+                ", workoutPerRoutineCode=" + workoutPerRoutineCode +
+                '}';
+    }
+
 }
+
+
