@@ -45,8 +45,7 @@ public class ExerciseEquipmentController {
                 registerEquipment.getExerciseImage(),
                 registerEquipment.getRecommendedVideo(),
                 registerEquipment.getCreatedAt(),
-                registerEquipment.getUpdatedAt(),
-                registerEquipment.getEquipmentPerGyms()
+                registerEquipment.getUpdatedAt()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -62,8 +61,7 @@ public class ExerciseEquipmentController {
                 updatedEquipment.getExerciseDescription(),
                 updatedEquipment.getExerciseImage(),
                 updatedEquipment.getRecommendedVideo(),
-                updatedEquipment.getUpdatedAt(),
-                updatedEquipment.getEquipmentPerGyms()
+                updatedEquipment.getUpdatedAt()
         );
 
         return ResponseEntity.ok(response);
@@ -87,8 +85,7 @@ public class ExerciseEquipmentController {
                 equipmentDTO.getBodyPart(),
                 equipmentDTO.getExerciseDescription(),
                 equipmentDTO.getExerciseImage(),
-                equipmentDTO.getRecommendedVideo(),
-                equipmentDTO.getEquipmentPerGyms()
+                equipmentDTO.getRecommendedVideo()
         );
 
         return ResponseEntity.ok(response);
@@ -106,8 +103,7 @@ public class ExerciseEquipmentController {
                     equipmentDTO.getBodyPart(),
                     equipmentDTO.getExerciseDescription(),
                     equipmentDTO.getExerciseImage(),
-                    equipmentDTO.getRecommendedVideo(),
-                    equipmentDTO.getEquipmentPerGyms()
+                    equipmentDTO.getRecommendedVideo()
             );
 
             responseList.add(response);

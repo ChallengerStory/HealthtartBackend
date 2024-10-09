@@ -18,5 +18,4 @@ public class ResponseEditEquipmentVO {
     private String exerciseImage;
     private String recommendedVideo;
     private LocalDateTime updatedAt;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }

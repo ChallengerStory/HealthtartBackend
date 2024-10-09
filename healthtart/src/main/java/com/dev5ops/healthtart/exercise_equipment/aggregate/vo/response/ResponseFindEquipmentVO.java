@@ -16,5 +16,4 @@ public class ResponseFindEquipmentVO {
     private String exerciseDescription;
     private String exerciseImage;
     private String recommendedVideo;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }

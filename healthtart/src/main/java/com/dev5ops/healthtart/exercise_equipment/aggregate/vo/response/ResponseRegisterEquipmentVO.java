@@ -22,5 +22,4 @@ public class ResponseRegisterEquipmentVO {
     private String recommendedVideo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }

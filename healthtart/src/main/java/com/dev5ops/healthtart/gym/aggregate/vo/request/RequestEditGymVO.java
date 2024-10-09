@@ -14,5 +14,4 @@ public class RequestEditGymVO {
     private String gymName;
     private String address;
     private String businessNumber;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }
