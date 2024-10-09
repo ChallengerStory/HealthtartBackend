@@ -16,5 +16,4 @@ public class ResponseEditGymVO {
     private String address;
     private String businessNumber;
     private LocalDateTime updatedAt;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }

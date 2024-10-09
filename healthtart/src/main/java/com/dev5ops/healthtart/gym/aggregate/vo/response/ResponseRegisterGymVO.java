@@ -18,5 +18,4 @@ public class ResponseRegisterGymVO {
     private String businessNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<EquipmentPerGym> equipmentPerGyms;
 }
