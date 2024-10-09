@@ -19,17 +19,19 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service("exerciseEquipmentService")
 public class ExerciseEquipmentService {
+
     private final ExerciseEquipmentRepository exerciseEquipmentRepository;
     private final ModelMapper modelMapper;
 
     public ExerciseEquipmentDTO registerEquipment(ExerciseEquipmentDTO equipmentDTO) {
         ExerciseEquipment exerciseEquipment = modelMapper.map(equipmentDTO, ExerciseEquipment.class);
 
-        if (exerciseEquipmentRepository.findByExerciseEquipmentName(exerciseEquipment.getExerciseEquipmentName()).isPresent()) throw new CommonException(StatusEnum.EQUIPMENT_DUPLICATE);
+        if(exerciseEquipmentRepository.findByExerciseEquipmentName(exerciseEquipment.getExerciseEquipmentName()).isPresent()) throw new CommonException(StatusEnum.EQUIPMENT_DUPLICATE);
 
         exerciseEquipment = exerciseEquipmentRepository.save(exerciseEquipment);
         return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
     }
+
 
     public ExerciseEquipmentDTO editEquipment(Long exerciseEquipmentCode, RequestEditEquipmentVO request) {
         ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
