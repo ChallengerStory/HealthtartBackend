@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -257,6 +258,97 @@ class GymServiceTests {
 
         assertEquals(StatusEnum.GYM_NOT_FOUND, ((CommonException) exception).getStatusEnum());
         verify(gymRepository, never()).delete(any(Gym.class));
+    }
+
+    @DisplayName("헬스장 단일 조회 성공")
+    @Test
+    void testFindGymByGymCode_Success() {
+        // Given
+        Long gymCode = 1L;
+        Gym existingGym = Gym.builder()
+                .gymCode(gymCode)
+                .gymName("testGymName")
+                .address("testAddress")
+                .businessNumber("000-00-00000")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        GymDTO mockGymDTO = new GymDTO(
+                gymCode,
+                existingGym.getGymName(),
+                existingGym.getAddress(),
+                existingGym.getBusinessNumber(),
+                existingGym.getCreatedAt(),
+                existingGym.getUpdatedAt(),
+                new ArrayList<>()
+        );
+
+        when(gymRepository.findById(gymCode)).thenReturn(Optional.of(existingGym));
+        when(modelMapper.map(existingGym, GymDTO.class)).thenReturn(mockGymDTO);
+
+        // When
+        GymDTO result = gymService.findGymByGymCode(gymCode);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(gymCode, result.getGymCode());
+        assertEquals(existingGym.getGymName(), result.getGymName());
+        verify(gymRepository, times(1)).findById(gymCode);
+    }
+
+    @DisplayName("헬스장 단일 조회 실패 - 헬스장을 찾지 못함")
+    @Test
+    void testFindGymByGymCode_NotFound() {
+        // Given
+        Long gymCode = 1L;
+        when(gymRepository.findById(gymCode)).thenReturn(Optional.empty());
+
+        // When & Then
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            gymService.findGymByGymCode(gymCode);
+        });
+
+        assertEquals(StatusEnum.GYM_NOT_FOUND, exception.getStatusEnum());
+        verify(gymRepository, times(1)).findById(gymCode);
+    }
+
+    @DisplayName("헬스장 전체 조회 성공")
+    @Test
+    void testFindAllGym_Success() {
+        // Given
+        List<Gym> gymList = new ArrayList<>();
+        gymList.add(Gym.builder()
+                .gymCode(1L)
+                .gymName("testGymName1")
+                .address("testAddress1")
+                .businessNumber("000-00-00001")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build());
+        gymList.add(Gym.builder()
+                .gymCode(2L)
+                .gymName("testGymName2")
+                .address("testAddress2")
+                .businessNumber("000-00-00001")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build());
+
+        when(gymRepository.findAll()).thenReturn(gymList);
+
+        when(modelMapper.map(gymList.get(0), GymDTO.class)).thenReturn(
+                new GymDTO(1L, "testGymName1", "testAddress1", "000-00-00001", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+        when(modelMapper.map(gymList.get(1), GymDTO.class)).thenReturn(
+                new GymDTO(2L, "testGymName2", "testAddress2", "000-00-00002", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+
+        // When
+        List<GymDTO> result = gymService.findAllGym();
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(gymRepository, times(1)).findAll();
     }
 
 }
