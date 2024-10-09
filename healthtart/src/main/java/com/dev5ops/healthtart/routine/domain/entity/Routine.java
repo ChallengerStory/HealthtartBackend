@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Entity(name = "WorkoutRoutine")
 @Table(name = "workout_routine")
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class Routine {
     private String title;
 
     @Column(name = "time")
-    private DateTime time;
+    private Integer time;
 
     @Column(name = "link")
     private String link;
@@ -34,8 +36,8 @@ public class Routine {
     private String recommendMusic;
 
     @Column(name = "created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 }

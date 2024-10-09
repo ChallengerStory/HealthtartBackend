@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.type.DateTime;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class RoutineDTO {
     private String title;
 
     @JsonProperty("time")
-    private DateTime time;
+    private Integer time;
 
     @JsonProperty("link")
     private String link;
@@ -28,8 +30,8 @@ public class RoutineDTO {
     private String recommend_music;
 
     @JsonProperty("created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty("updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
