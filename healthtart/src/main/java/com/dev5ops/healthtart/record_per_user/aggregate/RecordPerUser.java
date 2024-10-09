@@ -1,47 +1,62 @@
 package com.dev5ops.healthtart.record_per_user.aggregate;
 
-import com.google.api.client.util.DateTime;
+import com.dev5ops.healthtart.user.domain.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 
 @Entity(name = "RecordPerUser")
 @Table(name = "record_per_user")
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Getter
+@Setter
+@Builder
 public class RecordPerUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_record_code")
+    @Column(name="user_record_code", nullable = false, unique = true)
     private Long userRecordCode;
 
-    @Column(name="day_of_exercise")
-    private DateTime dayOfExercise;
+    @Column(name="day_of_exercise", nullable = false)
+    private LocalDate dayOfExercise;
 
-    @Column(name="exercise_duration")
-    private DateTime exerciseDuration;
+    @Column(name="exercise_duration", nullable = false)
+    private LocalTime exerciseDuration;
 
-    @Column(name="ratings")
-    private int ratings;
-
-    @Column(name="record_flag")
+    @Column(name="record_flag", nullable = false)
     private boolean recordFlag;
 
-    @Column(name="created_at")
-    private DateTime createdAt;
+    @Column(name="created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
-    private DateTime updatedAt;
+    @Column(name="updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-    @Column(name="user_code")
-    private String userCode;
+    @ManyToOne
+    @JoinColumn(name = "user_code", nullable = false)
+    private User userCode;
 
-    @Column(name="workout_per_routine_code")
+    @Column(name="workout_per_routine_code", nullable = false)
     private Long workoutPerRoutineCode;
 
+
+    @Override
+    public String toString() {
+        return "RecordPerUser{" +
+                "userRecordCode=" + userRecordCode +
+                ", dayOfExercise=" + dayOfExercise +
+                ", exerciseDuration=" + exerciseDuration +
+                ", recordFlag=" + recordFlag +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", userCode=" + (userCode != null ? userCode.getUserCode() : null) +  // UserCode만 출력
+                ", workoutPerRoutineCode=" + workoutPerRoutineCode +
+                '}';
+    }
 }
