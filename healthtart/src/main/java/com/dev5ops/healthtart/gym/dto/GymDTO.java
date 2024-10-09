@@ -31,7 +31,4 @@ public class GymDTO {
 
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
-
-    @JsonProperty("equipment_per_gym")
-    private List<EquipmentPerGym> equipmentPerGyms;
 }
