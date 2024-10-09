@@ -12,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -49,5 +51,19 @@ public class ExerciseEquipmentService {
         ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
 
         exerciseEquipmentRepository.delete(exerciseEquipment);
+    }
+
+    public ExerciseEquipmentDTO findEquipmentByEquipmentCode(Long exerciseEquipmentCode) {
+        ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(exerciseEquipmentCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+
+        return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
+    }
+
+    public List<ExerciseEquipmentDTO> findAllEquipment() {
+        List<ExerciseEquipment> exerciseEquipments = exerciseEquipmentRepository.findAll();
+
+        return exerciseEquipments.stream()
+                .map(exerciseEquipment -> modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class))
+                .collect(Collectors.toList());
     }
 }
