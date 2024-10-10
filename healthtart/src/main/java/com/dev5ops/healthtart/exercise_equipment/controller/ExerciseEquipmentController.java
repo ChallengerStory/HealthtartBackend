@@ -88,11 +88,11 @@ public class ExerciseEquipmentController {
                 equipmentDTO.getRecommendedVideo()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "관리자, 유저 - 운동기구 전체 조회")
-    @GetMapping("/equipmentList")
+    @GetMapping("/equipment_list")
     public ResponseEntity<List<ResponseFindEquipmentVO>> getEquipmentList() {
         List<ExerciseEquipmentDTO> equipmentDTOList = exerciseEquipmentService.findAllEquipment();
         List<ResponseFindEquipmentVO> responseList = new ArrayList<>();
@@ -108,6 +108,6 @@ public class ExerciseEquipmentController {
 
             responseList.add(response);
         }
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 }
