@@ -43,5 +43,15 @@ public class WorkoutPerRoutineController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "운동 루틴별 운동 수정")
+    @PutMapping("/{workoutPerRoutineCode}")
+    public ResponseEntity<ResponseModifyWorkoutPerRoutineVO> modifyWorkoutPerRoutine(
+            @PathVariable("workoutPerRoutineCode") Long workoutPerRoutineCode,
+            @RequestBody RequestInsertWorkoutPerRoutineVO requestModify) {
+        EditWorkoutPerRoutineVO editWorkoutPerRoutineVO = modelMapper.map(requestModify, EditWorkoutPerRoutineVO.class);
+        ResponseModifyWorkoutPerRoutineVO response = workoutPerRoutineService.modifyWorkoutPerRoutine(workoutPerRoutineCode, editWorkoutPerRoutineVO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 }
