@@ -35,5 +35,13 @@ public class WorkoutPerRoutineController {
         return new ResponseEntity<>(routine, HttpStatus.OK);
     }
 
+    @Operation(summary = "운동 루틴별 운동 등록")
+    @PostMapping
+    public ResponseEntity<ResponseInsertWorkoutPerRoutineVO> registerWorkoutPerRoutine(@RequestBody RequestInsertWorkoutPerRoutineVO requestInsertWorkoutPerRoutineVO) {
+        WorkoutPerRoutineDTO workoutPerRoutineDTO = modelMapper.map(requestInsertWorkoutPerRoutineVO, WorkoutPerRoutineDTO.class);
+        ResponseInsertWorkoutPerRoutineVO response = workoutPerRoutineService.registerWorkoutPerRoutine(workoutPerRoutineDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
 
 }
