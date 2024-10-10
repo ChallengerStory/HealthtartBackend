@@ -1,18 +1,21 @@
 package com.dev5ops.healthtart.equipment_per_gym.controller;
 
+import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestRegisterEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseEditEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseRegisterEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.service.EquipmentPerGymService;
+import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("equipmentPerGymController")
 @RequestMapping("equipmentPerGym")
@@ -28,6 +31,7 @@ public class EquipmentPerGymController {
         this.modelMapper = modelMapper;
     }
 
+    @Operation(summary = "관리자 - 헬스장 별 운동기구 등록")
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterEquipmentPerGymVO> registerEquipmentPerGym(@RequestBody RequestRegisterEquipmentPerGymVO request) {
         EquipmentPerGymDTO equipmentPerGymDTO = modelMapper.map(request, EquipmentPerGymDTO.class);
@@ -42,5 +46,28 @@ public class EquipmentPerGymController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "관리자 - 헬스장 별 운동기구 수정")
+    @PatchMapping("/{equipmentPerGymCode}/edit")
+    public ResponseEntity<ResponseEditEquipmentPerGymVO> editEquipmentPerGym(@PathVariable("equipmentPerGymCode") Long equipmentPerGymCode, @RequestBody RequestEditEquipmentPerGymVO request) {
+        EquipmentPerGymDTO newEquipmentPerGymDTO = equipmentPerGymService.editEquipmentPerGym(equipmentPerGymCode, request);
+
+        ResponseEditEquipmentPerGymVO response = new ResponseEditEquipmentPerGymVO(
+                newEquipmentPerGymDTO.getUpdatedAt(),
+                newEquipmentPerGymDTO.getGym(),
+                newEquipmentPerGymDTO.getExerciseEquipment()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "관리자 - 헬스장 별 운동기구 삭제")
+    @DeleteMapping("/{equipmentPerGymCode}/delete")
+    public ResponseEntity<String> deleteEquipmentPerGym(@PathVariable Long equipmentPerGymCode) {
+        equipmentPerGymService.deleteEquipmentPerGym(equipmentPerGymCode);
+
+        return ResponseEntity.ok("헬스장의 운동기구가 성공적으로 삭제되었습니다.");
     }
 }
