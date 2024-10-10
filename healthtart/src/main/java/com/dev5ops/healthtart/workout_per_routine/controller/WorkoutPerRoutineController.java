@@ -53,5 +53,11 @@ public class WorkoutPerRoutineController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
+    @Operation(summary = "운동 루틴별 운동 삭제")
+    @DeleteMapping("/{workoutPerRoutineCode}")
+    public ResponseEntity<ResponseDeleteWorkoutPerRoutineVO> deleteWorkoutPerRoutine(@RequestBody RequestDeleteWorkoutPerRoutineVO requestDeleteWorkoutPerRoutineVO) {
+        WorkoutPerRoutineDTO workoutPerRoutineDTO = modelMapper.map(requestDeleteWorkoutPerRoutineVO, WorkoutPerRoutineDTO.class);
+        ResponseDeleteWorkoutPerRoutineVO response = workoutPerRoutineService.deleteWorkoutPerRoutine(workoutPerRoutineDTO.getWorkoutPerRoutineCode());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
