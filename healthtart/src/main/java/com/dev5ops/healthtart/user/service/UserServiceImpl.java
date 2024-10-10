@@ -1,17 +1,16 @@
 package com.dev5ops.healthtart.user.service;
 
-import com.dev5ops.healthtart.common.util.JwtUtil;
+import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
-import org.apache.catalina.filters.ExpiresFilter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,6 +42,10 @@ public class UserServiceImpl implements UserService{
     // 회원가입
     @Override
     public ResponseInsertUserVO signUpUser(RequestInsertUserVO request) {
+
+        // Redis에서 이메일 인증 여부 확인
+//        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(requestRegisterUserVO.getUserEmail());
+        // -> 레디스 이메일 인증 처리는 일반회원만 해야한다.
 
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
@@ -116,6 +119,8 @@ public class UserServiceImpl implements UserService{
 
         // 이메일로 회원 조회
         UserEntity user = userRepository.findUserByUserEmail(userEmail);
+        // 밑에부분 예외처리 수정 필요
+        if (user == null) {throw new UsernameNotFoundException(userEmail);}
 
         // 권한 목록 설정
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
@@ -135,5 +140,10 @@ public class UserServiceImpl implements UserService{
                 user.getUserPassword(),
                 grantedAuthorities
         );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }

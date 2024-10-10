@@ -5,8 +5,6 @@ import lombok.Getter;
 
 @Getter
 public enum UserTypeEnum {
-
-    // 이렇게 2가지 값 가짐
     MEMBER("MEMBER"),
     ADMIN("ADMIN");
 

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
 public class RequestInsertUserVO {
 
     String userName;
@@ -19,13 +19,14 @@ public class RequestInsertUserVO {
     String userPhone;
     String userNickname;
     String userAddress;
+    // Boolean userFlag;
     String userGender;
     Double userHeight;
     Double userWeight;
     Integer userAge;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    Integer gymCode;
+    // Integer gymCode;
 
     public void changePwd(String encodedPwd) {
         this.userPassword = encodedPwd;
