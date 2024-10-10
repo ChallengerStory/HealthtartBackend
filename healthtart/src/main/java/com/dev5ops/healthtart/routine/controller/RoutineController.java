@@ -42,5 +42,13 @@ public class RoutineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PutMapping("/{routineCode}")
+    @Operation(summary = "운동 루틴 수정")
+    public ResponseEntity<ResponseModifyRoutineVO> modifyRoutine( @PathVariable("routineCode") Long routineCode,
+            @RequestBody RequestModifyRoutineVO requestModify) {
+        EditRoutineVO editRoutineVO = modelMapper.map(requestModify, EditRoutineVO.class);
+        ResponseModifyRoutineVO response = routineService.modifyRoutine(routineCode, editRoutineVO);
+        return ResponseEntity.ok(response);
+    }
 
 }
