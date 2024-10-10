@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.secutiry;
+package com.dev5ops.healthtart.security;
 
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import io.jsonwebtoken.*;
@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtil {
 
+    // JWT 토큰 서명 및 검증에 사용할 비밀 키
     private final Key secretKey;
     private long expirationTime;
 
@@ -67,8 +69,11 @@ public class JwtUtil {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         } else {
             /* 설명. 클레임에서 권한 정보들 가져오기 */
-            authorities = ((List<?>) claims.get("roles")).stream()
-                    .map(role -> new SimpleGrantedAuthority(role.toString()))
+            authorities = Arrays.stream(claims.get("roles").toString()
+                            .replace("[", "")
+                            .replace("]", "")
+                            .split(", "))
+                    .map(role -> new SimpleGrantedAuthority(role))
                     .collect(Collectors.toList());
         }
 

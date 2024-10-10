@@ -1,6 +1,8 @@
-package com.dev5ops.healthtart.secutiry;
+package com.dev5ops.healthtart.security;
+
+import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -36,12 +38,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // User 객체 추출
         Object userObj = oAuth2User.getAttribute("user");
-        if (!(userObj instanceof User)) {
+        if (!(userObj instanceof UserEntity)) {
             log.error("User object not found or invalid type in OAuth2User attributes");
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Invalid user data");
             return;
         }
-        User user = (User) userObj;
+        UserEntity user = (UserEntity) userObj;
 
         String userCode = user.getUserCode();
         String userEmail = user.getUserEmail();

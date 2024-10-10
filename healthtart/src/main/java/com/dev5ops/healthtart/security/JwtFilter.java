@@ -1,5 +1,4 @@
-package com.dev5ops.healthtart.secutiry;
-
+package com.dev5ops.healthtart.security;
 
 import com.dev5ops.healthtart.user.service.UserService;
 import jakarta.servlet.FilterChain;

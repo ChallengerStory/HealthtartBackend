@@ -1,12 +1,9 @@
-package com.dev5ops.healthtart.secutiry;
+package com.dev5ops.healthtart.security;
 
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestLoginVO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package com.dev5ops.healthtart.user.controller;
 
-import com.dev5ops.healthtart.secutiry.JwtUtil;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.service.UserService;
@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,26 +25,19 @@ import java.util.Map;
 public class UserController {
 
     private JwtUtil jwtUtil;
-//    private Environment env;
+    private Environment env;
     private ModelMapper modelMapper;
     private UserService userService;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil,/* Environment env,*/ ModelMapper modelMapper, UserService userService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService) {
         this.jwtUtil = jwtUtil;
-//        this.env = env;
+        this.env = env;
         this.modelMapper = modelMapper;
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserDTO>> findAllUsers () {
-        List<UserDTO> allUsers = userService.findAllUsers();
-
-        return ResponseEntity.status(HttpStatus.OK).body(allUsers);
-    }
-
-    @PostMapping // /users 와 POST 요청은 회원가입 (필요한 데이터가 뭐가 있을까?) -> RequestInsertUserVO
+    @PostMapping("/signUp")
     public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
         ResponseInsertUserVO responseUser = userService.signUpUser(request);
 
@@ -108,11 +100,11 @@ public class UserController {
             response.put("userName", userDTO.getUserName());
             response.put("userEmail", userDTO.getUserEmail());
             response.put("userType", userDTO.getUserType());
-            response.put("nickname", userDTO.getNickname());
+            response.put("nickname", userDTO.getUserNickname());
             // 필요한 추가 정보들...
 
             log.info("Mypage data successfully retrieved for user: {}", userCode);
             return ResponseEntity.ok(response);
-        
+
     }
 }

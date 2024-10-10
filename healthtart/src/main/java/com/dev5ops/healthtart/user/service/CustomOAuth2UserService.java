@@ -2,7 +2,7 @@ package com.dev5ops.healthtart.user.service;
 
 
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -57,7 +57,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // provider는 그거고 (kakao인지 google인지)
         // providerId는 식별자임 (code)
-        User user = userRepository.findByProviderAndProviderId(provider, providerId);
+        UserEntity user = userRepository.findByProviderAndProviderId(provider, providerId);
 
 
         if (user == null) {
@@ -68,14 +68,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             String userCode = curDate + "-" + uuid.substring(0);
 
-            user = User.builder()
+            user = UserEntity.builder()
                     .userCode(userCode)
                     .userType(UserTypeEnum.MEMBER)
                     .userName(name)
                     .userEmail(email)
                     .userPassword(null)  // OAuth2 사용자는 비밀번호가 없음
                     .userPhone("구글-폰번호")  // 필요한 경우 추가 정보를 받아야 함
-                    .nickname(name)  // 닉네임을 이름으로 초기 설정
+                    .userNickname(name)  // 닉네임을 이름으로 초기 설정
                     .userAddress("구글 주소")  // 필요한 경우 추가 정보를 받아야 함
                     .userFlag(true)  // 활성 사용자로 설정
                     .provider(provider)
