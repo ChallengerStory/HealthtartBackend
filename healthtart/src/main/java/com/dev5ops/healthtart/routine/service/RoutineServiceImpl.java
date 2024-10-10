@@ -40,7 +40,35 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseFindRoutineVO.class);
     }
 
+    // 루틴 시작하기 누르면 운동루틴 등록
+    @Override
+    @Transactional
+    public ResponseInsertRoutineVO registerRoutine(RoutineDTO routineDTO) {
+        validateRoutineDTO(routineDTO);
 
+        Routine routine = Routine.builder()
+                .routineCode(routineDTO.getRoutineCode())
+                .title(routineDTO.getTitle())
+                .time(routineDTO.getTime())
+                .link(routineDTO.getLink())
+                .recommendMusic(routineDTO.getRecommendMusic())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        routineRepository.save(routine);
+
+        return modelMapper.map(routine, ResponseInsertRoutineVO.class);
+    }
+
+
+
+    // DTO 검증 메서드
+    private void validateRoutineDTO(RoutineDTO routineDTO) {
+        if (routineDTO.getRoutineCode() == null || routineDTO.getTitle().isEmpty()) {
+            throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
+        }
+    }
 }
 
 
