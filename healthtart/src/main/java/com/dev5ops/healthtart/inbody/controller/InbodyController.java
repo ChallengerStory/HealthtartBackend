@@ -1,6 +1,8 @@
 package com.dev5ops.healthtart.inbody.controller;
 
+import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestRegisterInbodyVO;
+import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseRegisterInbodyVO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.service.InbodyService;
@@ -45,6 +47,28 @@ public class InbodyController {
                 registerInbody.getCreatedAt(),
                 registerInbody.getUpdatedAt(),
                 registerInbody.getUser()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "관리자, 유저 - 인바디 수정")
+    @PostMapping("/{inbodyCode}/edit")
+    public ResponseEntity<ResponseEditInbodyVO> editInbody(@PathVariable("inbodyCode") Long inbodyCode, @RequestBody RequestEditInbodyVO request) {
+        InbodyDTO inbodyDTO = inbodyService.editInbody(inbodyCode, request);
+
+        ResponseEditInbodyVO response = new ResponseEditInbodyVO(
+                inbodyDTO.getInbodyScore(),
+                inbodyDTO.getWeight(),
+                inbodyDTO.getHeight(),
+                inbodyDTO.getMuscleWeight(),
+                inbodyDTO.getFatWeight(),
+                inbodyDTO.getBmi(),
+                inbodyDTO.getFatPercentage(),
+                inbodyDTO.getDayOfInbody(),
+                inbodyDTO.getBasalMetabolicRate(),
+                inbodyDTO.getUpdatedAt(),
+                inbodyDTO.getUser()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
