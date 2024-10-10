@@ -2,7 +2,6 @@
 package com.dev5ops.healthtart.routine.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -27,7 +26,7 @@ public class RoutineDTO {
     private String link;
 
     @JsonProperty("recommend_music")
-    private String recommend_music;
+    private String recommendMusic;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;

@@ -1,13 +1,11 @@
 
 package com.dev5ops.healthtart.routine.domain.entity;
 
+import com.dev5ops.healthtart.routine.domain.vo.EditRoutineVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Getter
+@Builder
 public class Routine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +39,10 @@ public class Routine {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-}
+
+    public void toUpdate(@Validated EditRoutineVO editRoutineVO) {
+        this.title = editRoutineVO.getTitle();
+        this.time = editRoutineVO.getTime();
+    }
+
+    }
