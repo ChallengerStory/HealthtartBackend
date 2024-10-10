@@ -3,6 +3,7 @@ package com.dev5ops.healthtart.inbody.service;
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.inbody.aggregate.Inbody;
+import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.repository.InbodyRepository;
 import jakarta.transaction.Transactional;
@@ -36,4 +37,24 @@ public class InbodyService {
         return modelMapper.map(savedInbody, InbodyDTO.class);
     }
 
+    @Transactional
+    public InbodyDTO editInbody(Long inbodyCode, RequestEditInbodyVO request) {
+        Inbody inbody = inbodyRepository.findById(inbodyCode).orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        inbody.setInbodyScore(request.getInbodyScore());
+        inbody.setWeight(request.getWeight());
+        inbody.setHeight(request.getHeight());
+        inbody.setMuscleWeight(request.getMuscleWeight());
+        inbody.setFatWeight(request.getFatWeight());
+        inbody.setBmi(request.getBmi());
+        inbody.setFatPercentage(request.getFatPercentage());
+        inbody.setDayOfInbody(request.getDayOfInbody());
+        inbody.setBasalMetabolicRate(request.getBasalMetabolicRate());
+        inbody.setUpdatedAt(LocalDateTime.now());
+        inbody.setUser(request.getUser());
+
+        inbody = inbodyRepository.save(inbody);
+
+        return modelMapper.map(inbody, InbodyDTO.class);
+    }
 }
