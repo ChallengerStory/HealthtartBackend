@@ -28,13 +28,13 @@ public class User {
     @Column(name = "user_email", nullable = false) // unique = false는 default라서 생략
     private String userEmail;
 
-    @Column(name = "user_password", nullable = false)
+    @Column(name = "user_password"/*, nullable = false*/)
     private String userPassword;
 
     @Column(name = "user_phone", nullable = false)
     private String userPhone;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "user_nickname", nullable = false)
     private String nickname;
 
     @Column(name = "user_address", nullable = false)
