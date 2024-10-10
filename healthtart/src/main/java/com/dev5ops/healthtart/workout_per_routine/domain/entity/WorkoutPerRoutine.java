@@ -1,11 +1,11 @@
-package com.dev5ops.healthtart.workout_per_routine.aggregate;
+package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
-import com.google.type.DateTime;
+import com.dev5ops.healthtart.workout_per_routine.domain.vo.vo.EditWorkoutPerRoutineVO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDateTime;
 
 @Entity(name = "WorkoutPerRoutine")
 @Table(name = "workout_per_routine")
@@ -13,6 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Getter
+@Builder
 public class WorkoutPerRoutine {
 
     @Id
@@ -36,10 +37,10 @@ public class WorkoutPerRoutine {
     private int workoutTime;
 
     @Column(name = "created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "record_code")
     private Long recordCode;
@@ -47,7 +48,13 @@ public class WorkoutPerRoutine {
     @Column(name = "exercise_equipment_code")
     private Long exerciseEquipmentCode;
 
-
+    public void toUpdate(@Validated EditWorkoutPerRoutineVO editRoutineVO) {
+        this.workoutOrder = editRoutineVO.getWorkoutOrder();
+        this.weightSet = editRoutineVO.getWeightSet();
+        this.numberPerSet = editRoutineVO.getNumberPerSet();
+        this.weightPerSet = editRoutineVO.getWeightPerSet();
+        this.workoutTime = editRoutineVO.getWorkoutTime();
+    }
 
 
 }

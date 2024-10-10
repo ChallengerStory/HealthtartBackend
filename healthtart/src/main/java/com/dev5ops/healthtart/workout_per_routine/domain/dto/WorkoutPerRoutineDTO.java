@@ -1,8 +1,9 @@
-package com.dev5ops.healthtart.workout_per_routine.dto;
+package com.dev5ops.healthtart.workout_per_routine.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,10 +30,10 @@ public class WorkoutPerRoutineDTO {
     private int workoutTime;
 
     @JsonProperty("created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty("updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @JsonProperty("record_code")
     private Long recordCode;

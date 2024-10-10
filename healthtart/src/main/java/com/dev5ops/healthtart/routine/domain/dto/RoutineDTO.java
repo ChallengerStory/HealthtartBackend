@@ -1,9 +1,10 @@
 
-package com.dev5ops.healthtart.workout_routine.dto;
+package com.dev5ops.healthtart.routine.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 
 @AllArgsConstructor
@@ -11,7 +12,7 @@ import lombok.*;
 @ToString
 @Getter
 @Setter
-public class WorkoutRoutineDTO {
+public class RoutineDTO {
     @JsonProperty("routine_code")
     private Long routineCode;
 
@@ -19,14 +20,17 @@ public class WorkoutRoutineDTO {
     private String title;
 
     @JsonProperty("time")
-    private DateTime time;
+    private Integer time;
 
     @JsonProperty("link")
     private String link;
 
+    @JsonProperty("recommend_music")
+    private String recommendMusic;
+
     @JsonProperty("created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty("updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
