@@ -9,8 +9,8 @@ import java.util.List;
 
 @Repository
 public interface RecordPerUserRepository extends JpaRepository<RecordPerUser, Integer> {
-    List<RecordPerUser> findByUser_UserCode(String userCode);
-    List<RecordPerUser> findByUser_UserCodeAndDayOfExercise(String userCode, LocalDate dayOfExercise);
+    List<RecordPerUser> findByUserCode_UserCode(String userCode);
+    List<RecordPerUser> findByUserCode_UserCodeAndDayOfExercise(String userCode, LocalDate dayOfExercise);
 
-    boolean existsByUser_UserCode(String userCode);
+    boolean existsByUserCode_UserCode(String userCode);
 }

@@ -1,13 +1,12 @@
 package com.dev5ops.healthtart.recommended_workout_history.aggregate;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 @Entity(name = "RecommendedWorkoutHistory")
 @Table(name = "recommended_workout_history")
@@ -29,10 +28,10 @@ public class RecommendedWorkoutHistory {
     private int recommendedTime;
 
     @Column(name="created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name="updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name="routine_code")
     private Long routineCode;
