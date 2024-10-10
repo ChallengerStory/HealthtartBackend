@@ -82,11 +82,11 @@ public class GymController {
                 gymDTO.getBusinessNumber()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "관리자, 유저 - 헬스장 전체 조회")
-    @GetMapping("/gymList")
+    @GetMapping("/gym_list")
     public ResponseEntity<List<ResponseFindGymVO>> getGymList() {
         List<GymDTO> gymDTOList = gymService.findAllGym();
         List<ResponseFindGymVO> responseList = new ArrayList<>();
@@ -100,6 +100,6 @@ public class GymController {
 
             responseList.add(response);
         }
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 }

@@ -4,7 +4,6 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestRegisterEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.repository.EquipmentPerGymRepository;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
@@ -18,6 +17,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("equipmentPerGymService")
 @RequiredArgsConstructor
@@ -68,5 +69,19 @@ public class EquipmentPerGymService {
         exerciseEquipmentRepository.findById(equipmentPerGym.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
 
         equipmentPerGymRepository.delete(equipmentPerGym);
+    }
+
+    public EquipmentPerGymDTO findEquipmentPerGymByCode(Long equipmentPerGymCode) {
+        EquipmentPerGym equipmentPerGym = equipmentPerGymRepository.findById(equipmentPerGymCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND));
+
+        return modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class);
+    }
+
+    public List<EquipmentPerGymDTO> findAllEquipmentPer() {
+        List<EquipmentPerGym> equipmentPerGyms = equipmentPerGymRepository.findAll();
+
+        return equipmentPerGyms.stream()
+                .map(equipmentPerGym -> modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class))
+                .collect(Collectors.toList());
     }
 }
