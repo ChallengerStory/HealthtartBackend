@@ -72,7 +72,15 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseModifyRoutineVO.class);
     }
 
-
+    // 루틴 멈추기 누르면 운동루틴 삭제
+    @Override
+    @Transactional
+    public ResponseDeleteRoutineVO deleteRoutine(Long routineCode) {
+        Routine routine = routineRepository.findById(routineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        routineRepository.delete(routine);
+        return new ResponseDeleteRoutineVO();
+    }
 
     // DTO 검증 메서드
     private void validateRoutineDTO(RoutineDTO routineDTO) {
