@@ -1,6 +1,5 @@
 package com.dev5ops.healthtart.secutiry;
 
-import com.dev5ops.healthtart.user.domain.dto.GoogleUserDTO;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -15,10 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,17 +62,17 @@ public class JwtUtil {
         String userId = claims.getSubject();
 
         Collection<? extends GrantedAuthority> authorities = null;
-        if (claims.get("auth") == null) {
+        if (claims.get("roles") == null) {
+            log.warn("권한 정보가 없는 토큰입니다. Claims: {}", claims);
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         } else {
             /* 설명. 클레임에서 권한 정보들 가져오기 */
-            authorities = Arrays.stream(claims.get("auth").toString()
-                            .replace("[", "")
-                            .replace("]", "")
-                            .split(", "))
-                    .map(role -> new SimpleGrantedAuthority(role))
+            authorities = ((List<?>) claims.get("roles")).stream()
+                    .map(role -> new SimpleGrantedAuthority(role.toString()))
                     .collect(Collectors.toList());
         }
+
+        log.info("추출된 권한 정보: {}", authorities);
 
         // SecurityContext에 인증 정보를 저장하기 위해 Authentication 객체 반환
         return new UsernamePasswordAuthenticationToken(userId, "", authorities);
@@ -103,10 +102,14 @@ public class JwtUtil {
 //                .compact();
 //    }
 
-    public String googleGenerateToken(GoogleUserDTO userDTO){
-        Claims claims = Jwts.claims().setSubject(userDTO.getUserCode());
-        claims.put("email", userDTO.getUserEmail());
-        claims.put("name", userDTO.getUserName());
+    public String generateToken(JwtTokenDTO tokenDTO, List<String> roles, String provider){
+        Claims claims = Jwts.claims().setSubject(tokenDTO.getUserCode());
+        claims.put("email", tokenDTO.getUserEmail());
+        log.info("claim의 email: {}", tokenDTO.getUserEmail());
+        claims.put("name", tokenDTO.getUserName());
+        claims.put("roles", roles);
+        claims.put("provider", provider != null ? provider : "local");  // null 대신 "local" 사용
+
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -116,17 +119,37 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateToken(JwtTokenDTO tokenDTO, List<String> roles){
-        Claims claims = Jwts.claims().setSubject(tokenDTO.getUserCode());
-        claims.put("email", tokenDTO.getUserEmail());
-        claims.put("name", tokenDTO.getUserName());
-        claims.put("roles", roles);
+    public String getEmailFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("email", String.class));
+    }
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .compact();
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("name", String.class));
+    }
+
+    public String getProviderFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("provider", String.class));
+    }
+
+    public Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
     }
 }

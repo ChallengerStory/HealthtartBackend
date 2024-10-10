@@ -4,6 +4,7 @@ package com.dev5ops.healthtart.user.service;
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
 import com.dev5ops.healthtart.user.domain.entity.User;
 import com.dev5ops.healthtart.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -14,9 +15,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
@@ -27,7 +30,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("loadUser1");
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        log.info("loadUser2");
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
         Map<String, Object> attributes = oAuth2User.getAttributes();
@@ -54,17 +59,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // providerId는 식별자임 (code)
         User user = userRepository.findByProviderAndProviderId(provider, providerId);
 
+
         if (user == null) {
+
             // 새 사용자 생성
+            String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String uuid = UUID.randomUUID().toString();
+
+            String userCode = curDate + "-" + uuid.substring(0);
+
             user = User.builder()
-                    .userCode(UUID.randomUUID().toString())
+                    .userCode(userCode)
                     .userType(UserTypeEnum.MEMBER)
                     .userName(name)
                     .userEmail(email)
                     .userPassword(null)  // OAuth2 사용자는 비밀번호가 없음
-                    .userPhone("")  // 필요한 경우 추가 정보를 받아야 함
+                    .userPhone("구글-폰번호")  // 필요한 경우 추가 정보를 받아야 함
                     .nickname(name)  // 닉네임을 이름으로 초기 설정
-                    .userAddress("")  // 필요한 경우 추가 정보를 받아야 함
+                    .userAddress("구글 주소")  // 필요한 경우 추가 정보를 받아야 함
                     .userFlag(true)  // 활성 사용자로 설정
                     .provider(provider)
                     .providerId(providerId)
@@ -79,7 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         user = userRepository.save(user);
-
+        log.info("customService user : {} ", user.toString());
         // User 정보를 포함한 attributes 맵 생성
         Map<String, Object> userAttributes = new HashMap<>(attributes);
         userAttributes.put("user", user);

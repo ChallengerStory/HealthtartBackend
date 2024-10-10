@@ -52,6 +52,7 @@ public class WebSecurity {
 
         http.authorizeHttpRequests((authz) ->
                                 authz
+//                                        .requestMatchers(new AntPathRequestMatcher("/users/mypage", "GET")).hasRole("ADMIN")
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
@@ -67,6 +68,10 @@ public class WebSecurity {
 
                 /* OAuth2 로그인 설정 추가 */
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization"))
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/login/oauth2/code/*"))
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )

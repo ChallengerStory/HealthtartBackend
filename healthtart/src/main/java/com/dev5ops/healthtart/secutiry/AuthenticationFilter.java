@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +89,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //                .compact();
 
         JwtTokenDTO tokenDTO = new JwtTokenDTO(userName, null, null);
-        String token = jwtUtil.generateToken(tokenDTO, roles);
+        String token = jwtUtil.generateToken(tokenDTO, roles, null);
 
 //        response.addHeader("token", token);
         response.addHeader(HttpHeaders.AUTHORIZATION, token);
