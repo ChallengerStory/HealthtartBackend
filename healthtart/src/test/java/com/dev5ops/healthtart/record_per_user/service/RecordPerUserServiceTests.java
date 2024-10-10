@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,7 +98,7 @@ class RecordPerUserServiceTests {
                 .asList(mockFirstRecordPerUserDTO, mockSecondRecordPerUserDTO);
 
         // when
-        when(recordPerUserRepository.findByUser_UserCode(userCode))
+        when(recordPerUserRepository.findByUserCode_UserCode(userCode))
                 .thenReturn(mockRecordsPerUser);
         when(modelMapper.map(mockFirstRecordPerUser, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserDTO);
@@ -112,7 +111,7 @@ class RecordPerUserServiceTests {
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUser_UserCode(userCode);
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCode(userCode);
 
         // any - RecordPerUser의 어떤 객체여도 상관 없다 / eq - RecordPerUserDTO여야만 한다
         verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
@@ -183,7 +182,7 @@ class RecordPerUserServiceTests {
                 .asList(mockFirstRecordPerUserAndDayDTO, mockSecondRecordPerUserAndDayDTO);
 
         // when
-        when(recordPerUserRepository.findByUser_UserCodeAndDayOfExercise(userCode, dayOfExercise))
+        when(recordPerUserRepository.findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise))
                 .thenReturn(mockRecordsPerUserAndDay);
         when(modelMapper.map(firstMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserAndDayDTO);
@@ -196,7 +195,7 @@ class RecordPerUserServiceTests {
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserAndDayDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUser_UserCodeAndDayOfExercise(userCode, dayOfExercise);
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise);
         verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
 
     }
