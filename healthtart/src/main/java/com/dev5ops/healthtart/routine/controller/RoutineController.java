@@ -51,4 +51,11 @@ public class RoutineController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{routineCode}")
+    @Operation(summary = "운동 루틴 삭제")
+    public ResponseEntity<ResponseDeleteRoutineVO> deleteRoutine(@RequestBody RequestModifyRoutineVO requestModifyRoutineVO) {
+        RoutineDTO routineDTO = modelMapper.map(requestModifyRoutineVO, RoutineDTO.class);
+        ResponseDeleteRoutineVO response = routineService.deleteRoutine(routineDTO.getRoutineCode());
+        return ResponseEntity.ok(response);
+    }
 }
