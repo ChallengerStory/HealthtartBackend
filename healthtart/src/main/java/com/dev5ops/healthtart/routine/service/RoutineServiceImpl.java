@@ -61,6 +61,17 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseInsertRoutineVO.class);
     }
 
+    // 운동루틴 제목, 할시간 수정 가능
+    @Override
+    @Transactional
+    public ResponseModifyRoutineVO modifyRoutine(Long routineCode, EditRoutineVO modifyRoutine) {
+        Routine routine = routineRepository.findById(routineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        routine.toUpdate(modifyRoutine);
+        routineRepository.save(routine);
+        return modelMapper.map(routine, ResponseModifyRoutineVO.class);
+    }
+
 
 
     // DTO 검증 메서드
