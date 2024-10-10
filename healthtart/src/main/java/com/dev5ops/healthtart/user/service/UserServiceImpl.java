@@ -8,10 +8,6 @@ import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -80,29 +76,6 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO loginUser(String userEmail, String userPassword) {
-        // 회원 조회 (이메일로 사용자 조회)
-        UserEntity userEntity = userRepository.findUserByUserEmail(userEmail);
-
-        System.out.println(userEntity);
-        // 비밀번호 검증
-        if (!bCryptPasswordEncoder.matches(userPassword, userEntity.getUserPassword())) {
-            throw new BadCredentialsException("잘못된 비밀번호입니다.");
-        }
-
-        // 로그인 성공 처리
-        // JWT 토큰 발급
-        String token = jwtUtil.generateToken(userEmail);
-
-        // 사용자 정보를 DTO로 변환해 반환
-        UserDTO userDTO = modelMapper.map(userEntity, UserDTO.class);
-        userDTO.setToken(token);
-
-        return userDTO;
-    }
-
-    // 회원 전체 조회
-    @Override
     public List<UserDTO> findAllUsers() {
         List<UserEntity> allUsers = userRepository.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
@@ -115,32 +88,19 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDetails findUserByUsername(String userEmail) throws UsernameNotFoundException {
+    public UserDTO findUserByEmail(String email) {
+        UserEntity findUser = userRepository.findByUserEmail(email);
 
-        // 이메일로 회원 조회
-        UserEntity user = userRepository.findUserByUserEmail(userEmail);
-        // 밑에부분 예외처리 수정 필요
-        if (user == null) {throw new UsernameNotFoundException(userEmail);}
-
-        // 권한 목록 설정
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-        // 회원의 UserType에 따라 권한 부여
-        switch(user.getUserType()) {
-            case MEMBER -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
-            case ADMIN -> {
-                grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
-            }
-        }
-
-        // userDetails 객체 생성 및 반환
-        return new User(
-                user.getUserEmail(),
-                user.getUserPassword(),
-                grantedAuthorities
-        );
+        return modelMapper.map(findUser, UserDTO.class);
     }
+
+    @Override
+    public UserDTO findById(String userCode) {
+        UserEntity user = userRepository.findById(userCode).get();
+
+        return modelMapper.map(user, UserDTO.class);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

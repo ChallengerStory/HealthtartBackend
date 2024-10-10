@@ -4,7 +4,7 @@ package com.dev5ops.healthtart.record_per_user.service;
 import com.dev5ops.healthtart.record_per_user.aggregate.RecordPerUser;
 import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class RecordPerUserServiceTests {
 
         // given
         String userCode = "testUserCode";
-        User mockUser = User.builder()
+        UserEntity mockUser = UserEntity.builder()
                 .userCode(userCode)
                 .build();
 
@@ -126,7 +126,7 @@ class RecordPerUserServiceTests {
 
         // given
         String userCode = "testUserCode";
-        User mockUser = User.builder()
+        UserEntity mockUser = UserEntity.builder()
                 .userCode(userCode)
                 .build();
 

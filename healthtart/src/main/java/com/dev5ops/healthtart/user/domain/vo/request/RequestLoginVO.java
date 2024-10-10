@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class RequestLoginUserVO {
+public class RequestLoginVO {
     private String userEmail;
     private String userPassword;
 }

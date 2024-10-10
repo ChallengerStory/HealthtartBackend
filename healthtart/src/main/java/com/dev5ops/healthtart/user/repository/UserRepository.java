@@ -9,5 +9,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     // Optional: null값 담을 수 있는 컨테이너 객체
     // 사용자 존재하지 않을 경우 빈 Optional로 반환
-    UserEntity findUserByUserEmail(String userEmail);
+    UserEntity findByUserEmail(String userEmail);
+
+    UserEntity findByProviderAndProviderId(String provider, String providerId);
 }
