@@ -556,7 +556,7 @@ class InbodyServiceTests {
                         .build())
                 .build();
 
-        when(inbodyRepository.findInbodyByIdAndUserCode(inbodyCode, userCode)).thenReturn(Optional.of(existingInbody));
+        when(inbodyRepository.findByInbodyCodeAndUser_UserCode(inbodyCode, userCode)).thenReturn(Optional.of(existingInbody));
 
         InbodyDTO expectedDTO = new InbodyDTO(
                 existingInbody.getInbodyCode(),
@@ -584,7 +584,7 @@ class InbodyServiceTests {
         assertEquals(70.0, result.getWeight());
         assertEquals(175.0, result.getHeight());
         assertEquals(userCode, result.getUser().getUserCode());
-        verify(inbodyRepository, times(1)).findInbodyByIdAndUserCode(inbodyCode, userCode);
+        verify(inbodyRepository, times(1)).findByInbodyCodeAndUser_UserCode(inbodyCode, userCode);
     }
 
     @DisplayName("유저의 전체 인바디 조회 성공")
@@ -660,7 +660,7 @@ class InbodyServiceTests {
                         .build()
         );
 
-        when(inbodyRepository.findAllByUserCode(userCode)).thenReturn(inbodyList);
+        when(inbodyRepository.findAllByUser_UserCode(userCode)).thenReturn(inbodyList);
 
         List<InbodyDTO> expectedDTOList = inbodyList.stream()
                 .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
@@ -691,6 +691,6 @@ class InbodyServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(inbodyRepository, times(1)).findAllByUserCode(userCode);
+        verify(inbodyRepository, times(1)).findAllByUser_UserCode(userCode);
     }
 }

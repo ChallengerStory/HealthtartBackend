@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface InbodyRepository extends JpaRepository<Inbody, Long> {
     Optional<Inbody> findByDayOfInbodyAndUser(LocalDateTime dayOfInbody, UserEntity user);
 
-    Optional<Inbody> findInbodyByIdAndUserCode(Long inbodyCode, String userCode);
+    Optional<Inbody> findByInbodyCodeAndUser_UserCode(Long inbodyCode, String userCode);
 
-    List<Inbody> findAllByUserCode(String userCode);
+    List<Inbody> findAllByUser_UserCode(String userCode);
 }
