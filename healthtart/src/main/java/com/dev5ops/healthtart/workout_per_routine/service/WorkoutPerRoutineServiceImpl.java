@@ -40,6 +40,49 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         return modelMapper.map(routine, ResponseFindWorkoutPerRoutineVO.class);
     }
 
+    // 루틴별 운동 등록
+    @Override
+    @Transactional
+    public ResponseInsertWorkoutPerRoutineVO registerWorkoutPerRoutine(WorkoutPerRoutineDTO workoutPerRoutineDTO) {
+        validateWorkoutPerRoutineDTO(workoutPerRoutineDTO);
 
+        WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
+                .workoutPerRoutineCode(workoutPerRoutineDTO.getWorkoutPerRoutineCode())
+                .workoutOrder(workoutPerRoutineDTO.getWorkoutOrder())
+                .weightSet(workoutPerRoutineDTO.getWeightSet())
+                .numberPerSet(workoutPerRoutineDTO.getNumberPerSet())
+                .weightPerSet(workoutPerRoutineDTO.getWeightPerSet())
+                .workoutTime(workoutPerRoutineDTO.getWorkoutTime())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .exerciseEquipmentCode(workoutPerRoutineDTO.getExerciseEquipmentCode())
+                .recordCode(workoutPerRoutineDTO.getRecordCode())
+                .build();
+
+        workoutPerRoutineRepository.save(routine);
+        return modelMapper.map(routine, ResponseInsertWorkoutPerRoutineVO.class);
+    }
+
+    // 루틴별 운동 수정
+    @Override
+    @Transactional
+    public ResponseModifyWorkoutPerRoutineVO modifyWorkoutPerRoutine(Long workoutPerRoutineCode, EditWorkoutPerRoutineVO modifyRoutine) {
+        WorkoutPerRoutine routine = workoutPerRoutineRepository.findById(workoutPerRoutineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        routine.toUpdate(modifyRoutine);
+        workoutPerRoutineRepository.save(routine);
+        return modelMapper.map(routine, ResponseModifyWorkoutPerRoutineVO.class);
+    }
+
+
+
+    // DTO 검증
+    private void validateWorkoutPerRoutineDTO(WorkoutPerRoutineDTO workoutPerRoutineDTO) {
+        if (workoutPerRoutineDTO.getWorkoutPerRoutineCode() == null ||
+                workoutPerRoutineDTO.getWorkoutOrder() <= 0 ||
+                workoutPerRoutineDTO.getWorkoutTime() <= 0) {
+            throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
+        }
+    }
 
 }
