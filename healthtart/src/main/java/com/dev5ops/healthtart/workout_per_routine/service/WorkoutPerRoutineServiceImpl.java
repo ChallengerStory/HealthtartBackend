@@ -74,7 +74,15 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         return modelMapper.map(routine, ResponseModifyWorkoutPerRoutineVO.class);
     }
 
-
+    // 루틴별 운동 삭제
+    @Override
+    @Transactional
+    public ResponseDeleteWorkoutPerRoutineVO deleteWorkoutPerRoutine(Long workoutPerRoutineCode) {
+        WorkoutPerRoutine routine = workoutPerRoutineRepository.findById(workoutPerRoutineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        workoutPerRoutineRepository.delete(routine);
+        return new ResponseDeleteWorkoutPerRoutineVO();
+    }
 
     // DTO 검증
     private void validateWorkoutPerRoutineDTO(WorkoutPerRoutineDTO workoutPerRoutineDTO) {
