@@ -86,7 +86,7 @@ public class InbodyController {
         return ResponseEntity.ok("인바디 정보가 성공적으로 삭제되었습니다.");
     }
 
-    @Operation(summary = "관리자, 유저 - 인바디 단 건 조회")
+    @Operation(summary = "관리자 - 인바디 단 건 조회")
     @GetMapping("/{inbodyCode}")
     public ResponseEntity<ResponseFindInbodyVO> getInbody(@PathVariable("inbodyCode") Long inbodyCode) {
         InbodyDTO inbodyDTO = inbodyService.findInbodyByCode(inbodyCode);
@@ -132,4 +132,51 @@ public class InbodyController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
+
+    @Operation(summary = "유저 - 본인의 인바디 단 건 조회")
+    @GetMapping("/my-inbody/{inbodyCode}")
+    public ResponseEntity<ResponseFindInbodyVO> getUserInbody(@PathVariable("inbodyCode") Long inbodyCode, @RequestParam("userCode") String userCode) {
+        InbodyDTO inbodyDTO = inbodyService.findInbodyByCodeAndUser(inbodyCode, userCode);
+
+        ResponseFindInbodyVO response = new ResponseFindInbodyVO(
+                inbodyDTO.getInbodyScore(),
+                inbodyDTO.getWeight(),
+                inbodyDTO.getHeight(),
+                inbodyDTO.getMuscleWeight(),
+                inbodyDTO.getFatWeight(),
+                inbodyDTO.getBmi(),
+                inbodyDTO.getFatPercentage(),
+                inbodyDTO.getDayOfInbody(),
+                inbodyDTO.getBasalMetabolicRate(),
+                inbodyDTO.getUser()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(summary = "유저 - 본인의 모든 인바디 정보 조회")
+    @GetMapping("/my-inbody")
+    public ResponseEntity<List<ResponseFindInbodyVO>> getUserInbodyList(@RequestParam("userCode") String userCode) {
+        List<InbodyDTO> inbodyDTOList = inbodyService.findAllInbodyByUser(userCode);
+        List<ResponseFindInbodyVO> responseList = new ArrayList<>();
+
+        for (InbodyDTO inbodyDTO : inbodyDTOList) {
+            ResponseFindInbodyVO response = new ResponseFindInbodyVO(
+                    inbodyDTO.getInbodyScore(),
+                    inbodyDTO.getWeight(),
+                    inbodyDTO.getHeight(),
+                    inbodyDTO.getMuscleWeight(),
+                    inbodyDTO.getFatWeight(),
+                    inbodyDTO.getBmi(),
+                    inbodyDTO.getFatPercentage(),
+                    inbodyDTO.getDayOfInbody(),
+                    inbodyDTO.getBasalMetabolicRate(),
+                    inbodyDTO.getUser()
+            );
+            responseList.add(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
 }

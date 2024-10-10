@@ -79,4 +79,20 @@ public class InbodyService {
                 .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public InbodyDTO findInbodyByCodeAndUser(Long inbodyCode, String userCode) {
+        Inbody inbody = inbodyRepository.findInbodyByIdAndUserCode(inbodyCode, userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        return modelMapper.map(inbody, InbodyDTO.class);
+    }
+
+    public List<InbodyDTO> findAllInbodyByUser(String userCode) {
+        List<Inbody> inbodyList = inbodyRepository.findAllByUserCode(userCode);
+
+        return inbodyList.stream()
+                .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
+                .collect(Collectors.toList());
+    }
+
 }
