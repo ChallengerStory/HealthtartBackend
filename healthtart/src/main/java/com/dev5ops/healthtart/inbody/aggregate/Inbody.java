@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.inbody.aggregate;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,5 +55,5 @@ public class Inbody {
 
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
-    private User user;
+    private UserEntity user;
 }

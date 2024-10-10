@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.inbody.aggregate.vo.response;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,5 +21,5 @@ public class ResponseEditInbodyVO {
     private LocalDateTime dayOfInbody;
     private Integer basalMetabolicRate;
     private LocalDateTime updatedAt;
-    private User user;
+    private UserEntity user;
 }

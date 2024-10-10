@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.record_per_user.dto;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -34,7 +34,7 @@ public class RecordPerUserDTO {
     private LocalDateTime updatedAt;
 
     @JsonProperty("user_code")
-    private User userCode;
+    private UserEntity userCode;
 
     @JsonProperty("workout_per_routine_code")
     private Long workoutPerRoutineCode;

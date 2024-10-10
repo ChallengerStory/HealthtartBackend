@@ -1,9 +1,11 @@
 package com.dev5ops.healthtart.security;
 
+import com.dev5ops.healthtart.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,10 +16,13 @@ import java.io.IOException;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private UserService userService;
+    private Environment env;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment env) {
+        super(authenticationManager);
+        this.userService = userService;
+        this.env = env;
     }
 
     // authenticationManager가 authenticationToken 받아서 검증
@@ -29,7 +34,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userEmail, userPassword, null);
 
-        return authenticationManager.authenticate(authenticationToken);
+        return getAuthenticationManager().authenticate(authenticationToken);
     }
 
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {

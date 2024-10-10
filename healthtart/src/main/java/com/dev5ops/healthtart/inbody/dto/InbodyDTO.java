@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.inbody.dto;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -24,5 +24,5 @@ public class InbodyDTO {
     private Integer basalMetabolicRate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private User user;
+    private UserEntity user;
 }
