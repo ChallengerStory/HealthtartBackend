@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.inbody.aggregate.vo.response;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +20,5 @@ public class ResponseFindInbodyVO {
     private double fatPercentage;
     private LocalDateTime dayOfInbody;
     private Integer basalMetabolicRate;
-    private User user;
+    private UserEntity user;
 }

@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.record_per_user.aggregate;
 
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,7 +40,7 @@ public class RecordPerUser {
 
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
-    private User userCode;
+    private UserEntity userCode;
 
     @Column(name="workout_per_routine_code", nullable = false)
     private Long workoutPerRoutineCode;
