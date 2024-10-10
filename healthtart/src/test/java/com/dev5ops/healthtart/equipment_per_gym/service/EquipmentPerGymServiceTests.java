@@ -19,6 +19,8 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -454,4 +456,123 @@ class EquipmentPerGymServiceTests {
         verify(equipmentPerGymRepository, never()).delete(any(EquipmentPerGym.class));
     }
 
+    @DisplayName("헬스장 별 운동기구 단건 조회 성공")
+    @Test
+    void testFindEquipmentPerGymByCode_Success() {
+        // Given
+        Long equipmentPerGymCode = 1L;
+
+        Gym existingGym = Gym.builder()
+                .gymCode(1L)
+                .gymName("Test Gym")
+                .address("Test Address")
+                .businessNumber("000-00-00000")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        ExerciseEquipment existingEquipment = ExerciseEquipment.builder()
+                .exerciseEquipmentCode(1L)
+                .exerciseEquipmentName("Test Equipment")
+                .bodyPart("Arms")
+                .exerciseDescription("Test Description")
+                .exerciseImage("image url")
+                .recommendedVideo("video url")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        EquipmentPerGym existingEquipmentPerGym = EquipmentPerGym.builder()
+                .equipmentPerGymCode(equipmentPerGymCode)
+                .gym(existingGym)
+                .exerciseEquipment(existingEquipment)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        // Mock: equipmentPerGymRepository.findById()
+        when(equipmentPerGymRepository.findById(equipmentPerGymCode)).thenReturn(Optional.of(existingEquipmentPerGym));
+
+        when(modelMapper.map(existingEquipmentPerGym, EquipmentPerGymDTO.class)).thenReturn(new EquipmentPerGymDTO(
+                equipmentPerGymCode,
+                existingEquipmentPerGym.getCreatedAt(),
+                existingEquipmentPerGym.getUpdatedAt(),
+                existingGym,
+                existingEquipment
+        ));
+
+        // When
+        EquipmentPerGymDTO result = equipmentPerGymService.findEquipmentPerGymByCode(equipmentPerGymCode);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("Test Gym", result.getGym().getGymName());
+        assertEquals("Test Equipment", result.getExerciseEquipment().getExerciseEquipmentName());
+        verify(equipmentPerGymRepository, times(1)).findById(equipmentPerGymCode);
+    }
+
+    @DisplayName("헬스장 별 운동기구 단건 조회 실패 - NotFound")
+    @Test
+    void testFindEquipmentPerGymByCode_NotFound() {
+        // Given
+        Long equipmentPerGymCode = 1L;
+
+        when(equipmentPerGymRepository.findById(equipmentPerGymCode)).thenReturn(Optional.empty());
+
+        // When & Then
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            equipmentPerGymService.findEquipmentPerGymByCode(equipmentPerGymCode);
+        });
+
+        assertEquals(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND, exception.getStatusEnum());
+        verify(equipmentPerGymRepository, times(1)).findById(equipmentPerGymCode);
+    }
+
+    @DisplayName("헬스장 별 운동기구 전체 조회 성공")
+    @Test
+    void testFindAllEquipmentPerGym_Success() {
+        // Given
+        List<EquipmentPerGym> equipmentPerGymList = new ArrayList<>();
+
+        Gym gym1 = Gym.builder().gymCode(1L).gymName("TestGym1").build();
+        ExerciseEquipment equipment1 = ExerciseEquipment.builder().exerciseEquipmentCode(1L).exerciseEquipmentName("TestEquipment1").build();
+        EquipmentPerGym equipmentPerGym1 = EquipmentPerGym.builder().equipmentPerGymCode(1L).gym(gym1).exerciseEquipment(equipment1).build();
+
+        Gym gym2 = Gym.builder().gymCode(2L).gymName("TestGym2").build();
+        ExerciseEquipment equipment2 = ExerciseEquipment.builder().exerciseEquipmentCode(2L).exerciseEquipmentName("TestEquipment2").build();
+        EquipmentPerGym equipmentPerGym2 = EquipmentPerGym.builder().equipmentPerGymCode(2L).gym(gym2).exerciseEquipment(equipment2).build();
+
+        equipmentPerGymList.add(equipmentPerGym1);
+        equipmentPerGymList.add(equipmentPerGym2);
+
+        when(equipmentPerGymRepository.findAll()).thenReturn(equipmentPerGymList);
+
+        when(modelMapper.map(equipmentPerGym1, EquipmentPerGymDTO.class)).thenReturn(new EquipmentPerGymDTO(
+                1L,
+                equipmentPerGym1.getCreatedAt(),
+                equipmentPerGym1.getUpdatedAt(),
+                gym1,
+                equipment1
+        ));
+
+        when(modelMapper.map(equipmentPerGym2, EquipmentPerGymDTO.class)).thenReturn(new EquipmentPerGymDTO(
+                2L,
+                equipmentPerGym2.getCreatedAt(),
+                equipmentPerGym2.getUpdatedAt(),
+                gym2,
+                equipment2
+        ));
+
+        // When
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findAllEquipmentPer();
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("TestGym1", result.get(0).getGym().getGymName());
+        assertEquals("TestEquipment1", result.get(0).getExerciseEquipment().getExerciseEquipmentName());
+        assertEquals("TestGym2", result.get(1).getGym().getGymName());
+        assertEquals("TestEquipment2", result.get(1).getExerciseEquipment().getExerciseEquipmentName());
+        verify(equipmentPerGymRepository, times(1)).findAll();
+    }
 }
