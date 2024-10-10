@@ -50,7 +50,6 @@ class GymServiceTests {
                 "110-81-34859"
         );
 
-        // Mock GymDTO 생성
         GymDTO mockGymDTO = new GymDTO(
                 null,
                 request.getGymName(),
