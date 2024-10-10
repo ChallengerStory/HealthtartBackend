@@ -1,11 +1,9 @@
 package com.dev5ops.healthtart.gym.dto;
 
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
