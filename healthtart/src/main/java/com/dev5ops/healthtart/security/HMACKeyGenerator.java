@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.secutiry;
+package com.dev5ops.healthtart.security;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
