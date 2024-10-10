@@ -18,6 +18,7 @@ public enum StatusEnum {
 
     USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     GYM_NOT_FOUND(404, HttpStatus.NOT_FOUND, "헬스장이 존재하지 않습니다."),
+    ROUTINE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "해당 운동루틴이 존재하지 않습니다."),
 
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다");
     private final int statusCode;
