@@ -3,6 +3,7 @@ package com.dev5ops.healthtart.equipment_per_gym.service;
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
+import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestRegisterEquipmentPerGymVO;
 import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.repository.EquipmentPerGymRepository;
@@ -42,5 +43,30 @@ public class EquipmentPerGymService {
 
         return modelMapper.map(savedEquipmentPerGym, EquipmentPerGymDTO.class);
     }
-}
 
+    @Transactional
+    public EquipmentPerGymDTO editEquipmentPerGym(Long equipmentPerGymCode, RequestEditEquipmentPerGymVO request) {
+        Gym gym = gymRepository.findById(request.getGym().getGymCode()).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+        ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(request.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+
+        EquipmentPerGym equipmentPerGym = equipmentPerGymRepository.findById(equipmentPerGymCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND));
+
+        equipmentPerGym.setGym(gym);
+        equipmentPerGym.setExerciseEquipment(exerciseEquipment);
+        equipmentPerGym.setUpdatedAt(LocalDateTime.now());
+
+        EquipmentPerGym savedEquipmentPerGym = equipmentPerGymRepository.save(equipmentPerGym);
+
+        return modelMapper.map(savedEquipmentPerGym, EquipmentPerGymDTO.class);
+    }
+
+    @Transactional
+    public void deleteEquipmentPerGym(Long equipmentPerGymCode) {
+        EquipmentPerGym equipmentPerGym = equipmentPerGymRepository.findById(equipmentPerGymCode).get();
+
+        gymRepository.findById(equipmentPerGym.getGym().getGymCode()).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+        exerciseEquipmentRepository.findById(equipmentPerGym.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+
+        equipmentPerGymRepository.delete(equipmentPerGym);
+    }
+}
