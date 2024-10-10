@@ -289,4 +289,53 @@ class InbodyServiceTests {
         verify(inbodyRepository, never()).save(any(Inbody.class));
     }
 
+    @DisplayName("인바디 삭제 성공")
+    @Test
+    void testDeleteInbody_Success() {
+        // Given
+        Long inbodyCode = 1L;
+
+        Inbody existingInbody = Inbody.builder()
+                .inbodyCode(inbodyCode)
+                .inbodyScore(85)
+                .weight(70.0)
+                .height(175.0)
+                .muscleWeight(30.0)
+                .fatWeight(15.0)
+                .bmi(22.9)
+                .fatPercentage(18.0)
+                .dayOfInbody(LocalDateTime.now().minusDays(1))
+                .basalMetabolicRate(1600)
+                .createdAt(LocalDateTime.now().minusDays(5))
+                .updatedAt(LocalDateTime.now().minusDays(5))
+                .user(User.builder()
+                        .userCode("test")
+                        .userType(UserTypeEnum.MEMBER)
+                        .userName("testuser")
+                        .userEmail("testuser@example.com")
+                        .userPassword("testpassword")
+                        .userPhone("010-1234-5678")
+                        .nickname("tester")
+                        .userAddress("testAddress")
+                        .userFlag(true)
+                        .userGender("Male")
+                        .userHeight(175.0)
+                        .userWeight(70.0)
+                        .userAge(25)
+                        .createdAt(LocalDateTime.now().minusDays(10))
+                        .updatedAt(LocalDateTime.now().minusDays(5))
+                        .gymCode(100L)
+                        .build())
+                .build();
+
+        when(inbodyRepository.findById(inbodyCode)).thenReturn(Optional.of(existingInbody));
+
+        // When
+        inbodyService.deleteInbody(inbodyCode);
+
+        // Then
+        verify(inbodyRepository, times(1)).delete(existingInbody);
+    }
+
+
 }
