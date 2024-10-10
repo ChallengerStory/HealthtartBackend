@@ -1,7 +1,7 @@
 package com.dev5ops.healthtart.equipment_per_gym.dto;
 
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
+import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
+import com.dev5ops.healthtart.gym.aggregate.Gym;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -25,8 +25,8 @@ public class EquipmentPerGymDTO {
     private LocalDateTime updatedAt;
 
     @JsonProperty("gym")
-    private GymDTO gym;
+    private Gym gym;
 
     @JsonProperty("exercise_equipment")
-    private ExerciseEquipmentDTO exerciseEquipment;
+    private ExerciseEquipment exerciseEquipment;
 }
