@@ -73,4 +73,12 @@ public class InbodyController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @Operation(summary = "관리자, 유저 - 인바디 삭제")
+    @DeleteMapping("/{inbodyCode}")
+    public ResponseEntity<String> deleteInbody(@PathVariable("inbodyCode") Long inbodyCode) {
+        inbodyService.deleteInbody(inbodyCode);
+
+        return ResponseEntity.ok("인바디 정보가 성공적으로 삭제되었습니다.");
+    }
 }

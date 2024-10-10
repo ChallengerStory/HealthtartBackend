@@ -57,4 +57,10 @@ public class InbodyService {
 
         return modelMapper.map(inbody, InbodyDTO.class);
     }
+
+    public void deleteInbody(Long inbodyCode) {
+        Inbody inbody = inbodyRepository.findById(inbodyCode).orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        inbodyRepository.delete(inbody);
+    }
 }
