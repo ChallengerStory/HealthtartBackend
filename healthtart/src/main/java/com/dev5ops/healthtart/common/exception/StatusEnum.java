@@ -14,13 +14,17 @@ public enum StatusEnum {
     EMAIL_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다."),
     GYM_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 헬스장입니다."),
     EQUIPMENT_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 운동기구입니다."),
+    DAY_OF_INBODY_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록한 인바디 정보입니다."),
 
     RESTRICTED(403, HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
 
     USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     GYM_NOT_FOUND(404, HttpStatus.NOT_FOUND, "헬스장이 존재하지 않습니다."),
+    ROUTINE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "해당 운동루틴이 존재하지 않습니다."),
     EQUIPMENT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "DB에 해당 운동기구 데이터가 존재하지 않습니다."),
     DAY_NOT_FOUND(404, HttpStatus.NOT_FOUND,"해당 날짜에 운동한 기록이 존재하지 않습니다." ),
+    EQUIPMENT_PER_GYM_NOT_FOUND(404, HttpStatus.NOT_FOUND, "DB에 해당 헬스장 별 운동기구 데이터가 존재하지 않습니다."),
+    INBODY_NOT_FOUND(404, HttpStatus.NOT_FOUND, "인바디 데이터가 존재하지 않습니다."),
 
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다");
     private final int statusCode;

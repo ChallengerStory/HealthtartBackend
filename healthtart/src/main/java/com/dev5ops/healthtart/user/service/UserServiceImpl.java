@@ -1,17 +1,16 @@
 package com.dev5ops.healthtart.user.service;
 
+import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,15 +25,17 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    // 이건 회원가입을 하는 코드. -> 일단 일반 회원부터 처리해보자.
+    // 회원가입
     @Override
     public ResponseInsertUserVO signUpUser(RequestInsertUserVO request) {
 
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService{
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
 
-        String userCode = curDate + "-" + uuid.substring(0);
+        String userCode = curDate + "-" + uuid;
 
         request.changePwd(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService{
                 .userEmail(request.getUserEmail())
                 .userPassword(request.getUserPassword())
                 .userPhone(request.getUserPhone())
-                .nickname(request.getNickname())
+                .userNickname(request.getUserNickname())
                 .userAddress(request.getUserAddress())
                 .userFlag(true)
                 .userGender("M")
@@ -65,46 +66,44 @@ public class UserServiceImpl implements UserService{
                 .userAge(request.getUserAge())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .build(); // gym은 비워놓기
+                .build();
 
-        User insertUser = modelMapper.map(userDTO, User.class);
+        UserEntity insertUser = modelMapper.map(userDTO, UserEntity.class);
 
         userRepository.save(insertUser);
-
 
         return new ResponseInsertUserVO(userDTO);
     }
 
     @Override
     public List<UserDTO> findAllUsers() {
-        List<User> allUsers = userRepository.findAll();
-        List<UserDTO> userDTOs = new ArrayList<>();
+        List<UserEntity> allUsers = userRepository.findAll();
+        List<UserDTO> userDTOList = new ArrayList<>();
 
-        for (User user : allUsers) {
+        for(UserEntity user : allUsers) {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-            userDTOs.add(userDTO);
+            userDTOList.add(userDTO);
         }
-        return userDTOs;
+        return userDTOList;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        User loginUser = userRepository.findByUserEmail(userEmail);
+    public UserDTO findUserByEmail(String email) {
+        UserEntity findUser = userRepository.findByUserEmail(email);
 
-        // 밑에부분 예외처리 수정 필요
-        if (loginUser == null) {throw new UsernameNotFoundException(userEmail);}
+        return modelMapper.map(findUser, UserDTO.class);
+    }
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+    @Override
+    public UserDTO findById(String userCode) {
+        UserEntity user = userRepository.findById(userCode).get();
 
-        switch (loginUser.getUserType()) {
-            case MEMBER -> grantedAuthorities.add(new SimpleGrantedAuthority("MEMBER"));
-            case ADMIN -> {
-                grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
-                grantedAuthorities.add(new SimpleGrantedAuthority("MEMBER"));
-            }
-        }
+        return modelMapper.map(user, UserDTO.class);
+    }
 
-        // 여기서 사용되는 User는 우리의 User와 다름.
-        return new org.springframework.security.core.userdetails.User(loginUser.getUserEmail(), loginUser.getUserPassword(),  true, true, true, true, grantedAuthorities);
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }

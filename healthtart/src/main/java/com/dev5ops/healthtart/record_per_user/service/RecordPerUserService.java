@@ -23,7 +23,7 @@ public class RecordPerUserService {
 
     // 조회 - (유저별운동기록)유저별 운동 기록 조회 - UserCode Join | 운동기록은 여러개 있을 수 있으니 List
     public List<RecordPerUserDTO> findRecordByUserCode(String UserCode) {
-        List<RecordPerUser> recordPerUser = recordPerUserRepository.findByUser_UserCode(UserCode);
+        List<RecordPerUser> recordPerUser = recordPerUserRepository.findByUserCode_UserCode(UserCode);
 
         // 유저가 존재하지 않는다면 USER_NOT_FOUND
         if (recordPerUser.isEmpty()) {
@@ -39,10 +39,10 @@ public class RecordPerUserService {
     // (유저별운동기록)날짜별 운동 기록 조회 - UserCode Join | 하루에 여러번 운동 할 수 있으니 List
     public List<RecordPerUserDTO> findRecordPerDate(String UserCode, LocalDate dayOfExercise) {
         List<RecordPerUser> recordPerUser = recordPerUserRepository
-                .findByUser_UserCodeAndDayOfExercise(UserCode, dayOfExercise);
+                .findByUserCode_UserCodeAndDayOfExercise(UserCode, dayOfExercise);
 
         if (recordPerUser.isEmpty()) {
-            boolean userExists = recordPerUserRepository.existsByUser_UserCode(UserCode);
+            boolean userExists = recordPerUserRepository.existsByUserCode_UserCode(UserCode);
 
             // 유저가 존재하지 않으면 USER_NOT_FOUND
             if (!userExists) {

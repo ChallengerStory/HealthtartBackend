@@ -43,8 +43,7 @@ public class GymController {
                 registerGym.getAddress(),
                 registerGym.getBusinessNumber(),
                 registerGym.getCreatedAt(),
-                registerGym.getUpdatedAt(),
-                registerGym.getEquipmentPerGyms()
+                registerGym.getUpdatedAt()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -58,8 +57,7 @@ public class GymController {
                 updatedGym.getGymName(),
                 updatedGym.getAddress(),
                 updatedGym.getBusinessNumber(),
-                updatedGym.getUpdatedAt(),
-                updatedGym.getEquipmentPerGyms()
+                updatedGym.getUpdatedAt()
         );
 
         return ResponseEntity.ok(response);
@@ -81,15 +79,14 @@ public class GymController {
         ResponseFindGymVO response = new ResponseFindGymVO(
                 gymDTO.getGymName(),
                 gymDTO.getAddress(),
-                gymDTO.getBusinessNumber(),
-                gymDTO.getEquipmentPerGyms()
+                gymDTO.getBusinessNumber()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "관리자, 유저 - 헬스장 전체 조회")
-    @GetMapping("/gymList")
+    @GetMapping("/gym_list")
     public ResponseEntity<List<ResponseFindGymVO>> getGymList() {
         List<GymDTO> gymDTOList = gymService.findAllGym();
         List<ResponseFindGymVO> responseList = new ArrayList<>();
@@ -98,12 +95,11 @@ public class GymController {
             ResponseFindGymVO response = new ResponseFindGymVO(
                     gymDTO.getGymName(),
                     gymDTO.getAddress(),
-                    gymDTO.getBusinessNumber(),
-                    gymDTO.getEquipmentPerGyms()
+                    gymDTO.getBusinessNumber()
             );
 
             responseList.add(response);
         }
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 }

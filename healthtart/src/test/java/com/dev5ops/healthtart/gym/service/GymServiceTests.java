@@ -50,6 +50,17 @@ class GymServiceTests {
                 "110-81-34859"
         );
 
+        GymDTO mockGymDTO = new GymDTO(
+                null,
+                request.getGymName(),
+                request.getAddress(),
+                request.getBusinessNumber(),
+                null,
+                null
+        );
+
+        when(modelMapper.map(request, GymDTO.class)).thenReturn(mockGymDTO);
+
         Gym mockGym = Gym.builder()
                 .gymCode(1L)
                 .gymName(request.getGymName())
@@ -59,17 +70,7 @@ class GymServiceTests {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        GymDTO mockGymDTO = new GymDTO(
-                null,
-                request.getGymName(),
-                request.getAddress(),
-                request.getBusinessNumber(),
-                null,
-                null,
-                null
-        );
-
-        when(modelMapper.map(request, GymDTO.class)).thenReturn(mockGymDTO);
+        when(modelMapper.map(mockGymDTO, Gym.class)).thenReturn(mockGym);
         when(gymRepository.save(any(Gym.class))).thenReturn(mockGym);
         when(modelMapper.map(mockGym, GymDTO.class)).thenReturn(new GymDTO(
                 1L,
@@ -77,8 +78,7 @@ class GymServiceTests {
                 request.getAddress(),
                 request.getBusinessNumber(),
                 mockGym.getCreatedAt(),
-                mockGym.getUpdatedAt(),
-                null
+                mockGym.getUpdatedAt()
         ));
 
         // When
@@ -101,38 +101,49 @@ class GymServiceTests {
                 "110-81-34859"
         );
 
-        // 이미 존재하는 gym을 반환하도록 mock 설정
         Gym existingGym = Gym.builder()
                 .gymCode(1L)
-                .gymName("어게인짐 신대방삼거리역")
-                .address("서울 동작구 상도로 83 2층 어게인짐")
-                .businessNumber("110-81-34859")
+                .gymName(request.getGymName())
+                .address(request.getAddress())
+                .businessNumber(request.getBusinessNumber())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         when(gymRepository.findByBusinessNumber(request.getBusinessNumber())).thenReturn(Optional.of(existingGym));
 
+        GymDTO mockGymDTO = new GymDTO(
+                null,
+                request.getGymName(),
+                request.getAddress(),
+                request.getBusinessNumber(),
+                null,
+                null
+        );
+
+        when(modelMapper.map(any(RequestRegisterGymVO.class), eq(GymDTO.class))).thenReturn(mockGymDTO);
+
+        Gym gymEntity = Gym.builder()
+                .gymCode(1L)
+                .gymName(request.getGymName())
+                .address(request.getAddress())
+                .businessNumber(request.getBusinessNumber())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        when(modelMapper.map(any(GymDTO.class), eq(Gym.class))).thenReturn(gymEntity);
+
         // When & Then
-        Exception exception = assertThrows(CommonException.class, () -> {
-            GymDTO mockGymDTO = new GymDTO(
-                    null,
-                    request.getGymName(),
-                    request.getAddress(),
-                    request.getBusinessNumber(),
-                    null,
-                    null,
-                    null
-            );
+        CommonException exception = assertThrows(CommonException.class, () -> {
             gymService.registerGym(mockGymDTO);
         });
 
-        // 예외가 StatusEnum.GYM_DUPLICATE인지 확인
-        assertEquals(StatusEnum.GYM_DUPLICATE, ((CommonException) exception).getStatusEnum());
+        assertEquals(StatusEnum.GYM_DUPLICATE, exception.getStatusEnum());
 
-        // gymRepository.save()가 호출되지 않았는지 확인
         verify(gymRepository, never()).save(any(Gym.class));
     }
+
 
     @DisplayName("헬스장 수정 성공")
     @Test
@@ -142,8 +153,7 @@ class GymServiceTests {
         RequestEditGymVO request = new RequestEditGymVO(
                 "수정된 헬스장 이름",
                 "수정된 주소",
-                "수정된 사업자번호",
-                new ArrayList<>()
+                "수정된 사업자번호"
         );
 
         Gym existingGym = Gym.builder()
@@ -164,7 +174,6 @@ class GymServiceTests {
                 .businessNumber(request.getBusinessNumber())
                 .createdAt(existingGym.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
-                .equipmentPerGyms(request.getEquipmentPerGyms())
                 .build();
 
         when(gymRepository.save(existingGym)).thenReturn(updatedGym);
@@ -175,8 +184,7 @@ class GymServiceTests {
                 updatedGym.getAddress(),
                 updatedGym.getBusinessNumber(),
                 updatedGym.getCreatedAt(),
-                updatedGym.getUpdatedAt(),
-                updatedGym.getEquipmentPerGyms()
+                updatedGym.getUpdatedAt()
         );
 
         when(modelMapper.map(updatedGym, GymDTO.class)).thenReturn(updatedGymDTO);
@@ -201,8 +209,7 @@ class GymServiceTests {
         RequestEditGymVO request = new RequestEditGymVO(
                 "수정된 헬스장 이름",
                 "수정된 주소",
-                "수정된 사업자번호",
-                new ArrayList<>()
+                "수정된 사업자번호"
         );
 
         // 헬스장을 찾지 못했을 때, Optional.empty() 반환하도록 설정
@@ -280,8 +287,7 @@ class GymServiceTests {
                 existingGym.getAddress(),
                 existingGym.getBusinessNumber(),
                 existingGym.getCreatedAt(),
-                existingGym.getUpdatedAt(),
-                new ArrayList<>()
+                existingGym.getUpdatedAt()
         );
 
         when(gymRepository.findById(gymCode)).thenReturn(Optional.of(existingGym));
@@ -338,9 +344,9 @@ class GymServiceTests {
         when(gymRepository.findAll()).thenReturn(gymList);
 
         when(modelMapper.map(gymList.get(0), GymDTO.class)).thenReturn(
-                new GymDTO(1L, "testGymName1", "testAddress1", "000-00-00001", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                new GymDTO(1L, "testGymName1", "testAddress1", "000-00-00001", LocalDateTime.now(), LocalDateTime.now()));
         when(modelMapper.map(gymList.get(1), GymDTO.class)).thenReturn(
-                new GymDTO(2L, "testGymName2", "testAddress2", "000-00-00002", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>()));
+                new GymDTO(2L, "testGymName2", "testAddress2", "000-00-00002", LocalDateTime.now(), LocalDateTime.now()));
 
         // When
         List<GymDTO> result = gymService.findAllGym();

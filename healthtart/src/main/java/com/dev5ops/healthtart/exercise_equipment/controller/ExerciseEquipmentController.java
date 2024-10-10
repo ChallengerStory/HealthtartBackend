@@ -3,15 +3,10 @@ package com.dev5ops.healthtart.exercise_equipment.controller;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestRegisterEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseFindEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseRegisterEquipmentVO;
 import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseFindGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseRegisterGymVO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -50,8 +45,7 @@ public class ExerciseEquipmentController {
                 registerEquipment.getExerciseImage(),
                 registerEquipment.getRecommendedVideo(),
                 registerEquipment.getCreatedAt(),
-                registerEquipment.getUpdatedAt(),
-                registerEquipment.getEquipmentPerGyms()
+                registerEquipment.getUpdatedAt()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -67,8 +61,7 @@ public class ExerciseEquipmentController {
                 updatedEquipment.getExerciseDescription(),
                 updatedEquipment.getExerciseImage(),
                 updatedEquipment.getRecommendedVideo(),
-                updatedEquipment.getUpdatedAt(),
-                updatedEquipment.getEquipmentPerGyms()
+                updatedEquipment.getUpdatedAt()
         );
 
         return ResponseEntity.ok(response);
@@ -80,5 +73,41 @@ public class ExerciseEquipmentController {
         exerciseEquipmentService.deleteEquipment(exerciseEquipmentCode);
 
         return ResponseEntity.ok("운동기구가 성공적으로 삭제되었습니다.");
+    }
+
+    @Operation(summary = "관리자, 유저 - 운동기구 단 건 조회")
+    @GetMapping("/{exerciseEquipmentCode}")
+    public ResponseEntity<ResponseFindEquipmentVO> getEquipment(@PathVariable("exerciseEquipmentCode") Long exerciseEquipmentCode) {
+        ExerciseEquipmentDTO equipmentDTO = exerciseEquipmentService.findEquipmentByEquipmentCode(exerciseEquipmentCode);
+
+        ResponseFindEquipmentVO response = new ResponseFindEquipmentVO(
+                equipmentDTO.getExerciseEquipmentName(),
+                equipmentDTO.getBodyPart(),
+                equipmentDTO.getExerciseDescription(),
+                equipmentDTO.getExerciseImage(),
+                equipmentDTO.getRecommendedVideo()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(summary = "관리자, 유저 - 운동기구 전체 조회")
+    @GetMapping("/equipment_list")
+    public ResponseEntity<List<ResponseFindEquipmentVO>> getEquipmentList() {
+        List<ExerciseEquipmentDTO> equipmentDTOList = exerciseEquipmentService.findAllEquipment();
+        List<ResponseFindEquipmentVO> responseList = new ArrayList<>();
+
+        for (ExerciseEquipmentDTO equipmentDTO : equipmentDTOList) {
+            ResponseFindEquipmentVO response = new ResponseFindEquipmentVO(
+                    equipmentDTO.getExerciseEquipmentName(),
+                    equipmentDTO.getBodyPart(),
+                    equipmentDTO.getExerciseDescription(),
+                    equipmentDTO.getExerciseImage(),
+                    equipmentDTO.getRecommendedVideo()
+            );
+
+            responseList.add(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 }

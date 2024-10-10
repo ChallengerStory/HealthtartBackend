@@ -1,8 +1,9 @@
 package com.dev5ops.healthtart.recommended_workout_history.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.type.DateTime;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,10 +22,10 @@ public class RecommendedWorkoutHistoryDTO {
     private int recommendedTime;
 
     @JsonProperty("created_at")
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty("updated_at")
-    private DateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @JsonProperty("routine_code")
     private Long routineCode;
