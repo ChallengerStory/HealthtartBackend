@@ -1,17 +1,20 @@
 package com.dev5ops.healthtart.user.service;
 
+import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
-import com.dev5ops.healthtart.user.domain.entity.User;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,15 +29,17 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    // 이건 회원가입을 하는 코드. -> 일단 일반 회원부터 처리해보자.
+    // 회원가입
     @Override
     public ResponseInsertUserVO signUpUser(RequestInsertUserVO request) {
 
@@ -45,7 +50,7 @@ public class UserServiceImpl implements UserService{
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
 
-        String userCode = curDate + "-" + uuid.substring(0);
+        String userCode = curDate + "-" + uuid;
 
         request.changePwd(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
@@ -56,7 +61,7 @@ public class UserServiceImpl implements UserService{
                 .userEmail(request.getUserEmail())
                 .userPassword(request.getUserPassword())
                 .userPhone(request.getUserPhone())
-                .nickname(request.getNickname())
+                .userNickname(request.getUserNickname())
                 .userAddress(request.getUserAddress())
                 .userFlag(true)
                 .userGender("M")
@@ -65,46 +70,80 @@ public class UserServiceImpl implements UserService{
                 .userAge(request.getUserAge())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .build(); // gym은 비워놓기
+                .build();
 
-        User insertUser = modelMapper.map(userDTO, User.class);
+        UserEntity insertUser = modelMapper.map(userDTO, UserEntity.class);
 
         userRepository.save(insertUser);
-
 
         return new ResponseInsertUserVO(userDTO);
     }
 
     @Override
-    public List<UserDTO> findAllUsers() {
-        List<User> allUsers = userRepository.findAll();
-        List<UserDTO> userDTOs = new ArrayList<>();
+    public UserDTO loginUser(String userEmail, String userPassword) {
+        // 회원 조회 (이메일로 사용자 조회)
+        UserEntity userEntity = userRepository.findUserByUserEmail(userEmail);
 
-        for (User user : allUsers) {
-            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-            userDTOs.add(userDTO);
+        System.out.println(userEntity);
+        // 비밀번호 검증
+        if (!bCryptPasswordEncoder.matches(userPassword, userEntity.getUserPassword())) {
+            throw new BadCredentialsException("잘못된 비밀번호입니다.");
         }
-        return userDTOs;
+
+        // 로그인 성공 처리
+        // JWT 토큰 발급
+        String token = jwtUtil.generateToken(userEmail);
+
+        // 사용자 정보를 DTO로 변환해 반환
+        UserDTO userDTO = modelMapper.map(userEntity, UserDTO.class);
+        userDTO.setToken(token);
+
+        return userDTO;
+    }
+
+    // 회원 전체 조회
+    @Override
+    public List<UserDTO> findAllUsers() {
+        List<UserEntity> allUsers = userRepository.findAll();
+        List<UserDTO> userDTOList = new ArrayList<>();
+
+        for(UserEntity user : allUsers) {
+            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+            userDTOList.add(userDTO);
+        }
+        return userDTOList;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        User loginUser = userRepository.findByUserEmail(userEmail);
+    public UserDetails findUserByUsername(String userEmail) throws UsernameNotFoundException {
 
+        // 이메일로 회원 조회
+        UserEntity user = userRepository.findUserByUserEmail(userEmail);
         // 밑에부분 예외처리 수정 필요
-        if (loginUser == null) {throw new UsernameNotFoundException(userEmail);}
+        if (user == null) {throw new UsernameNotFoundException(userEmail);}
 
+        // 권한 목록 설정
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
-        switch (loginUser.getUserType()) {
-            case MEMBER -> grantedAuthorities.add(new SimpleGrantedAuthority("MEMBER"));
+        // 회원의 UserType에 따라 권한 부여
+        switch(user.getUserType()) {
+            case MEMBER -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
             case ADMIN -> {
-                grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
-                grantedAuthorities.add(new SimpleGrantedAuthority("MEMBER"));
+                grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
             }
         }
 
-        // 여기서 사용되는 User는 우리의 User와 다름.
-        return new org.springframework.security.core.userdetails.User(loginUser.getUserEmail(), loginUser.getUserPassword(),  true, true, true, true, grantedAuthorities);
+        // userDetails 객체 생성 및 반환
+        return new User(
+                user.getUserEmail(),
+                user.getUserPassword(),
+                grantedAuthorities
+        );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.config;
+package com.dev5ops.healthtart.common.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
