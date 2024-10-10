@@ -13,7 +13,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -57,4 +59,40 @@ public class InbodyService {
 
         return modelMapper.map(inbody, InbodyDTO.class);
     }
+
+    public void deleteInbody(Long inbodyCode) {
+        Inbody inbody = inbodyRepository.findById(inbodyCode).orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        inbodyRepository.delete(inbody);
+    }
+
+    public InbodyDTO findInbodyByCode(Long inbodyCode) {
+        Inbody inbody = inbodyRepository.findById(inbodyCode).orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        return modelMapper.map(inbody, InbodyDTO.class);
+    }
+
+    public List<InbodyDTO> findAllInbody() {
+        List<Inbody> inbodyList = inbodyRepository.findAll();
+
+        return inbodyList.stream()
+                .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public InbodyDTO findInbodyByCodeAndUser(Long inbodyCode, String userCode) {
+        Inbody inbody = inbodyRepository.findInbodyByIdAndUserCode(inbodyCode, userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.INBODY_NOT_FOUND));
+
+        return modelMapper.map(inbody, InbodyDTO.class);
+    }
+
+    public List<InbodyDTO> findAllInbodyByUser(String userCode) {
+        List<Inbody> inbodyList = inbodyRepository.findAllByUserCode(userCode);
+
+        return inbodyList.stream()
+                .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
+                .collect(Collectors.toList());
+    }
+
 }

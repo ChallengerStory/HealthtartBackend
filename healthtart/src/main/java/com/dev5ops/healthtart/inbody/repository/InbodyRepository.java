@@ -6,9 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface InbodyRepository extends JpaRepository<Inbody, Long> {
     Optional<Inbody> findByDayOfInbodyAndUser(LocalDateTime dayOfInbody, User user);
+
+    Optional<Inbody> findInbodyByIdAndUserCode(Long inbodyCode, String userCode);
+
+    List<Inbody> findAllByUserCode(String userCode);
 }
