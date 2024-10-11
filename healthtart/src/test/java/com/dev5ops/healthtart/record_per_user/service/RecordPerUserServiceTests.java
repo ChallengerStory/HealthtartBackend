@@ -2,7 +2,7 @@ package com.dev5ops.healthtart.record_per_user.service;
 
 
 import com.dev5ops.healthtart.record_per_user.aggregate.RecordPerUser;
-import com.dev5ops.healthtart.record_per_user.dto.ResponseRecordPerUserVO;
+import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +76,7 @@ class RecordPerUserServiceTests {
         List<RecordPerUser> mockRecordsPerUser = Arrays
                 .asList(mockFirstRecordPerUser, mockSecondRecordPerUser);
 
-        ResponseRecordPerUserVO mockFirstRecordPerUserDTO = new ResponseRecordPerUserVO(1L
+        RecordPerUserDTO mockFirstRecordPerUserDTO = new RecordPerUserDTO(1L
                 ,LocalDate.of(2024,10,9)
                 ,LocalTime.of(1,0,0)
                 ,true
@@ -85,7 +85,7 @@ class RecordPerUserServiceTests {
                 ,mockUser
                 ,1L);
 
-        ResponseRecordPerUserVO mockSecondRecordPerUserDTO = new ResponseRecordPerUserVO(2L
+        RecordPerUserDTO mockSecondRecordPerUserDTO = new RecordPerUserDTO(2L
                 ,LocalDate.of(2024,10,10)
                 ,LocalTime.of(1,0,0)
                 ,true
@@ -94,27 +94,27 @@ class RecordPerUserServiceTests {
                 ,mockUser
                 ,1L);
 
-        List<ResponseRecordPerUserVO> mockRecordsPerUserDTO = Arrays
+        List<RecordPerUserDTO> mockRecordsPerUserDTO = Arrays
                 .asList(mockFirstRecordPerUserDTO, mockSecondRecordPerUserDTO);
 
         // when
-        when(recordPerUserRepository.findByUserCode_UserCode(userCode))
+        when(recordPerUserRepository.findByUserCode_UserCode(mockUser))
                 .thenReturn(mockRecordsPerUser);
-        when(modelMapper.map(mockFirstRecordPerUser, ResponseRecordPerUserVO.class))
+        when(modelMapper.map(mockFirstRecordPerUser, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserDTO);
-        when(modelMapper.map(mockSecondRecordPerUser, ResponseRecordPerUserVO.class))
+        when(modelMapper.map(mockSecondRecordPerUser, RecordPerUserDTO.class))
                 .thenReturn(mockSecondRecordPerUserDTO);
 
-        List<ResponseRecordPerUserVO> actual = recordPerUserService.findRecordByUserCode(userCode);
+        List<RecordPerUserDTO> actual = recordPerUserService.findRecordByUserCode(mockUser);
 
         // then
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUserCode_UserCode(userCode);
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCode(mockUser);
 
         // any - RecordPerUser의 어떤 객체여도 상관 없다 / eq - RecordPerUserDTO여야만 한다
-        verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(ResponseRecordPerUserVO.class));
+        verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
 
     }
 
@@ -159,7 +159,7 @@ class RecordPerUserServiceTests {
                 .asList(firstMockRecordPerUserAndDay, secondMockRecordPerUserAndDay);
 
 
-        ResponseRecordPerUserVO mockFirstRecordPerUserAndDayDTO = new ResponseRecordPerUserVO(1L
+        RecordPerUserDTO mockFirstRecordPerUserAndDayDTO = new RecordPerUserDTO(1L
                 ,LocalDate.of(2024,10,9)
                 ,LocalTime.of(1,0,0)
                 ,true
@@ -168,7 +168,7 @@ class RecordPerUserServiceTests {
                 ,mockUser
                 ,1L);
 
-        ResponseRecordPerUserVO mockSecondRecordPerUserAndDayDTO = new ResponseRecordPerUserVO(2L
+        RecordPerUserDTO mockSecondRecordPerUserAndDayDTO = new RecordPerUserDTO(2L
                 ,LocalDate.of(2024,10,9)
                 ,LocalTime.of(1,0,0)
                 ,true
@@ -178,25 +178,25 @@ class RecordPerUserServiceTests {
                 ,1L);
 
 
-        List<ResponseRecordPerUserVO> mockRecordsPerUserAndDayDTO = Arrays
+        List<RecordPerUserDTO> mockRecordsPerUserAndDayDTO = Arrays
                 .asList(mockFirstRecordPerUserAndDayDTO, mockSecondRecordPerUserAndDayDTO);
 
         // when
-        when(recordPerUserRepository.findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise))
+        when(recordPerUserRepository.findByUserCode_UserCodeAndDayOfExercise(mockUser, dayOfExercise))
                 .thenReturn(mockRecordsPerUserAndDay);
-        when(modelMapper.map(firstMockRecordPerUserAndDay, ResponseRecordPerUserVO.class))
+        when(modelMapper.map(firstMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserAndDayDTO);
-        when(modelMapper.map(secondMockRecordPerUserAndDay, ResponseRecordPerUserVO.class))
+        when(modelMapper.map(secondMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockSecondRecordPerUserAndDayDTO);
 
-        List<ResponseRecordPerUserVO> actual = recordPerUserService.findRecordPerDate(userCode, dayOfExercise);
+        List<RecordPerUserDTO> actual = recordPerUserService.findRecordPerDate(mockUser, dayOfExercise);
 
         // then
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserAndDayDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise);
-        verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(ResponseRecordPerUserVO.class));
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCodeAndDayOfExercise(mockUser, dayOfExercise);
+        verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
 
     }
 
