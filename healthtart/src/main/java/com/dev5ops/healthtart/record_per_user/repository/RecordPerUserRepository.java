@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface RecordPerUserRepository extends JpaRepository<RecordPerUser, Integer> {
+public interface RecordPerUserRepository extends JpaRepository<RecordPerUser, Long> {
     List<RecordPerUser> findByUserCode_UserCode(String userCode);
     List<RecordPerUser> findByUserCode_UserCodeAndDayOfExercise(String userCode, LocalDate dayOfExercise);
 

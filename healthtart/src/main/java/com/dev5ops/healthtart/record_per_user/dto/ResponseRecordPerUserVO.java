@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class RecordPerUserDTO {
+public class ResponseRecordPerUserVO {
 
     @JsonProperty("user_record_code")
     private Long userRecordCode;
