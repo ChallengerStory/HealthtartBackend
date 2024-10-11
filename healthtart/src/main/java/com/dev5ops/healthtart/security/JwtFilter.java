@@ -27,12 +27,6 @@ public class JwtFilter extends OncePerRequestFilter {
     /* 설명. 들고 온(Request Header) 토큰이 유효한지 판별 및 인증(Authentication 객체로 관리) */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (shouldNotFilter(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        log.info("JwtFilter processing request to {}", request.getRequestURI());
 
         log.info("UsernamePasswordAuthenticationFilter보다 먼저 동작하는 필터");
         String token = extractToken(request);
@@ -85,22 +79,5 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         return null;
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return path.startsWith("/oauth2") ||
-                path.startsWith("/login") ||
-                path.equals("/users/login/google") ||
-                path.equals("/users/login/kakao") ||
-                isPublicEndpoint(path);
-    }
-
-    private boolean isPublicEndpoint(String path) {
-        // 여기에 공개 엔드포인트 목록을 정의
-        return path.equals("/api/public") ||
-                path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs");
     }
 }

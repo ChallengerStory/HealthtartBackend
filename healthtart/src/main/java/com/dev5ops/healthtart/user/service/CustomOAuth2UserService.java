@@ -46,10 +46,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             email = (String) attributes.get("email");
             name = (String) attributes.get("name");
         } else if ("kakao".equals(provider)) {
+            // 카카오 고유 ID 가져오기
             providerId = String.valueOf(attributes.get("id"));
+
+            // 카카오 계정 정보에서 프로필 정보 가져오기
             Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
-            email = (String) kakaoAccount.get("email");
+
+            // 이메일은 요청하지 않으므로 주석 처리 또는 제거
+            // email = (String) kakaoAccount.get("email");
+            email = "kakao@gmail.com입니당";
+            // 이름(닉네임)만 가져오기
             name = (String) kakaoProfile.get("nickname");
         } else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + provider);
@@ -74,21 +81,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .userName(name)
                     .userEmail(email)
                     .userPassword(null)  // OAuth2 사용자는 비밀번호가 없음
-                    .userPhone("구글-폰번호")  // 필요한 경우 추가 정보를 받아야 함
+                    .userPhone("빵빵아")  // 필요한 경우 추가 정보를 받아야 함
                     .userNickname(name)  // 닉네임을 이름으로 초기 설정
-                    .userAddress("구글 주소")  // 필요한 경우 추가 정보를 받아야 함
+                    .userAddress("옥지얌")  // 필요한 경우 추가 정보를 받아야 함
                     .userFlag(true)  // 활성 사용자로 설정
                     .provider(provider)
                     .providerId(providerId)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .build();
-        } else {
+        } /*else {
             // 기존 사용자 정보 업데이트
             user.setUserName(name);
             user.setUserEmail(email);
             user.setUpdatedAt(LocalDateTime.now());
-        }
+        }*/
 
         user = userRepository.save(user);
         log.info("customService user : {} ", user.toString());
@@ -96,7 +103,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> userAttributes = new HashMap<>(attributes);
         userAttributes.put("user", user);
 
-        // 제공자별 ID를 주요 식별자로 사용
+        // 제공자별 ID를 주요 식별자로 사용 -> 카카오는 "id"
         String nameAttributeKey = "google".equals(provider) ? "sub" : "id";
 
         return new DefaultOAuth2User(

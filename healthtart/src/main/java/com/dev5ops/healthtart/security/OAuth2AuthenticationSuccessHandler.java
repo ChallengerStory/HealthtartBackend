@@ -54,12 +54,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.info("userName: {}", userName);
         log.info("provider: {}", provider);
 
-        // null 체크 및 기본값 설정
-//        if (userCode == null) userCode = "bb20075c-d0ef-4640-ad30-d21ed6f275b1";
-//        if (userEmail == null) userEmail = "intbyte4@gmail.com";
-//        if (userName == null) userName = "자바오";
-
-
         // 사용자 권한 설정 (예: "ROLE_USER")
         List<String> roles = List.of("ROLE_MEMBER");
 
