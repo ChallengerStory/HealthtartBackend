@@ -1,28 +1,27 @@
 package com.dev5ops.healthtart.inbody.service;
 
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Feature;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.*;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.protobuf.ByteString;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service("visionService")
 public class VisionService {
 
-    public String extractTextFromImageUrl(String imageUrl) throws Exception {
-        URL url = new URL(imageUrl);
-        ByteString imgBytes;
-        try (InputStream in = url.openStream()) {
-            imgBytes = ByteString.readFrom(in);
-        }
+    @Value("${cloud.gcp.bucket-name}")
+    private String bucketName;
+
+    public String extractTextFromGCSImage(String fileName) throws IOException {
+        Storage storage = StorageOptions.getDefaultInstance().getService();
+        Blob blob = storage.get(bucketName, fileName);
+        ByteString imgBytes = ByteString.copyFrom(blob.getContent());
 
         Image img = Image.newBuilder().setContent(imgBytes).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
@@ -44,10 +43,7 @@ public class VisionService {
                 stringBuilder.append(res.getFullTextAnnotation().getText());
             }
 
-            String fullText = stringBuilder.toString();
-            String[] lines = fullText.split("\n");
-
-            return InbodyDataExtractor.extractInbodyDataFromLines(lines);
+            return InbodyDataExtractor.extractInbodyDataFromLines(stringBuilder.toString().split("\n"));
         }
     }
 }
