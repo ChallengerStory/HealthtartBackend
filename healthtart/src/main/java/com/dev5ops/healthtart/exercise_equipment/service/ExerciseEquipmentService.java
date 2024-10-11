@@ -70,4 +70,16 @@ public class ExerciseEquipmentService {
                 .map(exerciseEquipment -> modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public List<ExerciseEquipmentDTO> findByBodyPart(String bodyPart) {
+        List<ExerciseEquipment> equipmentList = exerciseEquipmentRepository.findByBodyPart(bodyPart);
+
+        if (equipmentList.isEmpty()) {
+            throw new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND);
+        }
+
+        return equipmentList.stream()
+                .map(equipment -> modelMapper.map(equipment, ExerciseEquipmentDTO.class))
+                .collect(Collectors.toList());
+    }
 }
