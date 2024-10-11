@@ -1,11 +1,11 @@
 package com.dev5ops.healthtart.exercise_equipment.controller;
 
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseFindEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseFindEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;

@@ -2,10 +2,10 @@ package com.dev5ops.healthtart.gym.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.gym.aggregate.Gym;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
+import com.dev5ops.healthtart.gym.domain.vo.request.RequestEditGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.request.RequestRegisterGymVO;
+import com.dev5ops.healthtart.gym.domain.dto.GymDTO;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

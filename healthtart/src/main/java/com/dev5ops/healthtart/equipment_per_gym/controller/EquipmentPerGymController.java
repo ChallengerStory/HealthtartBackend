@@ -1,11 +1,11 @@
 package com.dev5ops.healthtart.equipment_per_gym.controller;
 
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestRegisterEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseFindEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseRegisterEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestRegisterEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseFindEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseRegisterEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.service.EquipmentPerGymService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;

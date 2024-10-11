@@ -1,11 +1,11 @@
 package com.dev5ops.healthtart.gym.controller;
 
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseEditGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseFindGymVO;
-import com.dev5ops.healthtart.gym.aggregate.vo.response.ResponseRegisterGymVO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
+import com.dev5ops.healthtart.gym.domain.vo.request.RequestEditGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.request.RequestRegisterGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.response.ResponseEditGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.response.ResponseFindGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.response.ResponseRegisterGymVO;
+import com.dev5ops.healthtart.gym.domain.dto.GymDTO;
 import com.dev5ops.healthtart.gym.service.GymService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;

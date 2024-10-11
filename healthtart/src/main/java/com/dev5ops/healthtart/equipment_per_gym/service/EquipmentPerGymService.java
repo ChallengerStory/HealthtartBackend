@@ -2,13 +2,13 @@ package com.dev5ops.healthtart.equipment_per_gym.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.entity.EquipmentPerGym;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.repository.EquipmentPerGymRepository;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
-import com.dev5ops.healthtart.gym.aggregate.Gym;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
