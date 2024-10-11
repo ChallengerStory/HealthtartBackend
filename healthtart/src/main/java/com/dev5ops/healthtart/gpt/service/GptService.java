@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.openai.service;
+package com.dev5ops.healthtart.gpt.service;
 
 import com.dev5ops.healthtart.common.config.GptConfig;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
