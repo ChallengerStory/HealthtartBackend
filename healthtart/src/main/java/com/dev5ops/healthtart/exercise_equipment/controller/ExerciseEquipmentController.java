@@ -110,4 +110,24 @@ public class ExerciseEquipmentController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
+
+    @Operation(summary = "관리자, 유저 - 운동 부위별 운동기구 조회")
+    @GetMapping("/by_body_part")
+    public ResponseEntity<List<ResponseFindEquipmentVO>> getEquipmentByBodyPart(@RequestParam("bodyPart") String bodyPart) {
+        List<ExerciseEquipmentDTO> equipmentDTOList = exerciseEquipmentService.findByBodyPart(bodyPart);
+        List<ResponseFindEquipmentVO> responseList = new ArrayList<>();
+
+        for (ExerciseEquipmentDTO equipmentDTO : equipmentDTOList) {
+            ResponseFindEquipmentVO response = new ResponseFindEquipmentVO(
+                    equipmentDTO.getExerciseEquipmentName(),
+                    equipmentDTO.getBodyPart(),
+                    equipmentDTO.getExerciseDescription(),
+                    equipmentDTO.getExerciseImage(),
+                    equipmentDTO.getRecommendedVideo()
+            );
+            responseList.add(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
 }
