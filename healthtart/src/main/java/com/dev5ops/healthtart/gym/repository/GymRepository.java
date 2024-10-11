@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.gym.repository;
 
-import com.dev5ops.healthtart.gym.aggregate.Gym;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

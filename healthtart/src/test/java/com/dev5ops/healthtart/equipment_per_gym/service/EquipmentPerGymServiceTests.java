@@ -2,13 +2,13 @@ package com.dev5ops.healthtart.equipment_per_gym.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.EquipmentPerGym;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.entity.EquipmentPerGym;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.repository.EquipmentPerGymRepository;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
-import com.dev5ops.healthtart.gym.aggregate.Gym;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -574,5 +574,58 @@ class EquipmentPerGymServiceTests {
         assertEquals("TestGym2", result.get(1).getGym().getGymName());
         assertEquals("TestEquipment2", result.get(1).getExerciseEquipment().getExerciseEquipmentName());
         verify(equipmentPerGymRepository, times(1)).findAll();
+    }
+
+    @DisplayName("부위별 운동기구 조회 성공")
+    @Test
+    void testFindEquipmentByBodyPart_Success() {
+        // Given
+        String bodyPart = "이두";
+
+        Gym gym = Gym.builder().gymCode(1L).gymName("Test Gym").build();
+        ExerciseEquipment exerciseEquipment = ExerciseEquipment.builder()
+                .exerciseEquipmentCode(1L)
+                .exerciseEquipmentName("Test Equipment")
+                .bodyPart(bodyPart)
+                .build();
+
+        EquipmentPerGym equipmentPerGym = EquipmentPerGym.builder()
+                .equipmentPerGymCode(1L)
+                .gym(gym)
+                .exerciseEquipment(exerciseEquipment)
+                .build();
+
+        List<EquipmentPerGym> equipmentPerGymList = new ArrayList<>();
+        equipmentPerGymList.add(equipmentPerGym);
+
+        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(equipmentPerGymList);
+        when(modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class)).thenReturn(
+                new EquipmentPerGymDTO(1L, LocalDateTime.now(), LocalDateTime.now(), gym, exerciseEquipment)
+        );
+
+        // When
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(bodyPart, result.get(0).getExerciseEquipment().getBodyPart());
+        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
+    }
+
+    @DisplayName("부위별 운동기구 조회 실패 - 해당 부위에 운동기구가 없음")
+    @Test
+    void testFindEquipmentByBodyPart_NotFound() {
+        // Given
+        String bodyPart = "등";
+        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(new ArrayList<>());
+
+        // When
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
     }
 }

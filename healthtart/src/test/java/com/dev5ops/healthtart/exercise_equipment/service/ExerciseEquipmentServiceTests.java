@@ -2,10 +2,10 @@ package com.dev5ops.healthtart.exercise_equipment.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
