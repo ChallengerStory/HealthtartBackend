@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class RequestRegistRecordPerUserVO {
+public class RequestRegisterRecordPerUserVO {
     private Long userRecordCode;
     private LocalDate dayOfExercise;
     private LocalTime exerciseDuration;
