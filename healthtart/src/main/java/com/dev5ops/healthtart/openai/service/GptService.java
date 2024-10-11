@@ -1,7 +1,6 @@
 package com.dev5ops.healthtart.openai.service;
 
 import com.dev5ops.healthtart.common.config.GptConfig;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor

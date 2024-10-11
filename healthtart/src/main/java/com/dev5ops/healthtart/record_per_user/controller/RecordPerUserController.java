@@ -1,10 +1,6 @@
 package com.dev5ops.healthtart.record_per_user.controller;
 
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestRegisterGymVO;
-import com.dev5ops.healthtart.record_per_user.aggregate.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.aggregate.vo.response.ResponseFindPerUserVO;
-import com.dev5ops.healthtart.record_per_user.aggregate.vo.response.ResponseRecordPerUserVO;
-import com.dev5ops.healthtart.record_per_user.aggregate.vo.response.ResponseRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
