@@ -575,4 +575,57 @@ class EquipmentPerGymServiceTests {
         assertEquals("TestEquipment2", result.get(1).getExerciseEquipment().getExerciseEquipmentName());
         verify(equipmentPerGymRepository, times(1)).findAll();
     }
+
+    @DisplayName("부위별 운동기구 조회 성공")
+    @Test
+    void testFindEquipmentByBodyPart_Success() {
+        // Given
+        String bodyPart = "이두";
+
+        Gym gym = Gym.builder().gymCode(1L).gymName("Test Gym").build();
+        ExerciseEquipment exerciseEquipment = ExerciseEquipment.builder()
+                .exerciseEquipmentCode(1L)
+                .exerciseEquipmentName("Test Equipment")
+                .bodyPart(bodyPart)
+                .build();
+
+        EquipmentPerGym equipmentPerGym = EquipmentPerGym.builder()
+                .equipmentPerGymCode(1L)
+                .gym(gym)
+                .exerciseEquipment(exerciseEquipment)
+                .build();
+
+        List<EquipmentPerGym> equipmentPerGymList = new ArrayList<>();
+        equipmentPerGymList.add(equipmentPerGym);
+
+        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(equipmentPerGymList);
+        when(modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class)).thenReturn(
+                new EquipmentPerGymDTO(1L, LocalDateTime.now(), LocalDateTime.now(), gym, exerciseEquipment)
+        );
+
+        // When
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(bodyPart, result.get(0).getExerciseEquipment().getBodyPart());
+        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
+    }
+
+    @DisplayName("부위별 운동기구 조회 실패 - 해당 부위에 운동기구가 없음")
+    @Test
+    void testFindEquipmentByBodyPart_NotFound() {
+        // Given
+        String bodyPart = "등";
+        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(new ArrayList<>());
+
+        // When
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
+    }
 }

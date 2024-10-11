@@ -84,4 +84,12 @@ public class EquipmentPerGymService {
                 .map(equipmentPerGym -> modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public List<EquipmentPerGymDTO> findEquipmentByBodyPart(String bodyPart) {
+        List<EquipmentPerGym> equipmentPerGyms = equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart);
+
+        return equipmentPerGyms.stream()
+                .map(equipmentPerGym -> modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class))
+                .collect(Collectors.toList());
+    }
 }

@@ -101,4 +101,23 @@ public class EquipmentPerGymController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
+
+    @Operation(summary = "관리자, 유저 - 부위별 운동기구 조회")
+    @GetMapping("/equipment_per_gym_list/body_part")
+    public ResponseEntity<List<ResponseFindEquipmentPerGymVO>> getEquipmentPerGymByBodyPart(@RequestParam("bodyPart") String bodyPart) {
+        List<EquipmentPerGymDTO> equipmentPerGymDTOList = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+        List<ResponseFindEquipmentPerGymVO> responseList = new ArrayList<>();
+
+        for (EquipmentPerGymDTO equipmentPerGymDTO : equipmentPerGymDTOList) {
+            ResponseFindEquipmentPerGymVO response = new ResponseFindEquipmentPerGymVO(
+                    equipmentPerGymDTO.getGym(),
+                    equipmentPerGymDTO.getExerciseEquipment()
+            );
+
+            responseList.add(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
 }
