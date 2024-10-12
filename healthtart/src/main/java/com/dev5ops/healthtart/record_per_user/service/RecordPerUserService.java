@@ -2,9 +2,9 @@ package com.dev5ops.healthtart.record_per_user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.record_per_user.aggregate.RecordPerUser;
-import com.dev5ops.healthtart.record_per_user.aggregate.vo.request.RequestRegisterRecordPerUserVO;
-import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.entity.RecordPerUser;
+import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -61,18 +61,6 @@ public class RecordPerUserService {
         return modelMapper.map(recordPerUser, RecordPerUserDTO.class);
     }
 
-    // 운동 기록을 수정할 일이 없는거 같음
-//    public RecordPerUserDTO editRecordPerUser(Long userRecordCode, RequestEditRecordPerUserVO request){
-//        RecordPerUser recordPerUser = recordPerUserRepository
-//                .findById(userRecordCode).orElseThrow(() -> new CommonException(StatusEnum.RECORD_NOT_FOUND));
-//
-//        recordPerUser.setExerciseDuration(request.getExerciseDuration());
-//        recordPerUser.setUpdatedAt(request.getUpdatedAt());
-//
-//        recordPerUser = recordPerUserRepository.save(recordPerUser);
-//
-//        return modelMapper.map(recordPerUser, RecordPerUserDTO.class);
-//    }
 
     public void deleteRecordPerUser(Long userRecordCode) {
         RecordPerUser recordPerUser = recordPerUserRepository
@@ -80,7 +68,5 @@ public class RecordPerUserService {
 
         recordPerUserRepository.delete(recordPerUser);
     }
-
-
 
 }
