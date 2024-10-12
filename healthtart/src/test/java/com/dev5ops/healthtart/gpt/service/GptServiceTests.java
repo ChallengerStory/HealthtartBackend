@@ -3,6 +3,7 @@ package com.dev5ops.healthtart.gpt.service;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ class GptServiceTests {
     private UserService userService;
 
     @Test
+    @DisplayName("유저정보기반 데이터 전달 및 GPT 반영 테스트")
     public void testCallOpenAI() throws JsonProcessingException {
         String userCode = "20241007-05bfb06b-8eda-4857-8681-40d1eccb829d";
         UserDTO user = userService.findById(userCode);
