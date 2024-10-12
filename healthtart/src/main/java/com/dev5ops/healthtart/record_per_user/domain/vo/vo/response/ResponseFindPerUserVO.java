@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.record_per_user.aggregate.vo.response;
+package com.dev5ops.healthtart.record_per_user.domain.vo.vo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

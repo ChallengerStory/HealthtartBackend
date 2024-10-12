@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.record_per_user.aggregate.vo.response;
+package com.dev5ops.healthtart.record_per_user.domain.vo.vo.response;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ResponseRegisterRecordPerUserVO {
+public class ResponseRecordPerUserVO {
     private Long userRecordCode;
     private LocalDate dayOfExercise;
     private LocalTime exerciseDuration;

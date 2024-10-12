@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.recommended_workout_history.aggregate;
+package com.dev5ops.healthtart.recommended_workout_history.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

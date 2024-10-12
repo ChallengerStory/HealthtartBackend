@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.record_per_user.aggregate.vo.request;
+package com.dev5ops.healthtart.record_per_user.domain.vo.vo.request;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.AllArgsConstructor;

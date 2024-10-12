@@ -1,7 +1,8 @@
 package com.dev5ops.healthtart.record_per_user.controller;
 
-import com.dev5ops.healthtart.record_per_user.aggregate.vo.response.ResponseFindPerUserVO;
-import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
+
+import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseFindPerUserVO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;

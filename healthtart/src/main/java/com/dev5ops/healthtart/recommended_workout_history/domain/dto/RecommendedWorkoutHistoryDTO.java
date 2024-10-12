@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.recommended_workout_history.dto;
+package com.dev5ops.healthtart.recommended_workout_history.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

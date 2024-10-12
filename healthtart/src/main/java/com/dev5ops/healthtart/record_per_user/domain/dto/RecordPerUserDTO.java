@@ -1,8 +1,11 @@
-package com.dev5ops.healthtart.record_per_user.dto;
+package com.dev5ops.healthtart.record_per_user.domain.dto;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
