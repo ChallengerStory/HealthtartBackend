@@ -115,7 +115,6 @@ public class JwtUtil {
         claims.put("roles", roles);
         claims.put("provider", provider != null ? provider : "local");  // null 대신 "local" 사용
 
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -156,5 +155,9 @@ public class JwtUtil {
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
+    }
+
+    public String getUserCodeFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
     }
 }
