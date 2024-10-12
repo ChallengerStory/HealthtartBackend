@@ -1,6 +1,8 @@
 package com.dev5ops.healthtart.security;
 
+import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
+import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -61,7 +63,7 @@ public class JwtUtil {
         log.info("넘어온 AccessToken claims 확인: {}", claims);
 
         // JWT 토큰에서 subject를 가져와 사용자 ID로 사용
-        String userId = claims.getSubject();
+//        String userId = claims.getSubject();
 
         Collection<? extends GrantedAuthority> authorities = null;
         if (claims.get("roles") == null) {
@@ -79,8 +81,27 @@ public class JwtUtil {
 
         log.info("추출된 권한 정보: {}", authorities);
 
+        // claims에서 사용자 정보 추출
+//        String userCode = claims.get("userCode", String.class);
+        String userCode = claims.getSubject();
+        log.info("user code는 {}", userCode);
+        String email = claims.get("email", String.class);
+        String name = claims.get("name", String.class);
+
+        // CustomUserDetails 객체 생성 (필요에 따라 UserDTO도 claims에서 추가로 추출)
+        UserDTO userDTO = new UserDTO(); // 실제 UserDTO에 맞게 정보 설정
+        userDTO.setUserCode(userCode);
+        userDTO.setUserEmail(email);
+        userDTO.setUserName(name);
+
+        // CustomUserDetails 생성
+        CustomUserDetails customUserDetails = new CustomUserDetails(userDTO, (List<GrantedAuthority>) authorities, true, true, true, true);
+
+        // 인증 객체 생성 및 반환 -> custom으로 반환
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", authorities);
+
         // SecurityContext에 인증 정보를 저장하기 위해 Authentication 객체 반환
-        return new UsernamePasswordAuthenticationToken(userId, "", authorities);
+//        return new UsernamePasswordAuthenticationToken(userId, "", authorities);
     }
 
 
@@ -94,26 +115,14 @@ public class JwtUtil {
         return parseClaims(token).getSubject();
     }
 
-//    public String kakaoGenerateToken(KakaoUserDTO userDTO) {
-//        Claims claims = Jwts.claims().setSubject(userDTO.getUserCode());
-//        claims.put("email", userDTO.getUserEmail());
-//        claims.put("name", userDTO.getUserName());
-//
-//        return Jwts.builder()
-//                .setClaims(claims)
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-//                .signWith(SignatureAlgorithm.HS512, secretKey)
-//                .compact();
-//    }
-
     public String generateToken(JwtTokenDTO tokenDTO, List<String> roles, String provider){
         Claims claims = Jwts.claims().setSubject(tokenDTO.getUserCode());
         claims.put("email", tokenDTO.getUserEmail());
-        log.info("claim의 email: {}", tokenDTO.getUserEmail());
         claims.put("name", tokenDTO.getUserName());
         claims.put("roles", roles);
         claims.put("provider", provider != null ? provider : "local");  // null 대신 "local" 사용
+
+        log.info("claim의 모든 정보를 보자.: {}", claims.toString());
 
         return Jwts.builder()
                 .setClaims(claims)

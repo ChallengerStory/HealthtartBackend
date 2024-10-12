@@ -1,13 +1,18 @@
 package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.security.JwtUtil;
+import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private UserRepository userRepository;
@@ -103,7 +109,30 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findByUserEmail(userEmail);
+
+        log.info("여기");
+
+        // 사용자가 없을 경우 예외 발생
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        }
+
+        // 사용자의 권한 설정 (예: ROLE_MEMBER)
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(user.getUserType().name())); // 권한 설정
+
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
+        return new CustomUserDetails(
+                                    userDTO,
+                                    roles,
+                                    true,
+                                    true,
+                                    true,
+                                    user.getUserFlag());
+
+//        return new User(user.getUserEmail(), user.getUserPassword(), true, true, true, true, roles);
     }
 }
