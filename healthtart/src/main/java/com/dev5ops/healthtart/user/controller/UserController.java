@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.user.controller;
 
+import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
@@ -37,16 +38,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
         ResponseInsertUserVO responseUser = userService.signUpUser(request);
-
+        log.info("여기 오긴 왔나요??");
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
     @GetMapping("/login/google")
 //    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
-    public ResponseEntity<?> handleGoogleLogin(@RequestParam String token) {
+    public ResponseEntity<?> handleGoogleLogin(@RequestParam String token, Authentication authentication) {
         try {
             // "Bearer " 접두사 제거
 //            String token = authHeader.substring(7);
@@ -55,13 +56,19 @@ public class UserController {
             if (!jwtUtil.validateToken(token)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
             }
-
             // 토큰에서 이메일 추출
             String email = jwtUtil.getEmailFromToken(token);
-            log.info("handle google controller email: {}", email);
+            String userCode = jwtUtil.getUserCodeFromToken(token);
+            log.info("handle google controller code: {}", userCode);
 
+//            log.info("구글로 로그인 했을때에는 말이야?: {}", authentication.getPrincipal());
             // 사용자 정보 조회
-            UserDTO userDTO = userService.findUserByEmail(email);
+            UserDTO userDTO = userService.findById(userCode);
+            UserDTO userDTO2 = userService.findUserByEmail(email);
+
+            log.info("findbyUserCode: {}, findByUserEmail: {}", userDTO, userDTO2);
+
+
             if (userDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
@@ -79,12 +86,60 @@ public class UserController {
         }
     }
 
+    @GetMapping("/login/kakao")
+//    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> handleKakaoLogin(@RequestParam String token, Authentication authentication) {
+        try {
+//            log.info("authentication이 없어서 오류?? : {}", authentication.getPrincipal());
+            log.info("authentication 자체가 널인가??: {}", authentication);
+            // "Bearer " 접두사 제거
+//            String token = authHeader.substring(7);
+
+            // 토큰 유효성 검사 -> 유효성검사가 필요없음. -> 이미 jwtfilter를 거쳐서 나오기 때문
+//            if (!jwtUtil.validateToken(token)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+//            }
+            log.info("jwt 토큰 값은: {} ", token);
+            // 토큰에서 이메일 추출
+//            String email = jwtUtil.getEmailFromToken(token);
+            String userCode = jwtUtil.getUserCodeFromToken(token);
+            log.info("handle kakao controller code: {}", userCode);
+//            log.info("카카오로 로그인 했을때에는 말이야?: {}", authentication.getPrincipal());
+
+            // 사용자 정보 조회
+            UserDTO userDTO = userService.findById(userCode);
+//            UserDTO userDTO2 = userService.findUserByEmail(email);
+
+//            log.info("findbyUserCode: {}, findByUserEmail: {}", userDTO, userDTO2);
+
+
+            if (userDTO == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+
+            // 로그인 성공 응답
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "kakao login successful");
+            response.put("user", userDTO);
+
+            return ResponseEntity.ok(response);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has expired");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
+        }
+    }
+
     @GetMapping("/mypage")
     public ResponseEntity<?> getMyPage(Authentication authentication) {
         log.info("Mypage request received");
-
+        log.info("mypage 시에 모든 authentication 정보 보기: {}", authentication.toString());
             log.info(authentication.toString());
-            String userCode = authentication.getName();
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userCode = userDetails.getUserDTO().getUserCode();  // CustomUserDetails에서 UserDTO로 접근하여 userCode 가져옴
+        log.info("userDetails: {}", userDetails.getUserDTO().toString());
+        log.info("userCode: {}", userCode);
 //            String userEmail = jwtUtil.getEmailFromToken(authentication.getName());
 //            log.info("Fetching mypage for user: {}", userEmail);
 
@@ -105,6 +160,5 @@ public class UserController {
 
             log.info("Mypage data successfully retrieved for user: {}", userCode);
             return ResponseEntity.ok(response);
-
     }
 }

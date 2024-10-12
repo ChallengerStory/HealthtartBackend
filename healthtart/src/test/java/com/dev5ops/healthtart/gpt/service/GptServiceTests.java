@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -23,17 +22,15 @@ class GptServiceTests {
     @Test
     @DisplayName("유저정보기반 데이터 전달 및 GPT 반영 테스트")
     public void testCallOpenAI() throws JsonProcessingException {
-        // 특정 유저 코드로 유저 조회 (예: "USER001")
-        String userCode = "20241007-05bfb06b-8eda-4857-8681-40d1eccb829d"; // 전지현
+        String userCode = "20241007-05bfb06b-8eda-4857-8681-40d1eccb829d";
         UserDTO user = userService.findById(userCode);
         System.out.println("유저 정보 = " + user.getUserName());
 
         String bodyPart = "하체";
-        int workoutTime = 60; // 운동 시간(예: 60분)
-
+        int workoutTime = 90;
         String response = gptService.generateRoutine(userCode, bodyPart, workoutTime);
+        System.out.println("GPT 응답 = " + response);
         assertNotNull(response);
-        System.out.println(response);
     }
 
 }

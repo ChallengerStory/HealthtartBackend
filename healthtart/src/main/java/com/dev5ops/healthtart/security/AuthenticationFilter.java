@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.security;
 
+import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestLoginVO;
 import com.dev5ops.healthtart.user.service.UserService;
@@ -44,6 +45,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
+        log.info("로그인시 동작하는 기능임. authenticationfilter에요");
         /* 설명. request body에 담긴 내용을 우리가 만든 RequestLoginVO 타입에 담는다.(일종의 @RequestBody의 개념) */
         try {
             RequestLoginVO creds = new ObjectMapper().readValue(request.getInputStream(), RequestLoginVO.class);
@@ -66,8 +68,27 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         log.info("시크릿 키: " + env.getProperty("token.secret"));
 
         /* 설명. 토큰의 payload에 어떤 값을 담고 싶은지에 따라 고민해서 재료를 수집한다.(id, 가진 권한들, 만료시간) */
-        String userName = ((User)authResult.getPrincipal()).getUsername();  // id의 개념(우리는 email로 작성했음)
-        log.info("인증된 회원의 id: " + userName);
+//        String userEmail = ((User)authResult.getPrincipal()).getUsername();  // id의 개념(우리는 email로 작성했음)
+
+        // CustomUserDetails로 캐스팅하여 사용자 정보를 가져옴
+        CustomUserDetails userDetails = null;
+
+        if (authResult.getPrincipal() instanceof CustomUserDetails) {
+            userDetails = (CustomUserDetails) authResult.getPrincipal(); // 이게 뭔지 봐야할듯.
+            log.info("userDetails: {}", userDetails);
+            log.info("Authentication: {}", authResult);
+            // 이후 작업 계속
+        } else {
+            throw new IllegalArgumentException("인증 객체가 CustomUserDetails가 아닙니다.");
+        }
+
+        String userCode = userDetails.getUserDTO().getUserCode(); // CustomUserDetails에서 UserDTO로 접근하여 userCode 가져옴
+        String userEmail = userDetails.getUsername();  // CustomUserDetails의 이메일 정보
+        String userNickname = userDetails.getUserDTO().getUserNickname();
+
+        log.info("인증된 회원의 userCode: " + userCode);
+        log.info("인증된 회원의 email: " + userEmail);
+        log.info("인등된 회원의 userNickname: " + userNickname);
 
         /* 설명. 권한들을 꺼내 List<String>로 변환 */
         List<String> roles = authResult.getAuthorities().stream()
@@ -85,8 +106,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
 //                .compact();
 
-        JwtTokenDTO tokenDTO = new JwtTokenDTO(userName, null, null);
+//        JwtTokenDTO tokenDTO = new JwtTokenDTO(userName, null, null);
+        JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname); // principal에서 제공해주는 데이터가 적음.
         String token = jwtUtil.generateToken(tokenDTO, roles, null);
+
+        // 인증된 사용자 정보를 Authentication 객체에 설정
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails,  // CustomUserDetails가 Principal로 들어감
+                null,  // 비밀번호는 필요 없음
+                authResult.getAuthorities()  // 권한 설정
+        );
+
 
 //        response.addHeader("token", token);
         response.addHeader(HttpHeaders.AUTHORIZATION, token);
