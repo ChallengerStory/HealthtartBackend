@@ -2,10 +2,10 @@ package com.dev5ops.healthtart.exercise_equipment.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -334,5 +334,72 @@ class ExerciseEquipmentServiceTests {
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(exerciseEquipmentRepository, times(1)).findAll();
+    }
+
+    @DisplayName("운동 부위별 운동기구 조회 성공")
+    @Test
+    void testFindEquipmentByBodyPart_Success() {
+        // Given
+        String bodyPart = "testBodyPart1";
+
+        // Mock 데이터 생성
+        List<ExerciseEquipment> equipmentList = new ArrayList<>();
+        equipmentList.add(ExerciseEquipment.builder()
+                .exerciseEquipmentCode(1L)
+                .exerciseEquipmentName("testName1")
+                .bodyPart("testBodyPart1")
+                .exerciseDescription("testDescription1")
+                .exerciseImage("testImage1")
+                .recommendedVideo("testVideo1")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build());
+        equipmentList.add(ExerciseEquipment.builder()
+                .exerciseEquipmentCode(2L)
+                .exerciseEquipmentName("testName2")
+                .bodyPart("testBodyPart2")
+                .exerciseDescription("testDescription2")
+                .exerciseImage("testImage2")
+                .recommendedVideo("testVideo2")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build());
+
+        when(exerciseEquipmentRepository.findByBodyPart(bodyPart)).thenReturn(equipmentList);
+
+        when(modelMapper.map(equipmentList.get(0), ExerciseEquipmentDTO.class)).thenReturn(new ExerciseEquipmentDTO(
+                1L, "testName1", "testBodyPart1", "testDescription1", "testImage1", "testVideo1", LocalDateTime.now(), LocalDateTime.now()
+        ));
+
+        when(modelMapper.map(equipmentList.get(1), ExerciseEquipmentDTO.class)).thenReturn(new ExerciseEquipmentDTO(
+                2L, "testName2", "testBodyPart2", "testDescription2", "testImage2", "testVideo2", LocalDateTime.now(), LocalDateTime.now()
+        ));
+
+        // When
+        List<ExerciseEquipmentDTO> result = exerciseEquipmentService.findByBodyPart(bodyPart);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("testName1", result.get(0).getExerciseEquipmentName());
+        assertEquals("testName2", result.get(1).getExerciseEquipmentName());
+        verify(exerciseEquipmentRepository, times(1)).findByBodyPart(bodyPart);
+    }
+
+    @DisplayName("운동 부위별 운동기구 조회 실패 - 해당 부위에 대한 운동기구 없음")
+    @Test
+    void testFindEquipmentByBodyPart_NotFound() {
+        // Given
+        String bodyPart = "등";
+
+        when(exerciseEquipmentRepository.findByBodyPart(bodyPart)).thenReturn(new ArrayList<>());
+
+        // When & Then
+        CommonException exception = assertThrows(CommonException.class, () -> {
+            exerciseEquipmentService.findByBodyPart(bodyPart);
+        });
+
+        assertEquals(StatusEnum.EQUIPMENT_NOT_FOUND, exception.getStatusEnum());
+        verify(exerciseEquipmentRepository, times(1)).findByBodyPart(bodyPart);
     }
 }

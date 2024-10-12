@@ -3,8 +3,10 @@ package com.dev5ops.healthtart.record_per_user.service;
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.record_per_user.aggregate.RecordPerUser;
+import com.dev5ops.healthtart.record_per_user.aggregate.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,11 +23,9 @@ public class RecordPerUserService {
     private final RecordPerUserRepository recordPerUserRepository;
     private final ModelMapper modelMapper;
 
-    // 조회 - (유저별운동기록)유저별 운동 기록 조회 - UserCode Join | 운동기록은 여러개 있을 수 있으니 List
-    public List<RecordPerUserDTO> findRecordByUserCode(String UserCode) {
+    public List<RecordPerUserDTO> findRecordByUserCode(UserEntity UserCode) {
         List<RecordPerUser> recordPerUser = recordPerUserRepository.findByUserCode_UserCode(UserCode);
 
-        // 유저가 존재하지 않는다면 USER_NOT_FOUND
         if (recordPerUser.isEmpty()) {
             throw new CommonException(StatusEnum.USER_NOT_FOUND);
         }
@@ -36,19 +36,16 @@ public class RecordPerUserService {
                 .collect(Collectors.toList());
     }
 
-    // (유저별운동기록)날짜별 운동 기록 조회 - UserCode Join | 하루에 여러번 운동 할 수 있으니 List
-    public List<RecordPerUserDTO> findRecordPerDate(String UserCode, LocalDate dayOfExercise) {
+    public List<RecordPerUserDTO> findRecordPerDate(UserEntity UserCode, LocalDate dayOfExercise) {
         List<RecordPerUser> recordPerUser = recordPerUserRepository
                 .findByUserCode_UserCodeAndDayOfExercise(UserCode, dayOfExercise);
 
         if (recordPerUser.isEmpty()) {
             boolean userExists = recordPerUserRepository.existsByUserCode_UserCode(UserCode);
 
-            // 유저가 존재하지 않으면 USER_NOT_FOUND
             if (!userExists) {
                 throw new CommonException(StatusEnum.USER_NOT_FOUND);
             }
-            // 유저는 존재하지만 그 날 운동한 기록이 없다면 DAY_NOT_FOUND
             throw new CommonException(StatusEnum.DAY_NOT_FOUND);
         }
 
@@ -57,6 +54,33 @@ public class RecordPerUserService {
                 .map(record -> modelMapper.map(record, RecordPerUserDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public RecordPerUserDTO registerRecordPerUser(RequestRegisterRecordPerUserVO requestRegisterRecordPerUserVO){
+        RecordPerUser recordPerUser = modelMapper.map(requestRegisterRecordPerUserVO, RecordPerUser.class);
+        recordPerUser = recordPerUserRepository.save(recordPerUser);
+        return modelMapper.map(recordPerUser, RecordPerUserDTO.class);
+    }
+
+    // 운동 기록을 수정할 일이 없는거 같음
+//    public RecordPerUserDTO editRecordPerUser(Long userRecordCode, RequestEditRecordPerUserVO request){
+//        RecordPerUser recordPerUser = recordPerUserRepository
+//                .findById(userRecordCode).orElseThrow(() -> new CommonException(StatusEnum.RECORD_NOT_FOUND));
+//
+//        recordPerUser.setExerciseDuration(request.getExerciseDuration());
+//        recordPerUser.setUpdatedAt(request.getUpdatedAt());
+//
+//        recordPerUser = recordPerUserRepository.save(recordPerUser);
+//
+//        return modelMapper.map(recordPerUser, RecordPerUserDTO.class);
+//    }
+
+    public void deleteRecordPerUser(Long userRecordCode) {
+        RecordPerUser recordPerUser = recordPerUserRepository
+                .findById(userRecordCode).orElseThrow(() -> new CommonException(StatusEnum.RECORD_NOT_FOUND));
+
+        recordPerUserRepository.delete(recordPerUser);
+    }
+
 
 
 }

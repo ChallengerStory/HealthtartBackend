@@ -2,9 +2,9 @@ package com.dev5ops.healthtart.exercise_equipment.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.ExerciseEquipment;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.repository.ExerciseEquipmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +68,18 @@ public class ExerciseEquipmentService {
 
         return exerciseEquipments.stream()
                 .map(exerciseEquipment -> modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<ExerciseEquipmentDTO> findByBodyPart(String bodyPart) {
+        List<ExerciseEquipment> equipmentList = exerciseEquipmentRepository.findByBodyPart(bodyPart);
+
+        if (equipmentList.isEmpty()) {
+            throw new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND);
+        }
+
+        return equipmentList.stream()
+                .map(equipment -> modelMapper.map(equipment, ExerciseEquipmentDTO.class))
                 .collect(Collectors.toList());
     }
 }

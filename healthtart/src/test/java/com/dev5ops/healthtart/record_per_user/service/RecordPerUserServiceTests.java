@@ -98,20 +98,20 @@ class RecordPerUserServiceTests {
                 .asList(mockFirstRecordPerUserDTO, mockSecondRecordPerUserDTO);
 
         // when
-        when(recordPerUserRepository.findByUserCode_UserCode(userCode))
+        when(recordPerUserRepository.findByUserCode_UserCode(mockUser))
                 .thenReturn(mockRecordsPerUser);
         when(modelMapper.map(mockFirstRecordPerUser, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserDTO);
         when(modelMapper.map(mockSecondRecordPerUser, RecordPerUserDTO.class))
                 .thenReturn(mockSecondRecordPerUserDTO);
 
-        List<RecordPerUserDTO> actual = recordPerUserService.findRecordByUserCode(userCode);
+        List<RecordPerUserDTO> actual = recordPerUserService.findRecordByUserCode(mockUser);
 
         // then
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUserCode_UserCode(userCode);
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCode(mockUser);
 
         // any - RecordPerUser의 어떤 객체여도 상관 없다 / eq - RecordPerUserDTO여야만 한다
         verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
@@ -182,20 +182,20 @@ class RecordPerUserServiceTests {
                 .asList(mockFirstRecordPerUserAndDayDTO, mockSecondRecordPerUserAndDayDTO);
 
         // when
-        when(recordPerUserRepository.findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise))
+        when(recordPerUserRepository.findByUserCode_UserCodeAndDayOfExercise(mockUser, dayOfExercise))
                 .thenReturn(mockRecordsPerUserAndDay);
         when(modelMapper.map(firstMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserAndDayDTO);
         when(modelMapper.map(secondMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockSecondRecordPerUserAndDayDTO);
 
-        List<RecordPerUserDTO> actual = recordPerUserService.findRecordPerDate(userCode, dayOfExercise);
+        List<RecordPerUserDTO> actual = recordPerUserService.findRecordPerDate(mockUser, dayOfExercise);
 
         // then
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserAndDayDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUserCode_UserCodeAndDayOfExercise(userCode, dayOfExercise);
+        verify(recordPerUserRepository, times(1)).findByUserCode_UserCodeAndDayOfExercise(mockUser, dayOfExercise);
         verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
 
     }

@@ -1,11 +1,11 @@
 package com.dev5ops.healthtart.exercise_equipment.controller;
 
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.request.RequestRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseEditEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseFindEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.aggregate.vo.response.ResponseRegisterEquipmentVO;
-import com.dev5ops.healthtart.exercise_equipment.dto.ExerciseEquipmentDTO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.request.RequestRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseEditEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseFindEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.vo.response.ResponseRegisterEquipmentVO;
+import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +108,26 @@ public class ExerciseEquipmentController {
 
             responseList.add(response);
         }
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
+    @Operation(summary = "관리자, 유저 - 운동 부위별 운동기구 조회")
+    @GetMapping("/by_body_part")
+    public ResponseEntity<List<ResponseFindEquipmentVO>> getEquipmentByBodyPart(@RequestParam("bodyPart") String bodyPart) {
+        List<ExerciseEquipmentDTO> equipmentDTOList = exerciseEquipmentService.findByBodyPart(bodyPart);
+        List<ResponseFindEquipmentVO> responseList = new ArrayList<>();
+
+        for (ExerciseEquipmentDTO equipmentDTO : equipmentDTOList) {
+            ResponseFindEquipmentVO response = new ResponseFindEquipmentVO(
+                    equipmentDTO.getExerciseEquipmentName(),
+                    equipmentDTO.getBodyPart(),
+                    equipmentDTO.getExerciseDescription(),
+                    equipmentDTO.getExerciseImage(),
+                    equipmentDTO.getRecommendedVideo()
+            );
+            responseList.add(response);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 }

@@ -2,9 +2,9 @@ package com.dev5ops.healthtart.gym.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.gym.aggregate.Gym;
-import com.dev5ops.healthtart.gym.aggregate.vo.request.RequestEditGymVO;
-import com.dev5ops.healthtart.gym.dto.GymDTO;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
+import com.dev5ops.healthtart.gym.domain.vo.request.RequestEditGymVO;
+import com.dev5ops.healthtart.gym.domain.dto.GymDTO;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

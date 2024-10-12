@@ -57,6 +57,9 @@ public class WebSecurity {
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
 
+                                        .requestMatchers(new AntPathRequestMatcher("/ocr/**", "GET")).permitAll()
+                                        .requestMatchers(new AntPathRequestMatcher("/upload/**", "POST")).permitAll()
+
                                         .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()

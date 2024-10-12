@@ -1,11 +1,11 @@
 package com.dev5ops.healthtart.equipment_per_gym.controller;
 
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.request.RequestRegisterEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseEditEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseFindEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.aggregate.vo.response.ResponseRegisterEquipmentPerGymVO;
-import com.dev5ops.healthtart.equipment_per_gym.dto.EquipmentPerGymDTO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.request.RequestRegisterEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseEditEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseFindEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.vo.response.ResponseRegisterEquipmentPerGymVO;
+import com.dev5ops.healthtart.equipment_per_gym.domain.dto.EquipmentPerGymDTO;
 import com.dev5ops.healthtart.equipment_per_gym.service.EquipmentPerGymService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -101,4 +101,23 @@ public class EquipmentPerGymController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
+
+    @Operation(summary = "관리자, 유저 - 부위별 운동기구 조회")
+    @GetMapping("/equipment_per_gym_list/body_part")
+    public ResponseEntity<List<ResponseFindEquipmentPerGymVO>> getEquipmentPerGymByBodyPart(@RequestParam("bodyPart") String bodyPart) {
+        List<EquipmentPerGymDTO> equipmentPerGymDTOList = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+        List<ResponseFindEquipmentPerGymVO> responseList = new ArrayList<>();
+
+        for (EquipmentPerGymDTO equipmentPerGymDTO : equipmentPerGymDTOList) {
+            ResponseFindEquipmentPerGymVO response = new ResponseFindEquipmentPerGymVO(
+                    equipmentPerGymDTO.getGym(),
+                    equipmentPerGymDTO.getExerciseEquipment()
+            );
+
+            responseList.add(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
 }
