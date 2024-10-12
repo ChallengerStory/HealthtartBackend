@@ -25,11 +25,8 @@ import java.util.stream.Collectors;
 public class GptService {
 
     private final GptConfig gptConfig;
-
     private final RestTemplate restTemplate;
-
     private final ExerciseEquipmentService exerciseEquipmentService;
-
     private final UserService userService;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
@@ -78,7 +75,7 @@ public class GptService {
                 "음악도 매번 다르게 추천해 줘.\n" +
                 "오늘의 운동 루틴에는 형식과 조건을 꼭 지켜줘:\n");
 
-        prompt.append(String.format(" 날짜 : %s, 키: %.2fcm, 몸무게: %.2fkg, 성별: %s, 나이: %d세, 운동 부위: %s, 운동할 시간: %d분"
+        prompt.append(String.format(" 날짜 : %s, 키: %.0fcm, 몸무게: %.0fkg, 성별: %s, 나이: %d세, 운동 부위: %s, 운동할 시간: %d분"
                 , formattedDate
                 , user.getUserHeight()
                 , user.getUserWeight()
@@ -117,7 +114,7 @@ public class GptService {
                 "- 2. {가수명 - 노래제목} \n" +
                 "- 3. {가수명 - 노래제목} \n "+
                 "- 4. {가수명 - 노래제목} \n "+
-                "(운동하면서 듣는 신나는 음악을 가수명 - 노래제목 형식으로 미국,일본,한국 섞어서 4곡 추천해줘.)"+" 운동응원 한마디 남겨줘 ");
+                "(운동하면서 듣는 신나는 음악을 가수명 - 노래제목 형식으로 미국,일본,한국 섞어서 4곡 추천해줘.)\n"+" 운동 응원 한마디 남겨줘 ");
 
         return prompt.toString();
     }
