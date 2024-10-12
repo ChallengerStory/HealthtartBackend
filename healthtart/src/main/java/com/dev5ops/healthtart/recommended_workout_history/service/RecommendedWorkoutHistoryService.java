@@ -4,7 +4,6 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.recommended_workout_history.domain.dto.RecommendedWorkoutHistoryDTO;
 import com.dev5ops.healthtart.recommended_workout_history.domain.entity.RecommendedWorkoutHistory;
-import com.dev5ops.healthtart.recommended_workout_history.domain.vo.request.RequestRegisterRecommendedWorkoutHistoryVO;
 import com.dev5ops.healthtart.recommended_workout_history.repository.RecommendedWorkoutHistoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,14 +31,14 @@ public class RecommendedWorkoutHistoryService {
                 .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
     }
 
-
-
     // 만족도 등록
     public RecommendedWorkoutHistoryDTO registerRating
-            (RequestRegisterRecommendedWorkoutHistoryVO requestRegisterRecommendedWorkoutHistoryVO){
+            (RecommendedWorkoutHistoryDTO recommendedWorkoutHistoryDTO){
         RecommendedWorkoutHistory recommendedWorkoutHistory = modelMapper
-                .map(requestRegisterRecommendedWorkoutHistoryVO, RecommendedWorkoutHistory.class);
+                .map(recommendedWorkoutHistoryDTO, RecommendedWorkoutHistory.class);
+
         recommendedWorkoutHistory = recommendedWorkoutHistoryRepository.save(recommendedWorkoutHistory);
+
         return modelMapper.map(recommendedWorkoutHistory, RecommendedWorkoutHistoryDTO.class);
     }
 }
