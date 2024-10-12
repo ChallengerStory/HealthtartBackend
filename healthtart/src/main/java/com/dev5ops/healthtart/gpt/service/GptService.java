@@ -6,11 +6,9 @@ import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -26,17 +24,13 @@ import java.util.stream.Collectors;
 @Service
 public class GptService {
 
-    @Autowired
-    private GptConfig gptConfig;
+    private final GptConfig gptConfig;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    @Autowired
     private final ExerciseEquipmentService exerciseEquipmentService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -45,8 +39,6 @@ public class GptService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(gptConfig.getSecretKey());
-
-
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", gptConfig.getModel());
@@ -73,8 +65,6 @@ public class GptService {
         }
     }
 
-    // 1. 로그인한 회원이 운동부위와 시간을 선택하면 루틴생성을 위해 userCode, bodyPart를 사용해 유저정보와 운동기구정보를 prompt로 보냄
-    // 2. prompt는 넘어온 userDTO, bodyPart, time, exerciseEquipmentDTO를 통해 프롬프트를 생성하고 return
     public String generatePrompt(String userCode, String bodyPart, int time, List<ExerciseEquipmentDTO> exerciseEquipmentDTO) {
         UserDTO user = userService.findById(userCode);
 
@@ -132,7 +122,6 @@ public class GptService {
         return prompt.toString();
     }
 
-    // 3. 리턴 값은 String prompt에 저장되어 callOpenAPI에 넘겨지고 루틴 생성됨
     public String generateRoutine(String userCode, String bodyPart, int time) {
 
         List<ExerciseEquipmentDTO> exerciseEquipment = exerciseEquipmentService.findByBodyPart(bodyPart);
@@ -145,9 +134,6 @@ public class GptService {
         }
     }
 }
-
-// 4. 프론트에서는 받아온 운동 루틴의 세트수, 반복 횟수를 수정할 수 있고 하고싶지 않은 운동은 제외 하고 저장(DB에 저장하는 개념이 아님)하고, 시작을 누르면 DB에 저장을 위해 백엔드로 요청(JSON형식)
-// 5. 백엔드에서는 수정된 루틴을 저장할 수 있음
 
 
 
