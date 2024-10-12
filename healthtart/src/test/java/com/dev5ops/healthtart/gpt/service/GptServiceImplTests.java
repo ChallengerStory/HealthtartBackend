@@ -16,10 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class GptServiceTests {
+class GptServiceImplTests {
 
     @Autowired
-    private GptService gptService;
+    private GptServiceImpl gptServiceImpl;
 
     @Autowired
     private UserService userService;
@@ -48,7 +48,7 @@ class GptServiceTests {
         assertNotNull(equipmentList, "헬스 기구 정보가 조회되지 않았습니다.");
         assertFalse(equipmentList.isEmpty(), "해당 운동 부위에 대한 헬스 기구가 존재하지 않습니다.");
 
-        String response = gptService.generateRoutine(userCode, bodyPart, workoutTime);
+        String response = gptServiceImpl.generateRoutine(userCode, bodyPart, workoutTime);
         assertNotNull(response, "GPT 응답이 null입니다.");
         assertTrue(response.contains("하체"), "응답에 운동 부위 정보가 포함되지 않았습니다.");
         assertTrue(response.contains("레그 프레스"), "응답에 레그 프레스 정보가 포함되지 않았습니다.");

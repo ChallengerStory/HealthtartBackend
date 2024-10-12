@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class GptService {
+public class GptServiceImpl implements GptService {
 
     private final GptConfig gptConfig;
     private final RestTemplate restTemplate;
@@ -119,6 +119,7 @@ public class GptService {
         return prompt.toString();
     }
 
+    @Override
     public String generateRoutine(String userCode, String bodyPart, int time) {
 
         List<ExerciseEquipmentDTO> exerciseEquipment = exerciseEquipmentService.findByBodyPart(bodyPart);
