@@ -98,6 +98,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }*/
 
         user = userRepository.save(user);
+        // 여기 위에까지가 회원가입 하는것.(또는 수정)
+
+
         log.info("customService user : {} ", user.toString());
         // User 정보를 포함한 attributes 맵 생성
         Map<String, Object> userAttributes = new HashMap<>(attributes);
