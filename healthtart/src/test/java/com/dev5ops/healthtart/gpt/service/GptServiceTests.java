@@ -45,7 +45,6 @@ class GptServiceTests {
         assertNotNull(userDTO, "유저 정보를 찾을 수 없습니다.");
 
         List<ExerciseEquipmentDTO> equipmentList = exerciseEquipmentService.findByBodyPart(bodyPart);
-        System.out.println("equipmentList = " + equipmentList);
         assertNotNull(equipmentList, "헬스 기구 정보가 조회되지 않았습니다.");
         assertFalse(equipmentList.isEmpty(), "해당 운동 부위에 대한 헬스 기구가 존재하지 않습니다.");
 
