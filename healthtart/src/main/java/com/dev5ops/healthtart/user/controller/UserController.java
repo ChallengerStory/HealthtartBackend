@@ -90,7 +90,6 @@ public class UserController {
 //    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
     public ResponseEntity<?> handleKakaoLogin(@RequestParam String token, Authentication authentication) {
         try {
-            log.info("씨바");
             // "Bearer " 접두사 제거
 //            String token = authHeader.substring(7);
 
@@ -98,7 +97,6 @@ public class UserController {
             if (!jwtUtil.validateToken(token)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
             }
-            log.info("아ㅣ십ㄹ");
             // 토큰에서 이메일 추출
 //            String email = jwtUtil.getEmailFromToken(token);
             String userCode = jwtUtil.getUserCodeFromToken(token);
