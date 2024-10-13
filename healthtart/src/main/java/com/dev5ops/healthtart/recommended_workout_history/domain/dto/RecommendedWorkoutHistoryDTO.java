@@ -16,7 +16,7 @@ public class RecommendedWorkoutHistoryDTO {
     private Long historyCode;
 
     @JsonProperty("routine_ratings")
-    private int routineRatings;
+    private Double routineRatings;
 
     @JsonProperty("recommended_time")
     private int recommendedTime;

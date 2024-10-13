@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ResponseRegisterRecommendedWorkoutHistoryVO {
     private Long historyCode;
-    private int routineRatings;
+    private Double routineRatings;
     private int recommendedTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -22,7 +22,7 @@ public class RecommendedWorkoutHistory {
     private Long historyCode;
 
     @Column(name="routine_ratings")
-    private int routineRatings;
+    private Double routineRatings;
 
     @Column(name="recommended_time")
     private int recommendedTime;
