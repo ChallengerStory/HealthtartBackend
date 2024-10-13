@@ -25,7 +25,7 @@ public class RecordPerUserDTO {
     private LocalDate dayOfExercise;
 
     @JsonProperty("exercise_duration")
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
 
     @JsonProperty("record_flag")
     private boolean recordFlag;
@@ -37,24 +37,11 @@ public class RecordPerUserDTO {
     private LocalDateTime updatedAt;
 
     @JsonProperty("user_code")
-    private UserEntity userCode;
+    private String userCode;
 
     @JsonProperty("workout_per_routine_code")
     private Long workoutPerRoutineCode;
 
-    @Override
-    public String toString() {
-        return "RecordPerUser{" +
-                "userRecordCode=" + userRecordCode +
-                ", dayOfExercise=" + dayOfExercise +
-                ", exerciseDuration=" + exerciseDuration +
-                ", recordFlag=" + recordFlag +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", userCode=" + (userCode != null ? userCode.getUserCode() : null) +
-                ", workoutPerRoutineCode=" + workoutPerRoutineCode +
-                '}';
-    }
 
 }
 

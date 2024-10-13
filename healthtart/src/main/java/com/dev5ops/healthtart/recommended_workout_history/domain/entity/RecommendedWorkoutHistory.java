@@ -22,10 +22,7 @@ public class RecommendedWorkoutHistory {
     private Long historyCode;
 
     @Column(name="routine_ratings")
-    private int routineRatings;
-
-    @Column(name="recommended_time")
-    private int recommendedTime;
+    private Double routineRatings;
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
