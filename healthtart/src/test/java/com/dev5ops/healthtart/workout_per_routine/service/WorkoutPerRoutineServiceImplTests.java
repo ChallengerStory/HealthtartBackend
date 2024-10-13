@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,6 +64,41 @@ class WorkoutPerRoutineServiceImplTests {
 
         assertNotNull(result);
         verify(workoutPerRoutineRepository).findById(1L);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("운동 루틴 등록 테스트")
+    void registerWorkoutPerRoutineSuccess() {
+        WorkoutPerRoutineDTO dto = new WorkoutPerRoutineDTO();
+        dto.setWorkoutPerRoutineCode(1L);
+        dto.setWorkoutOrder(1);
+        dto.setWeightSet(3);
+        dto.setNumberPerSet(10);
+        dto.setWorkoutTime(30);
+        dto.setExerciseEquipmentCode(100L);
+        dto.setRecordCode(200L);
+
+        WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
+                .workoutPerRoutineCode(dto.getWorkoutPerRoutineCode())
+                .workoutOrder(dto.getWorkoutOrder())
+                .weightSet(dto.getWeightSet())
+                .numberPerSet(dto.getNumberPerSet())
+                .workoutTime(dto.getWorkoutTime())
+                .exerciseEquipmentCode(dto.getExerciseEquipmentCode())
+                .recordCode(dto.getRecordCode())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        when(workoutPerRoutineRepository.save(any(WorkoutPerRoutine.class))).thenReturn(routine);
+        when(modelMapper.map(any(WorkoutPerRoutine.class), eq(ResponseInsertWorkoutPerRoutineVO.class)))
+                .thenReturn(new ResponseInsertWorkoutPerRoutineVO());
+
+        ResponseInsertWorkoutPerRoutineVO result = workoutPerRoutineService.registerWorkoutPerRoutine(dto);
+
+        assertNotNull(result);
+        verify(workoutPerRoutineRepository).save(any(WorkoutPerRoutine.class));
     }
 
 
