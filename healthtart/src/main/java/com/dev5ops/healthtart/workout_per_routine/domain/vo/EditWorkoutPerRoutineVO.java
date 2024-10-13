@@ -1,4 +1,5 @@
-package com.dev5ops.healthtart.workout_per_routine.domain.vo.vo;
+package com.dev5ops.healthtart.workout_per_routine.domain.vo;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class ResponseModifyWorkoutPerRoutineVO {
+public class EditWorkoutPerRoutineVO {
     private int workoutOrder;
     private int weightSet;
     private int numberPerSet;

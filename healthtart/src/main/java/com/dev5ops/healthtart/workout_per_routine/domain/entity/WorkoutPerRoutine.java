@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
-import com.dev5ops.healthtart.workout_per_routine.domain.vo.vo.EditWorkoutPerRoutineVO;
+import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -54,6 +54,7 @@ public class WorkoutPerRoutine {
         this.numberPerSet = editRoutineVO.getNumberPerSet();
         this.weightPerSet = editRoutineVO.getWeightPerSet();
         this.workoutTime = editRoutineVO.getWorkoutTime();
+        this.updatedAt = LocalDateTime.now();
     }
 
 
