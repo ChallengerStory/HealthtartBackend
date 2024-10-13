@@ -24,8 +24,6 @@ public class RecordPerUserService {
 
     public List<RecordPerUserDTO> findRecordByUserCode(String userCode) {
         List<RecordPerUser> recordPerUser = recordPerUserRepository.findUserByUserCode(userCode);
-        System.out.println(userCode);
-        System.out.println(recordPerUser);
 
         if (recordPerUser.isEmpty()) {
             throw new CommonException(StatusEnum.USER_NOT_FOUND);

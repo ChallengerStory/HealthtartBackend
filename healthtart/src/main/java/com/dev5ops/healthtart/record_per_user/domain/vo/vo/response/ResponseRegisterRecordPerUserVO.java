@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +14,7 @@ import java.time.LocalTime;
 public class ResponseRegisterRecordPerUserVO {
     private Long userRecordCode;
     private LocalDate dayOfExercise;
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
     private boolean recordFlag;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

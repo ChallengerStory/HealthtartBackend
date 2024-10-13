@@ -53,7 +53,7 @@ class RecordPerUserServiceTests {
         RecordPerUser mockFirstRecordPerUser = RecordPerUser.builder()
                 .userRecordCode(1L)
                 .dayOfExercise(LocalDate.of(2024,10,9))
-                .exerciseDuration(LocalTime.of(1,0,0))
+                .exerciseDuration(LocalDateTime.of(2024, 10, 9, 1, 0, 0))
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -64,7 +64,7 @@ class RecordPerUserServiceTests {
         RecordPerUser mockSecondRecordPerUser = RecordPerUser.builder()
                 .userRecordCode(2L)
                 .dayOfExercise(LocalDate.of(2024,10,10))
-                .exerciseDuration(LocalTime.of(1,0,0))
+                .exerciseDuration(LocalDateTime.of(2024, 10, 10, 1, 0, 0))
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -77,7 +77,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUserDTO mockFirstRecordPerUserDTO = new RecordPerUserDTO(1L
                 ,LocalDate.of(2024,10,9)
-                ,LocalTime.of(1,0,0)
+                ,LocalDateTime.of(2024, 10, 9, 1, 0, 0)
                 ,true
                 ,LocalDateTime.now()
                 ,LocalDateTime.now()
@@ -86,7 +86,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUserDTO mockSecondRecordPerUserDTO = new RecordPerUserDTO(2L
                 ,LocalDate.of(2024,10,10)
-                ,LocalTime.of(1,0,0)
+                ,LocalDateTime.of(2024, 10, 10, 1, 0, 0)
                 ,true
                 ,LocalDateTime.now()
                 ,LocalDateTime.now()
@@ -134,7 +134,7 @@ class RecordPerUserServiceTests {
         RecordPerUser firstMockRecordPerUserAndDay = RecordPerUser.builder()
                 .userRecordCode(1L)
                 .dayOfExercise(LocalDate.of(2024,10,9))
-                .exerciseDuration(LocalTime.of(1,0,0))
+                .exerciseDuration(LocalDateTime.of(2024, 10, 9, 1, 0, 0))
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now().withNano(0))
                 .updatedAt(LocalDateTime.now().withNano(0))
@@ -145,7 +145,7 @@ class RecordPerUserServiceTests {
         RecordPerUser secondMockRecordPerUserAndDay = RecordPerUser.builder()
                 .userRecordCode(2L)
                 .dayOfExercise(LocalDate.of(2024,10,9))
-                .exerciseDuration(LocalTime.of(1,0,0))
+                .exerciseDuration(LocalDateTime.of(2024, 10, 9, 1, 0, 0))
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now().withNano(0))
                 .updatedAt(LocalDateTime.now().withNano(0))
@@ -160,7 +160,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUserDTO mockFirstRecordPerUserAndDayDTO = new RecordPerUserDTO(1L
                 ,LocalDate.of(2024,10,9)
-                ,LocalTime.of(1,0,0)
+                ,LocalDateTime.of(2024, 10, 9, 1, 0, 0)
                 ,true
                 ,LocalDateTime.now().withNano(0)
                 ,LocalDateTime.now().withNano(0)
@@ -169,7 +169,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUserDTO mockSecondRecordPerUserAndDayDTO = new RecordPerUserDTO(2L
                 ,LocalDate.of(2024,10,9)
-                ,LocalTime.of(1,0,0)
+                ,LocalDateTime.of(2024, 10, 9, 1, 0, 0)
                 ,true
                 ,LocalDateTime.now().withNano(0)
                 ,LocalDateTime.now().withNano(0)
@@ -181,20 +181,20 @@ class RecordPerUserServiceTests {
                 .asList(mockFirstRecordPerUserAndDayDTO, mockSecondRecordPerUserAndDayDTO);
 
         // when
-        when(recordPerUserRepository.findByUser_UserCodeAndDayOfExercise(mockUser, dayOfExercise))
+        when(recordPerUserRepository.findByUser_UserCodeAndDayOfExercise(userCode, dayOfExercise))
                 .thenReturn(mockRecordsPerUserAndDay);
         when(modelMapper.map(firstMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockFirstRecordPerUserAndDayDTO);
         when(modelMapper.map(secondMockRecordPerUserAndDay, RecordPerUserDTO.class))
                 .thenReturn(mockSecondRecordPerUserAndDayDTO);
 
-        List<RecordPerUserDTO> actual = recordPerUserService.findRecordPerDate(mockUser, dayOfExercise);
+        List<RecordPerUserDTO> actual = recordPerUserService.findRecordPerDate(userCode, dayOfExercise);
 
         // then
         assertNotNull(actual);
         assertEquals(mockRecordsPerUserAndDayDTO, actual);
 
-        verify(recordPerUserRepository, times(1)).findByUser_UserCodeAndDayOfExercise(mockUser, dayOfExercise);
+        verify(recordPerUserRepository, times(1)).findByUser_UserCodeAndDayOfExercise(userCode, dayOfExercise);
         verify(modelMapper, times(2)).map(any(RecordPerUser.class), eq(RecordPerUserDTO.class));
 
     }

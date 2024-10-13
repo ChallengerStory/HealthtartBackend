@@ -15,10 +15,10 @@ import java.time.LocalTime;
 public class RequestRegisterRecordPerUserVO {
     private Long userRecordCode;
     private LocalDate dayOfExercise;
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
     private boolean recordFlag;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private UserEntity userCode;
+    private String userCode;
     private Long workoutPerRoutineCode;
 }

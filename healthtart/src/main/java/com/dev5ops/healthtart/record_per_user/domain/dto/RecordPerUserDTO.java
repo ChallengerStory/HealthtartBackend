@@ -25,7 +25,7 @@ public class RecordPerUserDTO {
     private LocalDate dayOfExercise;
 
     @JsonProperty("exercise_duration")
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
 
     @JsonProperty("record_flag")
     private boolean recordFlag;

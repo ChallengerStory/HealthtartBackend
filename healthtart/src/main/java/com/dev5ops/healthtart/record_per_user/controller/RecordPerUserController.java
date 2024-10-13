@@ -6,7 +6,6 @@ import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegist
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseFindPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
-import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,4 +59,23 @@ public class RecordPerUserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "유저 - 운동 기록")
+    @PostMapping("/register")
+    public ResponseEntity<ResponseRegisterRecordPerUserVO> registerRecordPerUser(
+            @RequestBody RequestRegisterRecordPerUserVO request) {
+        RecordPerUserDTO registerRecordPerUser = recordPerUserService
+                .registerRecordPerUser(request);
+
+        ResponseRegisterRecordPerUserVO response = new ResponseRegisterRecordPerUserVO(
+                registerRecordPerUser.getUserRecordCode(),
+                registerRecordPerUser.getDayOfExercise(),
+                registerRecordPerUser.getExerciseDuration(),
+                registerRecordPerUser.isRecordFlag(),
+                registerRecordPerUser.getCreatedAt(),
+                registerRecordPerUser.getUpdatedAt(),
+                registerRecordPerUser.getUserCode(),
+                registerRecordPerUser.getWorkoutPerRoutineCode()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }

@@ -27,7 +27,7 @@ public class RecordPerUser {
     private LocalDate dayOfExercise;
 
     @Column(name="exercise_duration", nullable = false)
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
 
     @Column(name="record_flag", nullable = false)
     private boolean recordFlag;
