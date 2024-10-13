@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService{
         return new ResponseInsertUserVO(userDTO);
     }
 
+    // 회원 전체 조회
     @Override
     public List<UserDTO> findAllUsers() {
         List<UserEntity> allUsers = userRepository.findAll();
@@ -93,6 +94,7 @@ public class UserServiceImpl implements UserService{
         return userDTOList;
     }
 
+    // 이메일로 회원 조회
     @Override
     public UserDTO findUserByEmail(String email) {
         UserEntity findUser = userRepository.findByUserEmail(email);
