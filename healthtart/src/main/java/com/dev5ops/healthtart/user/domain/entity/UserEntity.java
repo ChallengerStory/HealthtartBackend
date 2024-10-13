@@ -69,6 +69,8 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+//    @ManyToOne
+//    @JoinColumn(name = "gym_code", nullable = true)
     @Column(name = "gym_code", nullable = true)
     private Long gymCode;
 }
