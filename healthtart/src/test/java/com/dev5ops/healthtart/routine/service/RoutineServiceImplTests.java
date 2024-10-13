@@ -141,6 +141,20 @@ class RoutineServiceImplTests {
     }
 
 
+    @Test
+    @Transactional
+    @DisplayName("루틴 삭제 테스트")
+    void deleteRoutineSuccess() {
+        Long routineCode = 1L;
+        Routine routine = new Routine();
+        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
+
+        ResponseDeleteRoutineVO result = routineService.deleteRoutine(routineCode);
+
+        assertNotNull(result);
+        verify(routineRepository).findById(routineCode);
+        verify(routineRepository).delete(routine);
+    }
 
 
 }
