@@ -6,7 +6,6 @@ import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.domain.entity.RecordPerUser;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
-import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,8 +22,10 @@ public class RecordPerUserService {
     private final RecordPerUserRepository recordPerUserRepository;
     private final ModelMapper modelMapper;
 
-    public List<RecordPerUserDTO> findRecordByUserCode(UserEntity UserCode) {
-        List<RecordPerUser> recordPerUser = recordPerUserRepository.findByUserCode_UserCode(UserCode);
+    public List<RecordPerUserDTO> findRecordByUserCode(String userCode) {
+        List<RecordPerUser> recordPerUser = recordPerUserRepository.findUserByUserCode(userCode);
+        System.out.println(userCode);
+        System.out.println(recordPerUser);
 
         if (recordPerUser.isEmpty()) {
             throw new CommonException(StatusEnum.USER_NOT_FOUND);
@@ -36,12 +37,12 @@ public class RecordPerUserService {
                 .collect(Collectors.toList());
     }
 
-    public List<RecordPerUserDTO> findRecordPerDate(UserEntity UserCode, LocalDate dayOfExercise) {
+    public List<RecordPerUserDTO> findRecordPerDate(String UserCode, LocalDate dayOfExercise) {
         List<RecordPerUser> recordPerUser = recordPerUserRepository
-                .findByUserCode_UserCodeAndDayOfExercise(UserCode, dayOfExercise);
+                .findByUser_UserCodeAndDayOfExercise(UserCode, dayOfExercise);
 
         if (recordPerUser.isEmpty()) {
-            boolean userExists = recordPerUserRepository.existsByUserCode_UserCode(UserCode);
+            boolean userExists = recordPerUserRepository.existsByUser_UserCode(UserCode);
 
             if (!userExists) {
                 throw new CommonException(StatusEnum.USER_NOT_FOUND);

@@ -2,7 +2,9 @@ package com.dev5ops.healthtart.record_per_user.controller;
 
 
 import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseFindPerUserVO;
+import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,8 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController("recordPerUserController")
 @RequestMapping("/recordperuser")
@@ -27,38 +32,35 @@ public class RecordPerUserController {
 
     @Operation(summary = "유저 - 유저별 운동기록 조회")
     @GetMapping("/{userCode}")
-    public ResponseEntity<List<ResponseFindPerUserVO>> getRecordPerUser(@PathVariable("userCode") UserEntity userCode) {
-        RecordPerUserDTO recordPerUserDTO = (RecordPerUserDTO) recordPerUserService
+    public ResponseEntity<List<ResponseFindPerUserVO>> getRecordPerUser(@PathVariable("userCode") String userCode) {
+        List<RecordPerUserDTO> recordPerUserDTO = recordPerUserService
                 .findRecordByUserCode(userCode);
 
-        ResponseFindPerUserVO response = new ResponseFindPerUserVO(
-                recordPerUserDTO.getDayOfExercise(),
-                recordPerUserDTO.getExerciseDuration()
-        );
+        List<ResponseFindPerUserVO> response = recordPerUserDTO.stream()
+                .map(record -> new ResponseFindPerUserVO(
+                        record.getDayOfExercise(),
+                        record.getExerciseDuration()
+                ))
+                .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonList(response));
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "유저 - 날짜별 운동기록 조회")
     @GetMapping("/{userCode}/{dayOfExercise}")
     public ResponseEntity<List<ResponseFindPerUserVO>> getRecordPerDate(
-            @PathVariable("userCode") UserEntity userCode, @PathVariable("dayOfExercise") LocalDate dayOfExercise) {
-        RecordPerUserDTO recordPerUserDTO = (RecordPerUserDTO) recordPerUserService
+            @PathVariable("userCode") String userCode, @PathVariable("dayOfExercise") LocalDate dayOfExercise) {
+        List<RecordPerUserDTO> recordPerUserDTO = recordPerUserService
                 .findRecordPerDate(userCode, dayOfExercise);
 
-        ResponseFindPerUserVO response = new ResponseFindPerUserVO(
-                recordPerUserDTO.getDayOfExercise(),
-                recordPerUserDTO.getExerciseDuration()
-        );
+        List<ResponseFindPerUserVO> response = recordPerUserDTO.stream()
+                .map(record -> new ResponseFindPerUserVO(
+                        record.getDayOfExercise(),
+                        record.getExerciseDuration()
+                ))
+                .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonList(response));
+        return ResponseEntity.ok(response);
     }
 
-//    public ResponseEntity<ResponseRegisterRecordPerUserVO> registerRecordPerUser(
-//            @RequestBody RequestRegisterRecordPerUserVO request) {
-//        RecordPerUserDTO response = recordPerUserService
-//                .registerRecordPerUser(modelmapper.map(request, RecordPerUserDTO.class));
-//
-//        )
-//    }
 }

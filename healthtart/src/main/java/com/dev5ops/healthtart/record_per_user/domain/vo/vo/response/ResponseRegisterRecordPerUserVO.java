@@ -19,6 +19,7 @@ public class ResponseRegisterRecordPerUserVO {
     private boolean recordFlag;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private UserEntity userCode;
+    private String userCode;
     private Long workoutPerRoutineCode;
+
 }
