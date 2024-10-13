@@ -49,6 +49,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
+    // 근데 로그인에서 구글이랑 카카오밖에 없으면 그냥 로그인은 어케해요????
+
     @GetMapping("/login/google")
 //    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
     public ResponseEntity<?> handleGoogleLogin(@RequestParam String token, Authentication authentication) {
@@ -179,8 +181,8 @@ public class UserController {
     }
 
     // 이메일로 회원 정보 조회
-    @GetMapping
-    public ResponseEntity<ResponseFindUserVO> findUserByEmail(@RequestParam String email) {
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ResponseFindUserVO> findUserByEmail(@PathVariable String email) {
         UserDTO userDTO = userService.findUserByEmail(email);
         ResponseFindUserVO responseFindUserVO = modelMapper.map(userDTO, ResponseFindUserVO.class);
 
@@ -188,12 +190,22 @@ public class UserController {
     }
 
     // 회원 코드로 회원 정보 조회
-    @GetMapping
-    public ResponseEntity<ResponseFindUserVO> findUserById(@RequestParam String userCode) {
+    @GetMapping("/usercode/{userCode}")
+    public ResponseEntity<ResponseFindUserVO> findUserById(@PathVariable String userCode) {
         UserDTO userDTO = userService.findById(userCode);
         ResponseFindUserVO responseFindUserVO = modelMapper.map(userDTO, ResponseFindUserVO.class);
 
         return new ResponseEntity<>(responseFindUserVO, HttpStatus.OK);
     }
+
+    // 회원 탈퇴
+    @PatchMapping("/delete/{userCode}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userCode) {
+        userService.deleteUser(userCode);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
 
 }

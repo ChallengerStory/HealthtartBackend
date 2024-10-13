@@ -18,4 +18,6 @@ public interface UserService extends UserDetailsService {
     UserDTO findUserByEmail(String userEmail);
 
     UserDTO findById(String userCode);
+
+    void deleteUser(String userCode);
 }

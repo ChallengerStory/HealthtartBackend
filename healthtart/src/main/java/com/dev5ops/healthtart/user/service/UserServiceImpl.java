@@ -1,5 +1,7 @@
 package com.dev5ops.healthtart.user.service;
 
+import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
@@ -12,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -96,8 +97,8 @@ public class UserServiceImpl implements UserService{
 
     // 이메일로 회원 조회
     @Override
-    public UserDTO findUserByEmail(String email) {
-        UserEntity findUser = userRepository.findByUserEmail(email);
+    public UserDTO findUserByEmail(String userEmail) {
+        UserEntity findUser = userRepository.findByUserEmail(userEmail);
 
         return modelMapper.map(findUser, UserDTO.class);
     }
@@ -136,5 +137,13 @@ public class UserServiceImpl implements UserService{
                                     user.getUserFlag());
 
 //        return new User(user.getUserEmail(), user.getUserPassword(), true, true, true, true, roles);
+    }
+
+    @Override
+    public void deleteUser(String userCode) {
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.removeRequest(user);
+        userRepository.save(user);
     }
 }
