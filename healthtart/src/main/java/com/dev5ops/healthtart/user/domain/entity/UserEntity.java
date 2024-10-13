@@ -73,4 +73,10 @@ public class UserEntity {
 //    @JoinColumn(name = "gym_code", nullable = true)
     @Column(name = "gym_code", nullable = true)
     private Long gymCode;
+
+    public void removeRequest(UserEntity user) {
+        this.userCode = user.getUserCode();
+        this.userFlag = false;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

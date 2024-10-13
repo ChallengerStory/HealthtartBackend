@@ -1,8 +1,7 @@
 package com.dev5ops.healthtart.record_per_user.service;
 
-
-import com.dev5ops.healthtart.record_per_user.aggregate.RecordPerUser;
-import com.dev5ops.healthtart.record_per_user.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
+import com.dev5ops.healthtart.record_per_user.domain.entity.RecordPerUser;
 import com.dev5ops.healthtart.record_per_user.repository.RecordPerUserRepository;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;

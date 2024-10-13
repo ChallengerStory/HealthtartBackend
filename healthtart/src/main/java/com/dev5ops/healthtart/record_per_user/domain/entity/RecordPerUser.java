@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.record_per_user.aggregate;
+package com.dev5ops.healthtart.record_per_user.domain.entity;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
