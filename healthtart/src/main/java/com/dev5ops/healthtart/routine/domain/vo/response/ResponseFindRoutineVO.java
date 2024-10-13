@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.routine.domain.vo;
+package com.dev5ops.healthtart.routine.domain.vo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

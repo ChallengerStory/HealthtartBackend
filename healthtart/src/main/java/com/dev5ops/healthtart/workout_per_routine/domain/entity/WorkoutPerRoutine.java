@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
-import com.dev5ops.healthtart.workout_per_routine.domain.vo.vo.EditWorkoutPerRoutineVO;
+import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
