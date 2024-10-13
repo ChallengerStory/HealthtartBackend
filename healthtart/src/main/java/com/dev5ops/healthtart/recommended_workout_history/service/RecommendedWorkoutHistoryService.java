@@ -1,7 +1,5 @@
 package com.dev5ops.healthtart.recommended_workout_history.service;
 
-import com.dev5ops.healthtart.common.exception.CommonException;
-import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.recommended_workout_history.domain.dto.RecommendedWorkoutHistoryDTO;
 import com.dev5ops.healthtart.recommended_workout_history.domain.entity.RecommendedWorkoutHistory;
 import com.dev5ops.healthtart.recommended_workout_history.repository.RecommendedWorkoutHistoryRepository;
@@ -12,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -21,17 +21,27 @@ public class RecommendedWorkoutHistoryService {
     private final ModelMapper modelMapper;
 
     // 운동추천내역 만족도순 조회 1. 운동루틴별 운동추천내역 조회 2. 만족도만 다 더해서 평균내기
-    public double findByRatingOrder(Long routineCode) {
-        List<RecommendedWorkoutHistoryDTO> recommendedWorkoutHistoryDTOList = recommendedWorkoutHistoryRepository
-                .findByRoutineCode(routineCode);
+    public List<Map.Entry<Long, Double>> findByRatingOrder() {
 
-        return recommendedWorkoutHistoryDTOList.stream()
-                .mapToDouble(RecommendedWorkoutHistoryDTO::getRoutineRatings)
-                .average()
-                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        List<RecommendedWorkoutHistory> recommendedWorkoutHistory =
+                recommendedWorkoutHistoryRepository.findAll();
+
+        List<RecommendedWorkoutHistoryDTO> recommendedWorkoutHistoryDTOList =
+                recommendedWorkoutHistory.stream()
+                        .map(history -> modelMapper.map(history, RecommendedWorkoutHistoryDTO.class))
+                        .collect(Collectors.toList());
+
+        Map<Long, Double> averageRatingsByRoutineCode = recommendedWorkoutHistoryDTOList.stream()
+                .collect(Collectors.groupingBy(
+                        RecommendedWorkoutHistoryDTO::getRoutineCode,
+                        Collectors.averagingDouble(RecommendedWorkoutHistoryDTO::getRoutineRatings)
+                ));
+
+        return averageRatingsByRoutineCode.entrySet().stream()
+                .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
+                .collect(Collectors.toList());
     }
 
-    // 만족도 등록
     public RecommendedWorkoutHistoryDTO registerRating
             (RecommendedWorkoutHistoryDTO recommendedWorkoutHistoryDTO){
         RecommendedWorkoutHistory recommendedWorkoutHistory = modelMapper
