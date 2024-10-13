@@ -41,7 +41,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         setFilterProcessesUrl("/users/login");
     }
 
-    /* 설명. 로그인 시도 시 동작하는 기능(POST /login 요청 시) */
+    /* 설명. 로그인 시도 시 동작하는 기능(POST /users/login 요청 시) -> service의 loasUser메서드 전에 작동한다 */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
@@ -110,12 +110,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname); // principal에서 제공해주는 데이터가 적음.
         String token = jwtUtil.generateToken(tokenDTO, roles, null);
 
-        // 인증된 사용자 정보를 Authentication 객체에 설정
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                userDetails,  // CustomUserDetails가 Principal로 들어감
-                null,  // 비밀번호는 필요 없음
-                authResult.getAuthorities()  // 권한 설정
-        );
+//        // 인증된 사용자 정보를 Authentication 객체에 설정
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+//                userDetails,  // CustomUserDetails가 Principal로 들어감
+//                null,  // 비밀번호는 필요 없음
+//                authResult.getAuthorities()  // 권한 설정
+//        );
 
 
 //        response.addHeader("token", token);
