@@ -30,7 +30,7 @@ public class UserEntity {
     @Column(name = "user_email", nullable = false)
     private String userEmail;
 
-    @Column(name = "user_password"/*, nullable = false*/)
+    @Column(name = "user_password")
     private String userPassword;
 
     @Column(name = "user_phone", nullable = false)
@@ -71,7 +71,7 @@ public class UserEntity {
 
 //    @ManyToOne
 //    @JoinColumn(name = "gym_code", nullable = true)
-    @Column(name = "gym_code", nullable = true)
+    @Column(name = "gym_code")
     private Long gymCode;
 
     public void removeRequest(UserEntity user) {
