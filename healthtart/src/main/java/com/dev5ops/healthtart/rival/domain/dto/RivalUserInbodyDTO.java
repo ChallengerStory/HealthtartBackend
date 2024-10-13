@@ -26,7 +26,7 @@ public class RivalUserInbodyDTO {
 
     // inbody 데이터
     private Integer inbodyScore;
-    private Integer height;
+    private Double height;
     private Double weight;
     private double muscleWeight;
     private double fatWeight;
