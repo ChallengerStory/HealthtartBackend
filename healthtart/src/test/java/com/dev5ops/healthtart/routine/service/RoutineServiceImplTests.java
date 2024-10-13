@@ -117,5 +117,30 @@ class RoutineServiceImplTests {
         verify(modelMapper).map(any(Routine.class), eq(ResponseInsertRoutineVO.class));
     }
 
+    @Test
+    @Transactional
+    @DisplayName("루틴 수정 테스트")
+    void modifyRoutineSuccess() {
+        Long routineCode = 1L;
+
+        EditRoutineVO modifyRoutine = new EditRoutineVO("김정은도 10kg 감량한 저녁 루틴 !!!", 90);
+
+        Routine routine = new Routine();
+        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
+
+        ResponseModifyRoutineVO responseVO = new ResponseModifyRoutineVO();
+        when(modelMapper.map(any(Routine.class), eq(ResponseModifyRoutineVO.class)))
+                .thenReturn(responseVO);
+
+        ResponseModifyRoutineVO result = routineService.modifyRoutine(routineCode, modifyRoutine);
+
+        assertNotNull(result);
+        verify(routineRepository).findById(routineCode);
+        verify(routineRepository).save(any(Routine.class));
+        verify(modelMapper).map(any(Routine.class), eq(ResponseModifyRoutineVO.class));
+    }
+
+
+
 
 }
