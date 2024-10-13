@@ -58,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
             log.info("OAuth 로그인: 쿼리 파라미터에서 토큰 추출. 토큰 : {}", token);
         }
 
-        /* 설명. 토큰이 있을 경우에만 유효성 검사 및 인증 처리 -> 아니면 다음 필터로 넘어가게함. (oauth 유저의 경우 바로 로그인이 되기 때문에*/
+        /* 설명. 토큰이 있을 경우에만 유효성 검사 및 인증 처리 -> 아니면 다음 필터로 넘어가게함. (oauth 유저의 경우 바로 로그인이 되기 때문에)*/
         if (token != null && jwtUtil.validateToken(token)) {
             Authentication authentication = jwtUtil.getAuthentication(token);
             log.info("JwtFilter를 통과한 유효한 토큰을 통해 security가 관리할 principal 객체: {}", authentication);

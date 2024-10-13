@@ -4,9 +4,11 @@ import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.service.UserService;
 //import io.swagger.v3.oas.annotations.Operation;
+import com.google.api.Http;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,7 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("users")
@@ -44,6 +48,8 @@ public class UserController {
         log.info("여기 오긴 왔나요??");
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
+
+    // 근데 로그인에서 구글이랑 카카오밖에 없으면 그냥 로그인은 어케해요????
 
     @GetMapping("/login/google")
 //    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
@@ -161,4 +167,45 @@ public class UserController {
             log.info("Mypage data successfully retrieved for user: {}", userCode);
             return ResponseEntity.ok(response);
     }
+
+    // 회원 전체 조회
+    @GetMapping
+    public ResponseEntity<List<ResponseFindUserVO>> getAllUsers() {
+        // service에서 DTO 형태로 찾은 애를 VO로 바꿔야한다
+        List<UserDTO> userDTOList = userService.findAllUsers();
+        List<ResponseFindUserVO> userVOList = userDTOList.stream()
+                .map(userDTO -> modelMapper.map(userDTO, ResponseFindUserVO.class))
+                .collect(Collectors.toList());
+
+                return new ResponseEntity<>(userVOList, HttpStatus.OK);
+    }
+
+    // 이메일로 회원 정보 조회
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ResponseFindUserVO> findUserByEmail(@PathVariable String email) {
+        UserDTO userDTO = userService.findUserByEmail(email);
+        ResponseFindUserVO responseFindUserVO = modelMapper.map(userDTO, ResponseFindUserVO.class);
+
+        return new ResponseEntity<>(responseFindUserVO, HttpStatus.OK);
+    }
+
+    // 회원 코드로 회원 정보 조회
+    @GetMapping("/usercode/{userCode}")
+    public ResponseEntity<ResponseFindUserVO> findUserById(@PathVariable String userCode) {
+        UserDTO userDTO = userService.findById(userCode);
+        ResponseFindUserVO responseFindUserVO = modelMapper.map(userDTO, ResponseFindUserVO.class);
+
+        return new ResponseEntity<>(responseFindUserVO, HttpStatus.OK);
+    }
+
+    // 회원 탈퇴
+    @PatchMapping("/delete/{userCode}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userCode) {
+        userService.deleteUser(userCode);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+
 }
