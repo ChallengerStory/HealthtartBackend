@@ -1,71 +1,75 @@
 package com.dev5ops.healthtart.rival.service;
 
 
-import com.dev5ops.healthtart.rival.domain.dto.user.RivalUserEntityDTO;
-import com.dev5ops.healthtart.rival.domain.dto.RivalDTO;
+import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO;
+import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyScoreDTO;
 import com.dev5ops.healthtart.rival.domain.entity.Rival;
 import com.dev5ops.healthtart.rival.repository.RivalRepository;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
-import com.dev5ops.healthtart.user.service.InfraUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Service("rivalService")
 public class RivalServiceImpl implements RivalService {
 
     private final RivalRepository rivalRepository;
     private final ModelMapper modelMapper;
-    private final InfraUserService infraUserService;
 
     @Autowired
-    public RivalServiceImpl(RivalRepository rivalRepository, ModelMapper modelMapper, InfraUserService infraUserService) {
+    public RivalServiceImpl(RivalRepository rivalRepository, ModelMapper modelMapper) {
         this.rivalRepository = rivalRepository;
         this.modelMapper = modelMapper;
-        this.infraUserService = infraUserService;
     }
 
     // 1. 내 라이벌 조회
-    public List<RivalDTO> findRivalById(){
-        // 현재 인증된 사용자 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    public List<RivalUserInbodyScoreDTO> findRivalById(){
+        String userCode = getUserCode();
 
-        String userCode = userDetails.getUserDTO().getUserCode();
+        // 현재 로그인한 유저가 라이벌로 설정한 사람들 + 그 사람들 정보를 담은 코드 (키, 몸무게, 나이 등등)
+        List<RivalUserInbodyScoreDTO> rivalUserInbodyScoreList = rivalRepository.findRivalUsersInbodyScoreByUserCode(userCode);
 
-        List<Rival> rivalList = rivalRepository.findByUser_UserCode(userCode);
-
-        return rivalList.stream()
-                .map(rival -> modelMapper.map(rival, RivalDTO.class))
-                .collect(Collectors.toList());
+        return rivalUserInbodyScoreList;
     }
 
     // 2. 선택한 라이벌 조회 -> 내꺼하고 상대꺼 2개 보여줘야함. -> 결국 유저 정보가 필요하구나? user를 infra로 가져와야한다.
-    public List<RivalDTO> findRival(String rivalUserCode){
+    public List<RivalUserInbodyDTO> findRival(String rivalUserCode){
         // 현재 인증된 사용자 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userCode = getUserCode();
 
-        String userCode = userDetails.getUserDTO().getUserCode();
+        RivalUserInbodyDTO userInbodyDTO = rivalRepository.findUserInbodyByUserCode(userCode);
+        RivalUserInbodyDTO rivalUserInbodyDTO = rivalRepository.findUserInbodyByUserCode(rivalUserCode);
+        // 여기서 rivalmatchcode를 어떻게 넘겨줄지? 생각해보기 -> 상세정보를 봤을때에도 삭제할 수 있는게 더 편하지 않을까 싶어서.
 
-        // userCode와 rivalUserCode에 해당하는 user의 정보를 가져와야한다.
-        // -> 라이벌에는 어떤 정보가 필요할까? 일단 usercode를 주면 찾아주는 메서드로 만들기
-        // 1대1로 비교하는것만 존재할거잖아? 그러면 내꺼 상대꺼 2개 파라미터 줘서 한꺼번에 처리하는게 어떨까?
-        // -> 유저이름, 유저 신장, 몸무게, 나이 -> 인바디 정보도 필요할거같은데????? 조졋다 -> 그러면 결국 DTO로 받을껀데 어떤 DTO??
-        // RivalCompareDTO로 할까?? 그러자.
 
-        RivalUserEntityDTO userCompareDTO = infraUserService.findUserDetailByUserCode(userCode);
-        RivalUserEntityDTO rivalUserCompareDTO = infraUserService.findUserDetailByUserCode(userCode); // 그냥 라이벌에서 유저코드 가지고 인바디 정보 부르면 되지않나? 유저코드 알잖아...
-        // 그럼 userinbodydto가 아니라 rivalinbodydto로 하자는 말인가???? 하 어캐해야할지 모르겠네
+        return Arrays.asList(userInbodyDTO, rivalUserInbodyDTO);
+    }
 
+    // 3. 라이벌 삭제 -> 라이벌 수정은 필요없을거같음. 라이벌 리스트에서 오른쪽에 삭제 버튼 만들어놓고 그걸 누르면 삭제되게 하는 로직으로 가자.
+    // 그리고 삭제를 한다는게 flag를 바꾸는게 아닌거같음. user에만 flag를 만들어놓고 진행? -> 일단 하자.
+    public void deleteRival(Long rivalMatchCode){
+
+        Rival rival = rivalRepository.findById(rivalMatchCode)
+                .orElseThrow(IllegalArgumentException::new); // 수정해주기
+
+        rivalRepository.delete(rival);
     }
 
 
+
+
+
+    public String getUserCode(){
+        // 현재 인증된 사용자 가져오기
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 현재 로그인한 유저의 유저코드
+        return userDetails.getUserDTO().getUserCode();
+    }
 }
