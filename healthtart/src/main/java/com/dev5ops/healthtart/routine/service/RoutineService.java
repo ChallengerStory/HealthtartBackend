@@ -2,6 +2,10 @@ package com.dev5ops.healthtart.routine.service;
 
 import com.dev5ops.healthtart.routine.domain.dto.RoutineDTO;
 import com.dev5ops.healthtart.routine.domain.vo.*;
+import com.dev5ops.healthtart.routine.domain.vo.response.ResponseDeleteRoutineVO;
+import com.dev5ops.healthtart.routine.domain.vo.response.ResponseFindRoutineVO;
+import com.dev5ops.healthtart.routine.domain.vo.response.ResponseInsertRoutineVO;
+import com.dev5ops.healthtart.routine.domain.vo.response.ResponseModifyRoutineVO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

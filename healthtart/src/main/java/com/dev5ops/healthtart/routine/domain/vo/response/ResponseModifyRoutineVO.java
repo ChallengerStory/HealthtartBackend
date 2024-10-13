@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.routine.domain.vo;
+package com.dev5ops.healthtart.routine.domain.vo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class RequestModifyRoutineVO {
+public class ResponseModifyRoutineVO {
     private String title;
     private Integer time;
     private LocalDateTime updatedAt;
-
 }
