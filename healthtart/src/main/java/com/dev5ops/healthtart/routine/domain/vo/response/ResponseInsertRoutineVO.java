@@ -1,4 +1,5 @@
-package com.dev5ops.healthtart.routine.domain.vo;
+package com.dev5ops.healthtart.routine.domain.vo.response;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ResponseDeleteRoutineVO {
+public class ResponseInsertRoutineVO {
     private Long routineCode;
     private String title;
     private Integer time;
@@ -17,5 +18,4 @@ public class ResponseDeleteRoutineVO {
     private String recommendMusic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }
