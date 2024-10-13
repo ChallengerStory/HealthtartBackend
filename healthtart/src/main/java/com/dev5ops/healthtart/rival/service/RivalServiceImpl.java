@@ -51,12 +51,20 @@ public class RivalServiceImpl implements RivalService {
         // 현재 인증된 사용자 가져오기
         String userCode = getUserCode();
 
+        // 1단계: userCode와 rivalUserCode로 rivalMatchCode 가져오기
+        Long rivalMatchCode = rivalRepository.findRivalMatchCode(userCode, rivalUserCode);
+
+        if(rivalMatchCode == null){return null;} // 라이벌 코드가 없으면 안되게 해야함.
+
+        // 2단계: userCode와 rivalUserCode 각각에 대한 인바디 + 유저 정보를 가져오기
         RivalUserInbodyDTO userInbodyDTO = rivalRepository.findUserInbodyByUserCode(userCode);
-        RivalUserInbodyDTO rivalUserInbodyDTO = rivalRepository.findUserInbodyByUserCode(rivalUserCode);
-        // 여기서 rivalmatchcode를 어떻게 넘겨줄지? 생각해보기 -> 상세정보를 봤을때에도 삭제할 수 있는게 더 편하지 않을까 싶어서.
+        RivalUserInbodyDTO rivalInbodyDTO = rivalRepository.findUserInbodyByUserCode(rivalUserCode);
 
+        // 3단계: 가져온 DTO에 rivalMatchCode 추가
+        userInbodyDTO.setRivalMatchCode(rivalMatchCode);
+        rivalInbodyDTO.setRivalMatchCode(rivalMatchCode);
 
-        return Arrays.asList(userInbodyDTO, rivalUserInbodyDTO);
+        return Arrays.asList(userInbodyDTO, rivalInbodyDTO);
     }
 
     @Override
@@ -66,6 +74,7 @@ public class RivalServiceImpl implements RivalService {
 
         Rival rival = rivalRepository.findById(rivalMatchCode)
                 .orElseThrow(IllegalArgumentException::new); // 수정해주기
+        log.info("Delete Rival");
 
         rivalRepository.delete(rival);
     }
@@ -99,6 +108,8 @@ public class RivalServiceImpl implements RivalService {
     public String getUserCode(){
         // 현재 인증된 사용자 가져오기
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails {}", userDetails.toString());
 
         // 현재 로그인한 유저의 유저코드
         return userDetails.getUserDTO().getUserCode();

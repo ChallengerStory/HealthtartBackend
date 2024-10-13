@@ -26,11 +26,18 @@ public interface RivalRepository extends JpaRepository<Rival, Long> {
             "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM inbody i2 WHERE i2.user.userCode = ru.userCode)")
     List<RivalUserInbodyScoreDTO> findRivalUsersInbodyScoreByUserCode(@Param("userCode") String userCode);
 
-
-    @Query("SELECT new com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO(r.rivalMatchCode, u.userCode, u.userName, u.userGender, u.userHeight, u.userWeight, u.userAge, u.userFlag, i.inbodyScore, i.height, i.weight, i.muscleWeight, i.fatWeight, i.bmi, i.fatPercentage, i.basalMetabolicRate) " +
+    // rival match code 가져오는 메서드
+    @Query("SELECT r.rivalMatchCode " +
             "FROM Rival r " +
-            "JOIN r.user u " +
-            "JOIN FETCH inbody i ON i.user.userCode = u.userCode " +
+            "WHERE r.user.userCode = :userCode AND r.rivalUser.userCode = :rivalUserCode")
+    Long findRivalMatchCode(@Param("userCode") String userCode, @Param("rivalUserCode") String rivalUserCode);
+
+    // 인바디 정보 가져오는 메서드
+    @Query("SELECT new com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO(" +
+            "null, u.userCode, u.userName, u.userGender, u.userHeight, u.userWeight, u.userAge, u.userFlag, " +
+            "i.inbodyScore, i.height, i.weight, i.muscleWeight, i.fatWeight, i.bmi, i.fatPercentage, i.basalMetabolicRate) " +
+            "FROM UserEntity u " +
+            "JOIN inbody i ON i.user.userCode = u.userCode " +
             "WHERE u.userCode = :userCode " +
             "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM inbody i2 WHERE i2.user.userCode = u.userCode)")
     RivalUserInbodyDTO findUserInbodyByUserCode(@Param("userCode") String userCode);
