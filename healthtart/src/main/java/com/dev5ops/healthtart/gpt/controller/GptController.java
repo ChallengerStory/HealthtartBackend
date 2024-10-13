@@ -5,6 +5,7 @@ import com.dev5ops.healthtart.gpt.service.GptService;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class GptController {
     private final ExerciseEquipmentService exerciseEquipmentService;
 
     @PostMapping("/generate-routine")
+    @Operation(summary = "GPT 운동 루틴 생성")
     public ResponseEntity<String> generateRoutine(@RequestParam String userCode, @RequestParam String bodyPart, @RequestParam int time) {
         try {
             UserDTO userDTO = userService.findById(userCode);
