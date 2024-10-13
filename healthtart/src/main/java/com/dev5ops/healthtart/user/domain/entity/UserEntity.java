@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "users")
+@Entity(name = "UserEntity")
 @Table(name = "users")
 @Getter @Setter
 @AllArgsConstructor
@@ -69,6 +69,8 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+//    @ManyToOne
+//    @JoinColumn(name = "gym_code", nullable = true)
     @Column(name = "gym_code")
     private Long gymCode;
 
