@@ -27,7 +27,7 @@ public class RecordPerUser {
     private LocalDate dayOfExercise;
 
     @Column(name="exercise_duration", nullable = false)
-    private LocalTime exerciseDuration;
+    private LocalDateTime exerciseDuration;
 
     @Column(name="record_flag", nullable = false)
     private boolean recordFlag;
@@ -40,23 +40,9 @@ public class RecordPerUser {
 
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
-    private UserEntity userCode;
+    private UserEntity user;
 
     @Column(name="workout_per_routine_code", nullable = false)
     private Long workoutPerRoutineCode;
 
-
-    @Override
-    public String toString() {
-        return "RecordPerUser{" +
-                "userRecordCode=" + userRecordCode +
-                ", dayOfExercise=" + dayOfExercise +
-                ", exerciseDuration=" + exerciseDuration +
-                ", recordFlag=" + recordFlag +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", userCode=" + (userCode != null ? userCode.getUserCode() : null) +  // UserCode만 출력
-                ", workoutPerRoutineCode=" + workoutPerRoutineCode +
-                '}';
-    }
 }

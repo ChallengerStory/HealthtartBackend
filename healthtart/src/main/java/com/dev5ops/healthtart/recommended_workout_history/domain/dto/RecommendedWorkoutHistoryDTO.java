@@ -16,10 +16,7 @@ public class RecommendedWorkoutHistoryDTO {
     private Long historyCode;
 
     @JsonProperty("routine_ratings")
-    private int routineRatings;
-
-    @JsonProperty("recommended_time")
-    private int recommendedTime;
+    private Double routineRatings;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
