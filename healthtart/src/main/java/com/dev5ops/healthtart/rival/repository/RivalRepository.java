@@ -21,16 +21,17 @@ public interface RivalRepository extends JpaRepository<Rival, Long> {
             "FROM Rival r " +
             "JOIN r.user u " +
             "JOIN r.rivalUser ru " +
-            "JOIN FETCH Inbody i ON i.user.userCode = ru.userCode " +  // Fetch join을 사용하여 즉시 데이터 로드
+            "JOIN FETCH inbody i ON i.user.userCode = ru.userCode " +  // Fetch join을 사용하여 즉시 데이터 로드
             "WHERE u.userCode = :userCode " +
-            "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM Inbody i2 WHERE i2.user.userCode = ru.userCode)")
+            "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM inbody i2 WHERE i2.user.userCode = ru.userCode)")
     List<RivalUserInbodyScoreDTO> findRivalUsersInbodyScoreByUserCode(@Param("userCode") String userCode);
 
 
-    @Query("SELECT new com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO(u.userCode, u.userName, u.userGender, u.userHeight, u.userWeight, u.userAge, u.userFlag, i.inbodyScore, i.height, i.weight, i.muscleWeight, i.fatWeight, i.bmi, i.fatPercentage, i.basalMetabolicRate) " +
-            "FROM UserEntity u " +
-            "JOIN FETCH Inbody i ON i.user.userCode = u.userCode " +  // Fetch join을 사용하여 즉시 데이터 로드
+    @Query("SELECT new com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO(r.rivalMatchCode, u.userCode, u.userName, u.userGender, u.userHeight, u.userWeight, u.userAge, u.userFlag, i.inbodyScore, i.height, i.weight, i.muscleWeight, i.fatWeight, i.bmi, i.fatPercentage, i.basalMetabolicRate) " +
+            "FROM Rival r " +
+            "JOIN r.user u " +
+            "JOIN FETCH inbody i ON i.user.userCode = u.userCode " +
             "WHERE u.userCode = :userCode " +
-            "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM Inbody i2 WHERE i2.user.userCode = u.userCode)")
+            "AND i.createdAt = (SELECT MAX(i2.createdAt) FROM inbody i2 WHERE i2.user.userCode = u.userCode)")
     RivalUserInbodyDTO findUserInbodyByUserCode(@Param("userCode") String userCode);
 }
