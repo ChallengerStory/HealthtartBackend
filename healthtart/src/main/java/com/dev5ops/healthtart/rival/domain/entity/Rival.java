@@ -18,14 +18,14 @@ public class Rival {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rival_match_code", nullable = false, unique = true)
-    private String rivalMatchCode;
+    private Long rivalMatchCode;
 
     @ManyToOne
-    @Column(name = "user_code")
+    @JoinColumn(name = "user_code", nullable = false)
     private UserEntity user;
 
     @ManyToOne
-    @Column(name = "rival_user_code")
+    @JoinColumn(name = "rival_user_code", nullable = false)
     private UserEntity rivalUser;
 
     @Column(name = "created_at", nullable = false)
