@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -84,6 +85,37 @@ class RoutineServiceImplTests {
         assertEquals(StatusEnum.ROUTINE_NOT_FOUND, exception.getStatusEnum());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("루틴 등록 테스트")
+    void registerRoutineSuccess() {
+        RoutineDTO routineDTO = new RoutineDTO();
+        routineDTO.setRoutineCode(1L);
+        routineDTO.setTitle("김정은도 10kg 감량한 모닝 루틴 !!!");
+        routineDTO.setTime(60);
+        routineDTO.setLink("http://healthtart.com");
+        routineDTO.setRecommendMusic("삐딱하게 - G-DRAGON");
+
+        Routine routine = Routine.builder()
+                .routineCode(routineDTO.getRoutineCode())
+                .title(routineDTO.getTitle())
+                .time(routineDTO.getTime())
+                .link(routineDTO.getLink())
+                .recommendMusic(routineDTO.getRecommendMusic())
+                .build();
+
+        when(routineRepository.save(any(Routine.class))).thenReturn(routine);
+
+        ResponseInsertRoutineVO responseVO = new ResponseInsertRoutineVO();
+        when(modelMapper.map(any(Routine.class), eq(ResponseInsertRoutineVO.class)))
+                .thenReturn(responseVO);
+
+        ResponseInsertRoutineVO result = routineService.registerRoutine(routineDTO);
+
+        assertNotNull(result);
+        verify(routineRepository).save(any(Routine.class));
+        verify(modelMapper).map(any(Routine.class), eq(ResponseInsertRoutineVO.class));
+    }
 
 
 }
