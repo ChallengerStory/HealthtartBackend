@@ -1,17 +1,21 @@
 package com.dev5ops.healthtart.rival.service;
 
 
+import com.dev5ops.healthtart.rival.domain.dto.RivalDTO;
 import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO;
 import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyScoreDTO;
 import com.dev5ops.healthtart.rival.domain.entity.Rival;
 import com.dev5ops.healthtart.rival.repository.RivalRepository;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,15 +25,18 @@ public class RivalServiceImpl implements RivalService {
 
     private final RivalRepository rivalRepository;
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public RivalServiceImpl(RivalRepository rivalRepository, ModelMapper modelMapper) {
+    public RivalServiceImpl(RivalRepository rivalRepository, ModelMapper modelMapper, UserRepository userRepository) {
         this.rivalRepository = rivalRepository;
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
     }
 
+    @Override
     // 1. 내 라이벌 조회
-    public List<RivalUserInbodyScoreDTO> findRivalById(){
+    public List<RivalUserInbodyScoreDTO> findRivalList(){
         String userCode = getUserCode();
 
         // 현재 로그인한 유저가 라이벌로 설정한 사람들 + 그 사람들 정보를 담은 코드 (키, 몸무게, 나이 등등)
@@ -38,6 +45,7 @@ public class RivalServiceImpl implements RivalService {
         return rivalUserInbodyScoreList;
     }
 
+    @Override
     // 2. 선택한 라이벌 조회 -> 내꺼하고 상대꺼 2개 보여줘야함. -> 결국 유저 정보가 필요하구나? user를 infra로 가져와야한다.
     public List<RivalUserInbodyDTO> findRival(String rivalUserCode){
         // 현재 인증된 사용자 가져오기
@@ -51,6 +59,7 @@ public class RivalServiceImpl implements RivalService {
         return Arrays.asList(userInbodyDTO, rivalUserInbodyDTO);
     }
 
+    @Override
     // 3. 라이벌 삭제 -> 라이벌 수정은 필요없을거같음. 라이벌 리스트에서 오른쪽에 삭제 버튼 만들어놓고 그걸 누르면 삭제되게 하는 로직으로 가자.
     // 그리고 삭제를 한다는게 flag를 바꾸는게 아닌거같음. user에만 flag를 만들어놓고 진행? -> 일단 하자.
     public void deleteRival(Long rivalMatchCode){
@@ -62,7 +71,29 @@ public class RivalServiceImpl implements RivalService {
     }
 
 
+    @Override
+    // 4. 라이벌 등록 -> 랭킹 페이지에서 상세 페이지에 들어가면 "라이벌 등록"이 있으면 괜찮을듯? -> 결국 랭킹에서 userCode가 있을거임.(보이진 않지만) 그걸 토대로 하기?
+    public RivalDTO insertRival(String rivalUserCode){
+        // 어떤 데이터가 있으면 좋을까? -> 랭킹에는 그 사람의 userCode가 존재할게 분명. -> 그걸 프론트에서 받아와야함. -> 프론트의 랭킹에서 userEntity 정보를 미리 보여줘야함.
+        String userCode = getUserCode();
 
+        UserEntity user = userRepository.findById(userCode)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        UserEntity rivalUser = userRepository.findById(rivalUserCode)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        Rival rival = Rival.builder()
+                .user(user)
+                .rivalUser(rivalUser)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        rivalRepository.save(rival);
+
+        return modelMapper.map(rival, RivalDTO.class);
+    }
 
 
     public String getUserCode(){
