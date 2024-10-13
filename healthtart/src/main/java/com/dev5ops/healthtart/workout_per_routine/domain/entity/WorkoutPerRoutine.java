@@ -54,6 +54,7 @@ public class WorkoutPerRoutine {
         this.numberPerSet = editRoutineVO.getNumberPerSet();
         this.weightPerSet = editRoutineVO.getWeightPerSet();
         this.workoutTime = editRoutineVO.getWorkoutTime();
+        this.updatedAt = LocalDateTime.now();
     }
 
 

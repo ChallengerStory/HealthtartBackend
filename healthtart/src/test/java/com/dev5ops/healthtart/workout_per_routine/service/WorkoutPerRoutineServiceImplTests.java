@@ -3,6 +3,7 @@ package com.dev5ops.healthtart.workout_per_routine.service;
 
 import com.dev5ops.healthtart.workout_per_routine.domain.dto.WorkoutPerRoutineDTO;
 import com.dev5ops.healthtart.workout_per_routine.domain.entity.WorkoutPerRoutine;
+import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
 import com.dev5ops.healthtart.workout_per_routine.domain.vo.response.ResponseFindWorkoutPerRoutineVO;
 import com.dev5ops.healthtart.workout_per_routine.domain.vo.response.ResponseInsertWorkoutPerRoutineVO;
 import com.dev5ops.healthtart.workout_per_routine.repository.WorkoutPerRoutineRepository;
@@ -100,6 +101,36 @@ class WorkoutPerRoutineServiceImplTests {
         assertNotNull(result);
         verify(workoutPerRoutineRepository).save(any(WorkoutPerRoutine.class));
     }
+
+    @Test
+    @Transactional
+    @DisplayName("운동 루틴 수정 테스트")
+    void updateWorkoutPerRoutineSuccess() {
+        WorkoutPerRoutine existingRoutine = WorkoutPerRoutine.builder()
+                .workoutPerRoutineCode(1L)
+                .workoutOrder(1)
+                .weightSet(3)
+                .numberPerSet(10)
+                .workoutTime(30)
+                .build();
+
+        when(workoutPerRoutineRepository.findById(1L)).thenReturn(Optional.of(existingRoutine));
+
+        EditWorkoutPerRoutineVO editVO = new EditWorkoutPerRoutineVO(2, 4,
+                12, 20, 40,LocalDateTime.now());
+
+        workoutPerRoutineService.modifyWorkoutPerRoutine(1L, editVO);
+
+        assertAll(
+                () -> assertEquals(2, existingRoutine.getWorkoutOrder()),
+                () -> assertEquals(4, existingRoutine.getWeightSet()),
+                () -> assertEquals(12, existingRoutine.getNumberPerSet()),
+                () -> assertEquals(20, existingRoutine.getWeightPerSet()),
+                () -> assertEquals(40, existingRoutine.getWorkoutTime())
+        );
+        verify(workoutPerRoutineRepository).save(existingRoutine);
+    }
+
 
     @Test
     @Transactional
