@@ -50,7 +50,6 @@ public class RecommendedWorkoutHistoryController {
         ResponseRegisterRecommendedWorkoutHistoryVO response = new ResponseRegisterRecommendedWorkoutHistoryVO(
                 registerRating.getHistoryCode(),
                 registerRating.getRoutineRatings(),
-                registerRating.getRecommendedTime(),
                 registerRating.getCreatedAt(),
                 registerRating.getUpdatedAt(),
                 registerRating.getRoutineCode()

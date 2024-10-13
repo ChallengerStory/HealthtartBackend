@@ -24,9 +24,6 @@ public class RecommendedWorkoutHistory {
     @Column(name="routine_ratings")
     private Double routineRatings;
 
-    @Column(name="recommended_time")
-    private int recommendedTime;
-
     @Column(name="created_at")
     private LocalDateTime createdAt;
 
