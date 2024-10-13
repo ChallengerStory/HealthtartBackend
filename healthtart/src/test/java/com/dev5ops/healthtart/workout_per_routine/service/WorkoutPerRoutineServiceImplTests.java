@@ -101,5 +101,15 @@ class WorkoutPerRoutineServiceImplTests {
         verify(workoutPerRoutineRepository).save(any(WorkoutPerRoutine.class));
     }
 
+    @Test
+    @Transactional
+    @DisplayName("운동 루틴 삭제 테스트")
+    void deleteWorkoutPerRoutineSuccess() {
+        WorkoutPerRoutine routine = new WorkoutPerRoutine();
+        when(workoutPerRoutineRepository.findById(anyLong())).thenReturn(Optional.of(routine));
 
+        workoutPerRoutineService.deleteWorkoutPerRoutine(1L);
+
+        verify(workoutPerRoutineRepository).delete(routine);
+    }
 }
