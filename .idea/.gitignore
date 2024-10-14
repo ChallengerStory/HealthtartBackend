@@ -1,5 +1,12 @@
 # Default ignored files
 /shelf/
+/compiler.xml
+/dataSources.xml
+/gradle.xml
+/Healthtart.iml
+/jarRepositories.xml
+/misc.xml
+/vcs.xml
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
