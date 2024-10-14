@@ -4,6 +4,8 @@
             <div class="logo">
                 <img src="@/assets/icons/logo.svg" alt="Healthtart Logo" class="logo-img"/>
             </div>
+        </div>
+        <div class="right-header">
             <div class="nav-menu">
                 <nav class="nav">
                     <button class="nav-button" :class="{active: activeTab === 'home' }" @click="setActiveTab('home')">Home</button>
@@ -13,17 +15,15 @@
                     <button class="nav-button" :class="{active: activeTab === 'inbody' }" @click="setActiveTab('inbody')">InBody</button>
                     <button class="nav-button" :class="{active: activeTab === 'mypage' }" @click="setActiveTab('mypage')">MyPage</button>
                 </nav>
+                <div class="auth-btn">
+                  <button @click="handleAuthAction">
+                   {{ isLoggedIn ? 'LogOut' : 'LogIn' }}  
+               </button>
             </div>
-        </div>
+          </div>
          <!-- 로그인 안 된 상태에는 LogIn, 로그인 된 상태에는 LogOut 글자가 나와야 한다 -->
         <!-- 배경 색도 달라야한다 -->
         <!-- <button class="login-btn" @click="login">LogIn</button> -->
-         <div class="right-header">
-            <div class="auth-btn">
-                <button @click="handleAuthAction">
-                    {{ isLoggedIn ? 'LogOut' : 'LogIn' }}  
-                </button>
-            </div>
         </div>
     </header>
 </template>
@@ -140,10 +140,11 @@ onMounted(() => {
   }
   
   .logo-img {
-    width: 50px;
+    width: 80px;
     /* margin-right: 10px; */
-    height: 50px; /* Set a fixed height */
+    height: auto; /* Set a fixed height */
     object-fit: contain; /* Maintain aspect ratio */
+    margin-top: 20px;
   }
   
   .nav-menu {
@@ -167,22 +168,23 @@ onMounted(() => {
   }
   
   .nav-button.active {
-    background-color: #00E0E0;
+    background-color: #01FEAE;
     color: black;
-    border-radius: 5px;
+    border-radius: 10px;
   }
 
   .auth-btn {
     flex: 0 0 auto;
+    margin-left: 30px;
   }
 
   .auth-btn button {
     background-color: #00E0E0;
     color: black;
     border: none;
-    border-radius: 5px;
-    padding: 5px 15px;
-    font-size: 16px;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 18px;
     cursor: pointer;
     white-space: nowrap; /* Prevent text wrapping */
   }
