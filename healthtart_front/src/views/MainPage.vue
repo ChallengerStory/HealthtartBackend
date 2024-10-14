@@ -1,5 +1,6 @@
 <template>
     <div class="app">
+      <AppHeader />
       <main>
         <div class="content">
           <div class="left-content">
@@ -30,6 +31,7 @@
   <script setup>
   import { onMounted } from 'vue';
   import '@/assets/css/Main/MainPage.css';
+import AppHeader from '@/components/AppHeader.vue';
   
   onMounted(() => {
     const blueWave = document.createElement('div');
