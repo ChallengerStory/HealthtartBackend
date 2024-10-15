@@ -5,7 +5,9 @@ import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.inbody.aggregate.Inbody;
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
+import com.dev5ops.healthtart.inbody.dto.InbodyUserDTO;
 import com.dev5ops.healthtart.inbody.repository.InbodyRepository;
+import com.dev5ops.healthtart.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class InbodyService {
     private final InbodyRepository inbodyRepository;
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     @Transactional
     public InbodyDTO registerInbody(InbodyDTO inbodyDTO) {
@@ -96,4 +99,8 @@ public class InbodyService {
     }
 
 
+    public List<InbodyUserDTO> findInbodyUserInbody() {
+
+        return inbodyRepository.findLatestInbodyRankings();
+    }
 }

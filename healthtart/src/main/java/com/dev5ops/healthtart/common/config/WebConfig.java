@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
 //                Ingress 적용 이후 CORS 불필요로 인한 경로 제거
-                .allowedOrigins()
+                .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT","PATCH", "DELETE");
     }
 }
