@@ -2,10 +2,12 @@ package com.dev5ops.healthtart.inbody.controller;
 
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestRegisterInbodyVO;
+import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseInbodyUserVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseFindInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseRegisterInbodyVO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
+import com.dev5ops.healthtart.inbody.dto.InbodyUserDTO;
 import com.dev5ops.healthtart.inbody.service.InbodyService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -131,6 +133,27 @@ public class InbodyController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ResponseInbodyUserVO>> findInbodyUserInbody(){
+        List<InbodyUserDTO> AllInbodyList = inbodyService.findInbodyUserInbody();
+        List<ResponseInbodyUserVO> response = new ArrayList<>();
+
+        for (InbodyUserDTO inbodyUserDTO : AllInbodyList) {
+            ResponseInbodyUserVO responseInbodyUserVO = new ResponseInbodyUserVO(
+                    inbodyUserDTO.getUserNickname(),
+                    inbodyUserDTO.getUserGender(),
+                    inbodyUserDTO.getHeight(),
+                    inbodyUserDTO.getWeight(),
+                    inbodyUserDTO.getMuscleWeight(),
+                    inbodyUserDTO.getFatPercentage(),
+                    inbodyUserDTO.getBasalMetabolicRate(),
+                    inbodyUserDTO.getInbodyScore()
+            );
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "유저 - 본인의 인바디 단 건 조회")

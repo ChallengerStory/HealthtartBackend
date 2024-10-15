@@ -53,6 +53,7 @@ public class WebSecurity {
         http.authorizeHttpRequests((authz) ->
                                 authz
 //                                        .requestMatchers(new AntPathRequestMatcher("/users/mypage", "GET")).hasRole("ADMIN")
+                                        .requestMatchers(new AntPathRequestMatcher("/inbody", "GET")).hasRole("ADMIN")
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                         .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
