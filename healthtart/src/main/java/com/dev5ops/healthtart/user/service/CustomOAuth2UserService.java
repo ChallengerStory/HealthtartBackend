@@ -82,7 +82,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .userEmail(email)
                     .userPassword(null)  // OAuth2 사용자는 비밀번호가 없음
                     .userPhone("빵빵아")  // 필요한 경우 추가 정보를 받아야 함
-                    .userNickname(name)  // 닉네임을 이름으로 초기 설정
+                    .userNickname("헤헤헤")  // 닉네임을 이름으로 초기 설정 -> 이거를 또 입력하게 해야할듯. -> 처음인 경우에 이걸로 설정.
                     .userAddress("옥지얌")  // 필요한 경우 추가 정보를 받아야 함
                     .userFlag(true)  // 활성 사용자로 설정
                     .provider(provider)
@@ -100,6 +100,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user = userRepository.save(user);
         // 여기 위에까지가 회원가입 하는것.(또는 수정)
 
+
+        // 여기서 처음 들어오는 회원인 경우 리다이렉트 부분을 추가한다.
+        // jwt token = jwtUtils.generateToken();
+        // getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        // redirectUrl은 /add-info?token=(jwt token 값)
+        // 이런식으로 리다이렉트를 한 후에 프론트에서 다시 /main이든 어디든 post 요청을 보내면 된다.
 
         log.info("customService user : {} ", user.toString());
         // User 정보를 포함한 attributes 맵 생성
