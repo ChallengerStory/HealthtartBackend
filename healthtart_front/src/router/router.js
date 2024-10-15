@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 
 import InbodyRoutes from './inbody';
+import RoutineRoutes from './routine';
 import MainPage from '@/views/MainPage.vue';
 
 const routes = [
@@ -10,6 +11,7 @@ const routes = [
   path: "/", component: MainPage
 },
 ...InbodyRoutes,
+...RoutineRoutes,
 ];
 
 const router = createRouter({
