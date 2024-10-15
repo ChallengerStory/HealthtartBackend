@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class InbodyService {
     private final InbodyRepository inbodyRepository;
     private final ModelMapper modelMapper;
-    private final UserRepository userRepository;
 
     @Transactional
     public InbodyDTO registerInbody(InbodyDTO inbodyDTO) {
@@ -91,8 +90,7 @@ public class InbodyService {
     }
 
     public List<InbodyDTO> findAllInbodyByUser(String userCode) {
-        List<Inbody> inbodyList = inbodyRepository.findAllByUser_UserCode(userCode);
-
+        List<InbodyUserDTO> inbodyList = inbodyRepository.findLatestInbodyRankings();
         return inbodyList.stream()
                 .map(inbody -> modelMapper.map(inbody, InbodyDTO.class))
                 .collect(Collectors.toList());
@@ -100,7 +98,9 @@ public class InbodyService {
 
 
     public List<InbodyUserDTO> findInbodyUserInbody() {
-
-        return inbodyRepository.findLatestInbodyRankings();
+        log.info("aweaew");
+        List<InbodyUserDTO> dtoList = inbodyRepository.findLatestInbodyRankings();
+        log.info("dtoList:{}", dtoList.toString());
+        return dtoList;
     }
 }

@@ -23,12 +23,14 @@ public interface InbodyRepository extends JpaRepository<Inbody, Long> {
             "u.userNickname, u.userGender, i.height, i.weight, i.muscleWeight, " +
             "i.fatPercentage, i.basalMetabolicRate, i.inbodyScore) " +
             "FROM inbody i " +
-            "JOIN i.user u " +
-            "WHERE (u.userCode, i.createdAt) IN (" +
-            "    SELECT i2.user.userCode, MAX(i2.createdAt) " +
+            "JOIN i.user u " +  // fetch join 대신 단순 join 사용
+            "WHERE i.createdAt = (" +
+            "    SELECT MAX(i2.createdAt) " +
             "    FROM inbody i2 " +
-            "    GROUP BY i2.user.userCode" +
+            "    WHERE i2.user.userCode = u.userCode" +
             ") " +
             "ORDER BY i.inbodyScore DESC")
     List<InbodyUserDTO> findLatestInbodyRankings();
+
+
 }
