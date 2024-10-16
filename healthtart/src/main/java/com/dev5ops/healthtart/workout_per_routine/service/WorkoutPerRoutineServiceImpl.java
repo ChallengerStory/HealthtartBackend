@@ -53,6 +53,7 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(workoutPerRoutineDTO.getWorkoutPerRoutineCode())
                 .workoutOrder(workoutPerRoutineDTO.getWorkoutOrder())
+                .workoutName(workoutPerRoutineDTO.getWorkoutName())
                 .weightSet(workoutPerRoutineDTO.getWeightSet())
                 .numberPerSet(workoutPerRoutineDTO.getNumberPerSet())
                 .weightPerSet(workoutPerRoutineDTO.getWeightPerSet())
@@ -60,7 +61,7 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .exerciseEquipmentCode(workoutPerRoutineDTO.getExerciseEquipmentCode())
-                .recordCode(workoutPerRoutineDTO.getRecordCode())
+                .routineCode(workoutPerRoutineDTO.getRoutineCode())
                 .build();
 
         workoutPerRoutineRepository.save(routine);

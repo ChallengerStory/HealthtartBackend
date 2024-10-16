@@ -73,21 +73,23 @@ class WorkoutPerRoutineServiceImplTests {
     void registerWorkoutPerRoutineSuccess() {
         WorkoutPerRoutineDTO dto = new WorkoutPerRoutineDTO();
         dto.setWorkoutPerRoutineCode(1L);
+        dto.setWorkoutName("데드리프트");
         dto.setWorkoutOrder(1);
         dto.setWeightSet(3);
         dto.setNumberPerSet(10);
         dto.setWorkoutTime(30);
         dto.setExerciseEquipmentCode(100L);
-        dto.setRecordCode(200L);
+        dto.setRoutineCode(200L);
 
         WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(dto.getWorkoutPerRoutineCode())
+                .workoutName(dto.getWorkoutName())
                 .workoutOrder(dto.getWorkoutOrder())
                 .weightSet(dto.getWeightSet())
                 .numberPerSet(dto.getNumberPerSet())
                 .workoutTime(dto.getWorkoutTime())
                 .exerciseEquipmentCode(dto.getExerciseEquipmentCode())
-                .recordCode(dto.getRecordCode())
+                .routineCode(dto.getRoutineCode())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -108,6 +110,7 @@ class WorkoutPerRoutineServiceImplTests {
     void updateWorkoutPerRoutineSuccess() {
         WorkoutPerRoutine existingRoutine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(1L)
+                .workoutName("바벨 로우")
                 .workoutOrder(1)
                 .weightSet(3)
                 .numberPerSet(10)
@@ -116,13 +119,14 @@ class WorkoutPerRoutineServiceImplTests {
 
         when(workoutPerRoutineRepository.findById(1L)).thenReturn(Optional.of(existingRoutine));
 
-        EditWorkoutPerRoutineVO editVO = new EditWorkoutPerRoutineVO(2, 4,
+        EditWorkoutPerRoutineVO editVO = new EditWorkoutPerRoutineVO(2,"데드리프트", 4,
                 12, 20, 40,LocalDateTime.now());
 
         workoutPerRoutineService.modifyWorkoutPerRoutine(1L, editVO);
 
         assertAll(
                 () -> assertEquals(2, existingRoutine.getWorkoutOrder()),
+                () -> assertEquals("데드리프트", existingRoutine.getWorkoutName()),
                 () -> assertEquals(4, existingRoutine.getWeightSet()),
                 () -> assertEquals(12, existingRoutine.getNumberPerSet()),
                 () -> assertEquals(20, existingRoutine.getWeightPerSet()),

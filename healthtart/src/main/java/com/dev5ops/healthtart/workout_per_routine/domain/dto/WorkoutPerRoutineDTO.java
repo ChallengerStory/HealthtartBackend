@@ -17,6 +17,9 @@ public class WorkoutPerRoutineDTO {
     @JsonProperty("workout_order")
     private int workoutOrder;
 
+    @JsonProperty("workout_name")
+    private String workoutName;
+
     @JsonProperty("weight_set")
     private int weightSet;
 
@@ -35,8 +38,8 @@ public class WorkoutPerRoutineDTO {
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
-    @JsonProperty("record_code")
-    private Long recordCode;
+    @JsonProperty("routine_code")
+    private Long routineCode;
 
     @JsonProperty("exercise_equipment_code")
     private Long exerciseEquipmentCode;

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class RequestDeleteWorkoutPerRoutineVO {
     private Long workoutPerRoutineCode;
+    private String workoutName;
     private int workoutOrder;
     private int weightSet;
     private int numberPerSet;
@@ -18,7 +19,7 @@ public class RequestDeleteWorkoutPerRoutineVO {
     private int workoutTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long recordCode;
+    private Long routineCode;
     private Long exerciseEquipmentCode;
 
 }

@@ -1,15 +1,16 @@
-package com.dev5ops.healthtart.routine.service;
+package com.dev5ops.healthtart.workoutinfo.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.routine.domain.dto.RoutineDTO;
 import com.dev5ops.healthtart.routine.domain.entity.Routine;
-import com.dev5ops.healthtart.routine.domain.vo.*;
+import com.dev5ops.healthtart.routine.domain.vo.EditRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseDeleteRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseFindRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseInsertRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseModifyRoutineVO;
 import com.dev5ops.healthtart.routine.repository.RoutineRepository;
+import com.dev5ops.healthtart.routine.service.RoutineServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-class RoutineServiceImplTests {
+class WorkoutInfoServiceImplTests {
 
 //    @InjectMocks
 //    private RoutineServiceImpl routineService;

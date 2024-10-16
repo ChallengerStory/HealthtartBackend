@@ -22,18 +22,6 @@ public class Routine {
     @Column(name="routine_code")
     private Long routineCode;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "time")
-    private Integer time;
-
-    @Column(name = "link")
-    private String link;
-
-    @JsonProperty("recommend_music")
-    private String recommendMusic;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -41,8 +29,7 @@ public class Routine {
     private LocalDateTime updatedAt;
 
     public void toUpdate(@Validated EditRoutineVO editRoutineVO) {
-        this.title = editRoutineVO.getTitle();
-        this.time = editRoutineVO.getTime();
+        this.updatedAt = editRoutineVO.getUpdatedAt();
     }
 
     }

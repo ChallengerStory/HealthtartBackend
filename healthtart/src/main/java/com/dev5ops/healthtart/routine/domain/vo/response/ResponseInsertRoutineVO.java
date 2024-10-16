@@ -12,10 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 public class ResponseInsertRoutineVO {
     private Long routineCode;
-    private String title;
-    private Integer time;
-    private String link;
-    private String recommendMusic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -26,7 +26,6 @@ public class RoutineServiceImpl implements RoutineService {
     private final RoutineRepository routineRepository;
     private final ModelMapper modelMapper;
 
-    // 운동 루틴 전체 조회
     @Override
     public List<ResponseFindRoutineVO> getRoutines() {
         List<Routine> routinesList = routineRepository.findAll();
@@ -36,7 +35,6 @@ public class RoutineServiceImpl implements RoutineService {
                 .collect(Collectors.toList());
     }
 
-    // 운동 루틴 단일 조회
     @Override
     public ResponseFindRoutineVO findRoutineByCode(Long routineCode) {
         Routine routine = routineRepository.findById(routineCode)
@@ -44,7 +42,6 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseFindRoutineVO.class);
     }
 
-    // 루틴 시작하기 누르면 운동루틴 등록
     @Override
     @Transactional
     public ResponseInsertRoutineVO registerRoutine(RoutineDTO routineDTO) {
@@ -52,10 +49,6 @@ public class RoutineServiceImpl implements RoutineService {
 
         Routine routine = Routine.builder()
                 .routineCode(routineDTO.getRoutineCode())
-                .title(routineDTO.getTitle())
-                .time(routineDTO.getTime())
-                .link(routineDTO.getLink())
-                .recommendMusic(routineDTO.getRecommendMusic())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -65,7 +58,6 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseInsertRoutineVO.class);
     }
 
-    // 운동루틴 제목, 할시간 수정 가능
     @Override
     @Transactional
     public ResponseModifyRoutineVO modifyRoutine(Long routineCode, EditRoutineVO modifyRoutine) {
@@ -76,7 +68,6 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseModifyRoutineVO.class);
     }
 
-    // 루틴 멈추기 누르면 운동루틴 삭제
     @Override
     @Transactional
     public ResponseDeleteRoutineVO deleteRoutine(Long routineCode) {
@@ -86,9 +77,8 @@ public class RoutineServiceImpl implements RoutineService {
         return new ResponseDeleteRoutineVO();
     }
 
-    // DTO 검증 메서드
     private void validateRoutineDTO(RoutineDTO routineDTO) {
-        if (routineDTO.getRoutineCode() == null || routineDTO.getTitle().isEmpty()) {
+        if (routineDTO.getRoutineCode() == null ) {
             throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
         }
     }
