@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class RequestInsertWorkoutPerRoutineVO {
     private Long workoutPerRoutineCode;
+    private String workoutName;
     private int workoutOrder;
     private int weightSet;
     private int numberPerSet;

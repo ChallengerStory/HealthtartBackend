@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
 import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,9 @@ public class WorkoutPerRoutine {
 
     @Column(name = "workout_order")
     private int workoutOrder;
+
+    @Column(name ="workout_name")
+    private String workoutName;
 
     @Column(name = "weight_set")
     private int weightSet;
@@ -50,6 +54,7 @@ public class WorkoutPerRoutine {
 
     public void toUpdate(@Validated EditWorkoutPerRoutineVO editRoutineVO) {
         this.workoutOrder = editRoutineVO.getWorkoutOrder();
+        this.workoutName = editRoutineVO.getWorkoutName();
         this.weightSet = editRoutineVO.getWeightSet();
         this.numberPerSet = editRoutineVO.getNumberPerSet();
         this.weightPerSet = editRoutineVO.getWeightPerSet();

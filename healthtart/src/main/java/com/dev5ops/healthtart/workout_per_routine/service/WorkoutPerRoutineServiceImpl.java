@@ -53,6 +53,7 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(workoutPerRoutineDTO.getWorkoutPerRoutineCode())
                 .workoutOrder(workoutPerRoutineDTO.getWorkoutOrder())
+                .workoutName(workoutPerRoutineDTO.getWorkoutName())
                 .weightSet(workoutPerRoutineDTO.getWeightSet())
                 .numberPerSet(workoutPerRoutineDTO.getNumberPerSet())
                 .weightPerSet(workoutPerRoutineDTO.getWeightPerSet())

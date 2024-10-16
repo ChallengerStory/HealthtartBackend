@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ResponseFindWorkoutPerRoutineVO {
     private Long workoutPerRoutineCode;
     private int workoutOrder;
+    private String workoutName;
     private int weightSet;
     private int numberPerSet;
     private int weightPerSet;
