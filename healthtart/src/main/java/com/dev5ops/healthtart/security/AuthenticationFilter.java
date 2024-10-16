@@ -95,28 +95,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .map(role -> role.getAuthority())
                 .collect(Collectors.toList());
 
-//        /* 설명. 재료들로 토큰 만들기(Jwt Token 라이브러리 추가(3가지)하기) */
-//        Claims claims = Jwts.claims().setSubject(userName);
-//        claims.put("auth", roles);      // 비공개 클레임은 Claims에서 제공하는 put을 활용해 추가한다.
-//
-//        String token = Jwts.builder()
-//                .setClaims(claims)
-//                .setExpiration(new Date(System.currentTimeMillis()
-//                        + Long.parseLong(env.getProperty("token.expiration_time"))))
-//                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-//                .compact();
-
-//        JwtTokenDTO tokenDTO = new JwtTokenDTO(userName, null, null);
         JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname); // principal에서 제공해주는 데이터가 적음.
         String token = jwtUtil.generateToken(tokenDTO, roles, null);
-
-//        // 인증된 사용자 정보를 Authentication 객체에 설정
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                userDetails,  // CustomUserDetails가 Principal로 들어감
-//                null,  // 비밀번호는 필요 없음
-//                authResult.getAuthorities()  // 권한 설정
-//        );
-
 
 //        response.addHeader("token", token);
         response.addHeader(HttpHeaders.AUTHORIZATION, token);

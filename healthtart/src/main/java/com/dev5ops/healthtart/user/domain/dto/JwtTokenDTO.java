@@ -11,5 +11,5 @@ public class JwtTokenDTO {
 
     private String userCode;
     private String userEmail;
-    private String userName;
+    private String userNickname;
 }

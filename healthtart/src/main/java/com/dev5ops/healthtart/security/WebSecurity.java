@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.security;
-import com.dev5ops.healthtart.user.service.CustomOAuth2UserService;
 
+import com.dev5ops.healthtart.user.service.CustomOAuth2UserService;
 import com.dev5ops.healthtart.user.service.UserService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +42,11 @@ public class WebSecurity {
         this.jwtUtil = jwtUtil;
     }
 
+    /* 설명. 인가(Authoriazation)용 메소드(인증 필터 추가) */
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         // CSRF 비활성화
         http.csrf(csrf -> csrf.disable());
-
         // CORS 설정 적용
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
@@ -61,10 +61,6 @@ public class WebSecurity {
         // HttpSecurity 설정
         http.authorizeHttpRequests((authz) ->
                         authz
-                                .requestMatchers(new AntPathRequestMatcher("/users/mypage", "GET")).hasRole("ADMIN")
-                                .requestMatchers(new AntPathRequestMatcher("/test/**", "POST")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/test/**", "OPTIONS")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "OPTIONS")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
@@ -78,11 +74,27 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).hasRole("MEMBER")
+//                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "OPTIONS")).permitAll() // OPTIONS 요청은 안해줘도 작동
                                 .anyRequest().authenticated()
                 )
+                /* UserDetails를 상속받는 Service 계층 + BCrypt 암호화 */
                 .authenticationManager(authenticationManager)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+//                /* OAuth2 로그인 설정 추가 */
+//                .oauth2Login(oauth2 -> oauth2
+//                        .authorizationEndpoint(authorization -> authorization
+//                                .baseUri("/oauth2/authorization"))
+//                        .redirectionEndpoint(redirection -> redirection
+//                                .baseUri("/login/oauth2/code/*"))
+//                        .userInfoEndpoint(userInfo -> userInfo
+//                                .userService(customOAuth2UserService)
+//                        )
+//                        .successHandler(new OAuth2AuthenticationSuccessHandler(jwtUtil))
+////                        .failureHandler(new OAuth2AuthenticationFailureHandler())
+//                )
+
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         // JWT 인증 필터 추가
         http.addFilter(getAuthenticationFilter(authenticationManager));
         http.addFilterBefore(new JwtFilter(userService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
