@@ -8,12 +8,12 @@
   }
   
   main {
-    padding: 2rem;
     position: relative;
     height: 100vh - 60px;
   }
   
   .content {
+    padding-top: 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -81,7 +81,7 @@
   }
   
   .secondary-btn:hover {
-    background-color: #e0ffce;
+    background-color: #00ffbb;
     color: #000000;
     border: 1px solid #000000;
   }
