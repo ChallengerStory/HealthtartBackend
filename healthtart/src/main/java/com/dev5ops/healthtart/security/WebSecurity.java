@@ -81,18 +81,18 @@ public class WebSecurity {
                 /* UserDetails를 상속받는 Service 계층 + BCrypt 암호화 */
                 .authenticationManager(authenticationManager)
 
-//                /* OAuth2 로그인 설정 추가 */
-//                .oauth2Login(oauth2 -> oauth2
-//                        .authorizationEndpoint(authorization -> authorization
-//                                .baseUri("/oauth2/authorization"))
-//                        .redirectionEndpoint(redirection -> redirection
-//                                .baseUri("/login/oauth2/code/*"))
-//                        .userInfoEndpoint(userInfo -> userInfo
-//                                .userService(customOAuth2UserService)
-//                        )
-//                        .successHandler(new OAuth2AuthenticationSuccessHandler(jwtUtil))
-////                        .failureHandler(new OAuth2AuthenticationFailureHandler())
-//                )
+                /* OAuth2 로그인 설정 추가 */
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization"))
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/login/oauth2/code/*"))
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(new OAuth2AuthenticationSuccessHandler(jwtUtil))
+//                        .failureHandler(new OAuth2AuthenticationFailureHandler())
+                )
 
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         // JWT 인증 필터 추가

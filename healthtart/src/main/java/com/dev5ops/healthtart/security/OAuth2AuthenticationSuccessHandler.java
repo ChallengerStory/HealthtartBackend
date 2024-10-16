@@ -48,18 +48,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String userCode = user.getUserCode();
         String userEmail = user.getUserEmail();
-        String userName = user.getUserName();
+        String userNickname = user.getUserNickname();
 
         log.info("userCode: {}", userCode);
         log.info("userEmail: {}", userEmail);
-        log.info("userName: {}", userName);
+        log.info("userNickname: {}", userNickname);
         log.info("provider: {}", provider);
 
         // 사용자 권한 설정 (예: "ROLE_USER")
         List<String> roles = List.of("ROLE_MEMBER");
 
         // JWT 토큰에 들어갈 데이터(JwtTokenDTO)
-        JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userName);
+        JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname);
 
         // JWT 토큰 생성
         String token = jwtUtil.generateToken(tokenDTO, roles, provider);
@@ -68,21 +68,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // 응답 헤더에 토큰 추가
         response.addHeader("Authorization", "Bearer " + token);
 
-
-        // websecurity에서 oauth2 로그인 설정 추가 부분에서 해주기 때문에 따로 구현할 필요가 없음.
-//        // **Authentication 객체 생성 및 설정**
-//        OAuth2AuthenticationToken oAuth2AuthenticationToken = new OAuth2AuthenticationToken(
-//                oAuth2User,
-//                oAuth2User.getAuthorities(),
-//                ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId()
-//        );
-//
-//        // **SecurityContext에 Authentication 객체 저장**
-//        SecurityContextHolder.getContext().setAuthentication(oAuth2AuthenticationToken);
-
-
-
-        String redirectUrl = String.format("/users/login/%s", provider.toLowerCase());
+        String redirectUrl = String.format("http://localhost:5173");
+//        String redirectUrl = String.format("http://localhost:5173/add-info/%s", provider.toLowerCase());
+//        String redirectUrl = String.format("/users/login/%s", provider.toLowerCase());
         redirectUrl = redirectUrl + "?token=" + token;
         log.info("Redirecting to: {}", redirectUrl);
 
@@ -96,4 +84,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
         return "unknown";
     }
+
+
 }
