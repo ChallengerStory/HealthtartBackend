@@ -46,8 +46,8 @@ public class WorkoutPerRoutine {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "record_code")
-    private Long recordCode;
+    @Column(name = "routine_code")
+    private Long routineCode;
 
     @Column(name = "exercise_equipment_code")
     private Long exerciseEquipmentCode;

@@ -19,7 +19,7 @@ public class ResponseDeleteWorkoutPerRoutineVO {
     private int workoutTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long recordCode;
+    private Long routineCode;
     private Long exerciseEquipmentCode;
 
 

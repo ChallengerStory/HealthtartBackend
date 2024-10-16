@@ -61,7 +61,7 @@ public class WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .exerciseEquipmentCode(workoutPerRoutineDTO.getExerciseEquipmentCode())
-                .recordCode(workoutPerRoutineDTO.getRecordCode())
+                .routineCode(workoutPerRoutineDTO.getRoutineCode())
                 .build();
 
         workoutPerRoutineRepository.save(routine);

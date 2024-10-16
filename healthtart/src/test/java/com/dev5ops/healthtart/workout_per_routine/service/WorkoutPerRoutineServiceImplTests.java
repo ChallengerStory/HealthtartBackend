@@ -79,7 +79,7 @@ class WorkoutPerRoutineServiceImplTests {
         dto.setNumberPerSet(10);
         dto.setWorkoutTime(30);
         dto.setExerciseEquipmentCode(100L);
-        dto.setRecordCode(200L);
+        dto.setRoutineCode(200L);
 
         WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(dto.getWorkoutPerRoutineCode())
@@ -89,7 +89,7 @@ class WorkoutPerRoutineServiceImplTests {
                 .numberPerSet(dto.getNumberPerSet())
                 .workoutTime(dto.getWorkoutTime())
                 .exerciseEquipmentCode(dto.getExerciseEquipmentCode())
-                .recordCode(dto.getRecordCode())
+                .routineCode(dto.getRoutineCode())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
