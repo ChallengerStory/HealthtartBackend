@@ -10,7 +10,5 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class ResponseModifyRoutineVO {
-    private String title;
-    private Integer time;
     private LocalDateTime updatedAt;
 }

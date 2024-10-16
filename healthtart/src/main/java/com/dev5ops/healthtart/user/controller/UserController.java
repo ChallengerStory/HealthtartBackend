@@ -8,7 +8,6 @@ import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.service.UserService;
 //import io.swagger.v3.oas.annotations.Operation;
-import com.google.api.Http;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.dev5ops.healthtart.user.domain.UserTypeEnum.MEMBER;
 
 @RestController
 @RequestMapping("users")
@@ -44,6 +45,9 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
+        if (request.getUserType() == null) {
+            request.setUserType("MEMBER");
+        }
         ResponseInsertUserVO responseUser = userService.signUpUser(request);
         log.info("여기 오긴 왔나요??");
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);

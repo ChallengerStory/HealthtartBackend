@@ -26,6 +26,5 @@ public class UserDTO {
     private Integer userAge;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String token;
 //    private Long gymCode;
 }

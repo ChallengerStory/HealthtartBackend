@@ -31,17 +31,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         log.info("UsernamePasswordAuthenticationFilter보다 먼저 동작하는 필터");
 
-        // oauth 로그인의 경우 filter가 아닌 oauth2handler에 가기 때문에 따로 처리할 필요가 없음. 이후 요청은 jwt token을 가지고 접근할테니 따로 처리 필요없음.
-//        // SecurityContext에 이미 OAuth2 인증 정보가 있는지 확인 (OAuth2 로그인 처리)
-//        Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        // OAuth2 로그인의 경우 JWT 필터 통과 없이 필터 체인 계속 진행
-//        if (currentAuthentication != null && currentAuthentication instanceof OAuth2AuthenticationToken) {
-//            log.info("OAuth2 authentication detected, skipping JWT processing.");
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-
         // Authorization 헤더에서 JWT 토큰 추출
         String authorizationHeader = request.getHeader("Authorization");
         log.info("jwtFilter의 getHeader('Authorization'): {}", authorizationHeader);

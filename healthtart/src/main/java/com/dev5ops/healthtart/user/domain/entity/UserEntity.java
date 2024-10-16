@@ -21,9 +21,8 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
-    private UserTypeEnum userType;
+    private UserTypeEnum userType = UserTypeEnum.MEMBER;
 
-    // 동명이인이 있을 수도 있으니까 unique = true는 없애는게 좋지 않을까?
     @Column(name = "user_name", nullable = false)
     private String userName;
 

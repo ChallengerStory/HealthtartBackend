@@ -137,9 +137,10 @@ public class InbodyController {
 
     @GetMapping
     public ResponseEntity<List<ResponseInbodyUserVO>> findInbodyUserInbody(){
+        log.info("heeeelejoeajoea");
         List<InbodyUserDTO> AllInbodyList = inbodyService.findInbodyUserInbody();
         List<ResponseInbodyUserVO> response = new ArrayList<>();
-
+        log.info("response: {}", response);
         for (InbodyUserDTO inbodyUserDTO : AllInbodyList) {
             ResponseInbodyUserVO responseInbodyUserVO = new ResponseInbodyUserVO(
                     inbodyUserDTO.getUserNickname(),
@@ -151,8 +152,10 @@ public class InbodyController {
                     inbodyUserDTO.getBasalMetabolicRate(),
                     inbodyUserDTO.getInbodyScore()
             );
+            response.add(responseInbodyUserVO);
         }
-        
+        log.info("response: {}", response);
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

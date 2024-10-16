@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -75,7 +74,9 @@ public class JwtUtil {
                             .replace("[", "")
                             .replace("]", "")
                             .split(", "))
-                    .map(role -> new SimpleGrantedAuthority(role))
+
+                    // 각 역할 앞에 "ROLE_" 접두사를 붙임
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
         }
 
@@ -86,10 +87,10 @@ public class JwtUtil {
         String userCode = claims.getSubject();
         log.info("user code는 {}", userCode);
         String email = claims.get("email", String.class);
-        String name = claims.get("name", String.class);
+        String name = claims.get("nickname", String.class);
 
-        // CustomUserDetails 객체 생성 (필요에 따라 UserDTO도 claims에서 추가로 추출)
-        UserDTO userDTO = new UserDTO(); // 실제 UserDTO에 맞게 정보 설정
+        // CustomUserDetails 객체 생성
+        UserDTO userDTO = new UserDTO();
         userDTO.setUserCode(userCode);
         userDTO.setUserEmail(email);
         userDTO.setUserName(name);
@@ -100,8 +101,6 @@ public class JwtUtil {
         // 인증 객체 생성 및 반환 -> custom으로 반환
         return new UsernamePasswordAuthenticationToken(customUserDetails, "", authorities);
 
-        // SecurityContext에 인증 정보를 저장하기 위해 Authentication 객체 반환
-//        return new UsernamePasswordAuthenticationToken(userId, "", authorities);
     }
 
 
@@ -118,7 +117,7 @@ public class JwtUtil {
     public String generateToken(JwtTokenDTO tokenDTO, List<String> roles, String provider){
         Claims claims = Jwts.claims().setSubject(tokenDTO.getUserCode());
         claims.put("email", tokenDTO.getUserEmail());
-        claims.put("name", tokenDTO.getUserName());
+        claims.put("nickname", tokenDTO.getUserNickname());
         claims.put("roles", roles);
         claims.put("provider", provider != null ? provider : "local");  // null 대신 "local" 사용
 
