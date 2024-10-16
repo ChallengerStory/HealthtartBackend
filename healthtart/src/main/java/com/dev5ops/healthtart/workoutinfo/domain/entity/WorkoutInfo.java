@@ -46,6 +46,7 @@ public class WorkoutInfo {
     public void toUpdate(@Validated EditWorkoutInfoVO editWorkoutInfoVO) {
         this.title = editWorkoutInfoVO.getTitle();
         this.time = editWorkoutInfoVO.getTime();
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

@@ -1,14 +1,6 @@
 package com.dev5ops.healthtart.workoutinfo.controller;
 
-import com.dev5ops.healthtart.routine.domain.dto.RoutineDTO;
-import com.dev5ops.healthtart.routine.domain.vo.EditRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.request.RequestInsertRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.request.RequestModifyRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseDeleteRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseFindRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseInsertRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseModifyRoutineVO;
-import com.dev5ops.healthtart.routine.service.RoutineServiceImpl;
 import com.dev5ops.healthtart.workoutinfo.domain.dto.WorkoutInfoDTO;
 import com.dev5ops.healthtart.workoutinfo.domain.vo.EditWorkoutInfoVO;
 import com.dev5ops.healthtart.workoutinfo.domain.vo.request.RequestInsertWorkoutInfoVO;
@@ -45,8 +37,8 @@ public class WorkoutInfoController {
 
     @GetMapping("/{workoutInfoCode}")
     @Operation(summary = "운동 정보 단일 조회")
-    public ResponseEntity<ResponseFindWorkoutInfoVO> getWorkoutInfoByCode(@PathVariable Long routineCode) {
-        ResponseFindWorkoutInfoVO workoutInfo = workoutInfoService.findWorkoutInfoByCode(routineCode);
+    public ResponseEntity<ResponseFindWorkoutInfoVO> getWorkoutInfoByCode(@PathVariable Long workoutInfoCode) {
+        ResponseFindWorkoutInfoVO workoutInfo = workoutInfoService.findWorkoutInfoByCode(workoutInfoCode);
         return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
     }
 
