@@ -1,4 +1,9 @@
 package com.dev5ops.healthtart.workoutinfo.repository;
 
-public class WorkoutInfoRepository {
+import com.dev5ops.healthtart.workoutinfo.domain.entity.WorkoutInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface WorkoutInfoRepository extends JpaRepository <WorkoutInfo, Long> {
 }
