@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +67,7 @@ class RoutineServiceImplTests {
     }
 
     @Test
-    @DisplayName("루틴 코드로 루틴 조회 테스트")
+    @DisplayName("단일 코드로 루틴 조회 테스트")
     void findRoutineSuccess() {
         Routine routine = new Routine();
         when(routineRepository.findById(anyLong())).thenReturn(Optional.of(routine));
@@ -95,17 +96,9 @@ class RoutineServiceImplTests {
     void registerRoutineSuccess() {
         RoutineDTO routineDTO = new RoutineDTO();
         routineDTO.setRoutineCode(1L);
-        routineDTO.setTitle("김정은도 10kg 감량한 모닝 루틴 !!!");
-        routineDTO.setTime(60);
-        routineDTO.setLink("http://healthtart.com");
-        routineDTO.setRecommendMusic("삐딱하게 - G-DRAGON");
 
         Routine routine = Routine.builder()
                 .routineCode(routineDTO.getRoutineCode())
-                .title(routineDTO.getTitle())
-                .time(routineDTO.getTime())
-                .link(routineDTO.getLink())
-                .recommendMusic(routineDTO.getRecommendMusic())
                 .build();
 
         when(routineRepository.save(any(Routine.class))).thenReturn(routine);
@@ -127,7 +120,7 @@ class RoutineServiceImplTests {
     void modifyRoutineSuccess() {
         Long routineCode = 1L;
 
-        EditRoutineVO modifyRoutine = new EditRoutineVO("김정은도 10kg 감량한 저녁 루틴 !!!", 90);
+        EditRoutineVO modifyRoutine = new EditRoutineVO(LocalDateTime.now());
 
         Routine routine = new Routine();
         when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));

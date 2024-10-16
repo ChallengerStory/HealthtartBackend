@@ -1,4 +1,4 @@
-package com.dev5ops.healthtart.routine.domain.vo.response;
+package com.dev5ops.healthtart.workoutinfo.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class ResponseModifyRoutineVO {
+public class EditWorkoutInfoVO {
+    private String title;
+    private Integer time;
     private LocalDateTime updatedAt;
 }
