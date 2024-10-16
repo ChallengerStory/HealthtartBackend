@@ -12,8 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-//                Ingress 적용 이후 CORS 불필요로 인한 경로 제거
-                .allowedOrigins("http://localhost:5173")
-                .allowedMethods("GET", "POST", "PUT","PATCH", "DELETE");
+                .allowedOrigins("http://localhost:5173")  // 프론트엔드 도메인
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 허용할 메서드
+                .allowedHeaders("*");  // 모든 헤더 허용
     }
 }
