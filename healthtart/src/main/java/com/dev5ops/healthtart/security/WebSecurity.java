@@ -16,6 +16,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -36,13 +42,14 @@ public class WebSecurity {
         this.jwtUtil = jwtUtil;
     }
 
-    /* 설명. 인가(Authoriazation)용 메소드(인증 필터 추가) */
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        // CSRF 비활성화
+        http.csrf(csrf -> csrf.disable());
+        // CORS 설정 적용
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        http.csrf((csrf) -> csrf.disable());
-
-        /* 로그인 시 추가할 authenticationManager */
+        // 로그인 시 추가할 authenticationManager 설정
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userService)
@@ -50,48 +57,56 @@ public class WebSecurity {
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
+        // HttpSecurity 설정
         http.authorizeHttpRequests((authz) ->
-                                authz
-//                                        .requestMatchers(new AntPathRequestMatcher("/users/mypage", "GET")).hasRole("ADMIN")
-                                        .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
+                        authz
 
-                                        .requestMatchers(new AntPathRequestMatcher("/ocr/**", "GET")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/upload/**", "POST")).permitAll()
-
-                                        .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
-                                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
-                                        .anyRequest().authenticated()
+                                .requestMatchers(new AntPathRequestMatcher("/users/mypage", "GET")).hasRole("ADMIN")
+                                .requestMatchers(new AntPathRequestMatcher("/test/**", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/test/**", "OPTIONS")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "OPTIONS")).permitAll() // OPTIONS 요청은 안해줘도 작동
+                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/**", "OPTIONS")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/login/**", "OPTIONS")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/login/**", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/login/**", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/ocr/**", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/upload/**", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                                .anyRequest().authenticated()
                 )
-                /* UserDetails를 상속받는 Service 계층 + BCrypt 암호화 */
                 .authenticationManager(authenticationManager)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-                /* OAuth2 로그인 설정 추가 */
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorization"))
-                        .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/login/oauth2/code/*"))
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(new OAuth2AuthenticationSuccessHandler(jwtUtil))
-//                        .failureHandler(new OAuth2AuthenticationFailureHandler())
-                )
-
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+        // JWT 인증 필터 추가
         http.addFilter(getAuthenticationFilter(authenticationManager));
         http.addFilterBefore(new JwtFilter(userService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /* Authentication 용 메소드(인증 필터 반환) */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // 프론트엔드 도메인 허용
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 설정
+        configuration.setAllowCredentials(true); // 인증 정보 허용 (쿠키 등)
+        configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // 노출할 헤더 설정
+        configuration.setMaxAge(3600L); // 1시간 동안 캐시
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    // Authentication 용 메소드(인증 필터 반환)
     private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
         return new AuthenticationFilter(authenticationManager, userService, env, jwtUtil);
     }
