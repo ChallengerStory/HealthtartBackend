@@ -4,6 +4,7 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
+import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
@@ -15,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -195,5 +197,37 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         userRepository.save(oauth2User);
+    }
+
+    @Override
+    public ResponseMypageDTO getMypageInfo() {
+
+        String userCode = getUserCode();
+
+        UserEntity userEntity = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        ResponseMypageDTO responseMypageVO = ResponseMypageDTO.builder()
+                .userName(userEntity.getUserName())
+                .userEmail(userEntity.getUserEmail())
+                .userPassword(userEntity.getUserPassword())
+                .userPhone(userEntity.getUserPhone())
+                .userNickname(userEntity.getUserNickname())
+                .userGender(userEntity.getUserGender())
+                .userHeight(userEntity.getUserHeight())
+                .userWeight(userEntity.getUserWeight())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return responseMypageVO;
+    }
+
+    public String getUserCode(){
+        // 현재 인증된 사용자 가져오기
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails {}", userDetails.toString());
+
+        // 현재 로그인한 유저의 유저코드
+        return userDetails.getUserDTO().getUserCode();
     }
 }

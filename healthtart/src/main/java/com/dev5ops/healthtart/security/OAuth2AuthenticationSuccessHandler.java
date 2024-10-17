@@ -74,7 +74,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             redirectUrl += "token?=" + token;
         }else{ // 신규 가입회원 -> 추가정보 페이지로 리다이렉트
                                                             // userName은 한글이어서 UTF-8로 인코딩
-            redirectUrl += "/addinfo" + "?token=" + token + "&userName=" + encodedUserName + "&userEmail=" + userEmail + "&provider=" + provider + "&providerId=" + providerId;
+            redirectUrl += "/addinfo" + "?token=" + token + "&userName=" + encodedUserName
+                    + "&userEmail=" + userEmail + "&provider=" + provider + "&providerId=" + providerId;
         }
 
         log.info("Redirecting to: {}", redirectUrl);
