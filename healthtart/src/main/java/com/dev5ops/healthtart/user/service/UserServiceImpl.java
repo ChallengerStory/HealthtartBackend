@@ -7,6 +7,7 @@ import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -122,9 +123,15 @@ public class UserServiceImpl implements UserService{
             throw new UsernameNotFoundException("User not found with email: " + userEmail);
         }
 
-        // 사용자의 권한 설정 (예: ROLE_MEMBER)
+        // 사용자의 권한 설정
+        // ADMIN인 경우 MEMBER 속성도 가짐.
         List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(user.getUserType().name())); // 권한 설정
+        if("MEMBER".equals(user.getUserType().name())){
+            roles.add(new SimpleGrantedAuthority("MEMBER"));
+        }else{
+            roles.add(new SimpleGrantedAuthority("MEMBER"));
+            roles.add(new SimpleGrantedAuthority("ADMIN"));
+        }
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
@@ -135,8 +142,6 @@ public class UserServiceImpl implements UserService{
                                     true,
                                     true,
                                     user.getUserFlag());
-
-//        return new User(user.getUserEmail(), user.getUserPassword(), true, true, true, true, roles);
     }
 
     @Override
@@ -145,5 +150,50 @@ public class UserServiceImpl implements UserService{
 
         user.removeRequest(user);
         userRepository.save(user);
+    }
+
+    @Override
+    public Boolean checkDuplicateNickname(String userNickname) {
+
+        Boolean response = true;
+
+        // 특수기호 확인을 위한 정규표현식
+        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
+        // 특수기호가 포함되어 있는지 확인
+        if (userNickname.matches(".*" + specialCharacters + ".*")) return response;
+
+        UserEntity user = userRepository.findByUserNickname(userNickname);
+        if(user == null) response = false;
+
+        return response;
+    }
+
+    @Override
+    public void saveOauth2User(RequestOauth2VO request) {
+
+        String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String uuid = UUID.randomUUID().toString();
+
+        String userCode = curDate + "-" + uuid.substring(0);
+
+        UserEntity oauth2User = UserEntity.builder()
+                .userCode(userCode)
+                .userName(request.getUserName())
+                .userEmail(request.getUserEmail())
+                .userPhone(request.getUserPhone())
+                .userNickname(request.getUserNickname())
+                .userAddress(request.getUserAddress())
+                .userFlag(true)
+                .userGender(request.getUserGender())
+                .userHeight(request.getUserHeight())
+                .userWeight(request.getUserWeight())
+                .userAge(request.getUserAge())
+                .provider(request.getProvider())
+                .providerId(request.getProviderId())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        userRepository.save(oauth2User);
     }
 }

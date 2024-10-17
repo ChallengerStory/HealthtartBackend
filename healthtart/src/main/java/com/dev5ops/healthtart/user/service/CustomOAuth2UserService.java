@@ -30,9 +30,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("loadUser1");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("loadUser2");
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
         Map<String, Object> attributes = oAuth2User.getAttributes();
@@ -53,23 +52,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
 
-            // 이메일은 요청하지 않으므로 주석 처리 또는 제거
-            // email = (String) kakaoAccount.get("email");
-            email = "kakao@gmail.com입니당";
-            // 이름(닉네임)만 가져오기
+            // 이름(nickname == 우리쪽에서 name으로 사용)만 가능
             name = (String) kakaoProfile.get("nickname");
+            // 카카오에서 이메일을 제공 안해주기 때문에 임의로 설정
+            email = "카카오@카카오.com";
         } else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + provider);
         }
 
-        // provider는 그거고 (kakao인지 google인지)
-        // providerId는 식별자임 (code)
+        // provider는 kakao인지 google인지 구분
+        // providerId는 provider 내부에서의 code
+        // provider + providerId로 인해 유일한 사용자임을 구분가능.
+        // google, kakao 다른 회원가입 사용자지만 providerId가 동일할 가능성 있기 때문
         UserEntity user = userRepository.findByProviderAndProviderId(provider, providerId);
 
-
         if (user == null) {
-
-            // 새 사용자 생성
+            // 최초 로그인인 경우
             String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             String uuid = UUID.randomUUID().toString();
 
@@ -80,34 +78,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .userType(UserTypeEnum.MEMBER)
                     .userName(name)
                     .userEmail(email)
-                    .userPassword(null)  // OAuth2 사용자는 비밀번호가 없음
-                    .userPhone("빵빵아")  // 필요한 경우 추가 정보를 받아야 함
-                    .userNickname("헤헤헤")  // 닉네임을 이름으로 초기 설정 -> 이거를 또 입력하게 해야할듯. -> 처음인 경우에 이걸로 설정.
-                    .userAddress("옥지얌")  // 필요한 경우 추가 정보를 받아야 함
+                    .userPassword(null)
+                    .userPhone(null)
+                    .userNickname(null)
+                    .userAddress(null)
                     .userFlag(true)  // 활성 사용자로 설정
                     .provider(provider)
                     .providerId(providerId)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .build();
-        } /*else {
+        }else {
             // 기존 사용자 정보 업데이트
             user.setUserName(name);
-            user.setUserEmail(email);
-            user.setUpdatedAt(LocalDateTime.now());
-        }*/
+        }
 
+        // 회원가입 및 유저정보 수정 로직
         user = userRepository.save(user);
-        // 여기 위에까지가 회원가입 하는것.(또는 수정)
 
-
-        // 여기서 처음 들어오는 회원인 경우 리다이렉트 부분을 추가한다.
-        // jwt token = jwtUtils.generateToken();
-        // getRedirectStrategy().sendRedirect(request, response, redirectUrl);
-        // redirectUrl은 /add-info?token=(jwt token 값)
-        // 이런식으로 리다이렉트를 한 후에 프론트에서 다시 /main이든 어디든 post 요청을 보내면 된다.
-
-        log.info("customService user : {} ", user.toString());
         // User 정보를 포함한 attributes 맵 생성
         Map<String, Object> userAttributes = new HashMap<>(attributes);
         userAttributes.put("user", user);

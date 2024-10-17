@@ -4,6 +4,7 @@ import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.service.UserService;
@@ -211,5 +212,29 @@ public class UserController {
     }
 
 
+    @GetMapping("/nickname/check") // users/nickname/check
+    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(String userNickname){
+
+        Boolean isDuplicate = userService.checkDuplicateNickname(userNickname);
+
+        // JSON 형태로 반환할 Map 생성
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response); // true이면 사용 불가
+    }
+
+    // 여기서 회원가입 시킬 예정
+    @PostMapping("/oauth2")
+    public ResponseEntity<String> saveOauth2User(@RequestBody RequestOauth2VO requestOauth2VO){
+
+        // userCode는 여기서 생성해서 저장하자.
+        // member type도 여기서
+        // flag도 여기서
+
+        userService.saveOauth2User(requestOauth2VO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
+    }
 
 }

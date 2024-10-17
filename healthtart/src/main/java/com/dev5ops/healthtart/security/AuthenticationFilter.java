@@ -94,6 +94,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         List<String> roles = authResult.getAuthorities().stream()
                 .map(role -> role.getAuthority())
                 .collect(Collectors.toList());
+        log.info("roles: {}", roles.toString());
 
         JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname); // principal에서 제공해주는 데이터가 적음.
         String token = jwtUtil.generateToken(tokenDTO, roles, null);
