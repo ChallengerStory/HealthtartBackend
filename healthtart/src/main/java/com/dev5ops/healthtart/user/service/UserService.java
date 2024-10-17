@@ -1,8 +1,6 @@
 package com.dev5ops.healthtart.user.service;
 
-import com.dev5ops.healthtart.user.domain.dto.ResponseInsertUserDTO;
-import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,4 +25,6 @@ public interface UserService extends UserDetailsService {
     void saveOauth2User(RequestOauth2VO requestOauth2VO);
 
     ResponseMypageDTO getMypageInfo();
+
+    EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
 }
