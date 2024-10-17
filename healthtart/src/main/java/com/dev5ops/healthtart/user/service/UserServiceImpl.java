@@ -4,12 +4,11 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
-import com.dev5ops.healthtart.user.domain.dto.ResponseInsertUserDTO;
-import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -224,13 +223,43 @@ public class UserServiceImpl implements UserService{
         return responseMypageDTO;
     }
 
-    public String getUserCode(){
-        // 현재 인증된 사용자 가져오기
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
-        log.info("userDetails {}", userDetails.toString());
+    @Override
+    public EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO) {
 
-        // 현재 로그인한 유저의 유저코드
+        String userCode = getUserCode();
+        UserEntity user = userRepository.findById(userCode).orElseThrow(()
+                -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        user.setUserName(editUserDTO.getUserName());
+        user.setUserEmail(editUserDTO.getUserEmail());
+        user.setUserPassword(editUserDTO.getUserPassword());
+        user.setUserPhone(editUserDTO.getUserPhone());
+        user.setUserNickname(editUserDTO.getUserNickname());
+        user.setUserGender(editUserDTO.getUserGender());
+        user.setUserHeight(editUserDTO.getUserHeight());
+        user.setUserWeight(editUserDTO.getUserWeight());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+        return modelMapper.map(user, EditMypageDTO.class);
+    }
+
+
+    public String getUserCode() {
+        // 현재 인증된 사용자 가져오기
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 인증된 사용자가 문자열(String)인 경우 (로그인하지 않은 상태)
+        if (principal instanceof String) {
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+        }
+
+        // 인증된 사용자가 CustomUserDetails인 경우
+        CustomUserDetails userDetails = (CustomUserDetails) principal;
+
+        log.info("Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails: {}", userDetails.toString());
+
+        // 현재 로그인한 유저의 유저코드 반환
         return userDetails.getUserDTO().getUserCode();
     }
 }

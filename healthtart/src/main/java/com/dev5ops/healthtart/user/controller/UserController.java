@@ -2,14 +2,14 @@ package com.dev5ops.healthtart.user.controller;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
-import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.security.JwtUtil;
-import com.dev5ops.healthtart.user.domain.dto.ResponseEmailDTO;
 import com.dev5ops.healthtart.user.domain.vo.EmailVerificationVO;
 import com.dev5ops.healthtart.user.domain.vo.ResponseEmailMessageVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
@@ -96,6 +96,18 @@ public class UserController {
         ResponseMypageDTO mypageInfo = userService.getMypageInfo();
 
         ResponseMypageVO response = modelMapper.map(mypageInfo, ResponseMypageVO.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/edit/mypage")
+    public ResponseEntity<ResponseEditMypageVO> editMypageInfo(@RequestBody RequestEditMypageVO request){
+
+        EditMypageDTO editMypageDTO = modelMapper.map(request, EditMypageDTO.class);
+
+        EditMypageDTO afterEditDTO = userService.editMypageInfo(editMypageDTO);
+
+        ResponseEditMypageVO response = modelMapper.map(afterEditDTO, ResponseEditMypageVO.class);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
