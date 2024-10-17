@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
@@ -47,7 +49,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userCode = user.getUserCode();
         String userEmail = user.getUserEmail();
         String userNickname = user.getUserNickname();
+
         String userName = user.getUserName();
+        String encodedUserName = URLEncoder.encode(userName, StandardCharsets.UTF_8);
+
         String provider = user.getProvider();
         String providerId = user.getProviderId();
 
@@ -68,7 +73,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if(userNickname != null){ // 이미 회원가입된 회원
             redirectUrl += "token?=" + token;
         }else{ // 신규 가입회원 -> 추가정보 페이지로 리다이렉트
-            redirectUrl += "/addinfo" + "?token=" + token + "&userName=" + userName + "&userEmail=" + userEmail + "&provider=" + provider + "&providerId=" + providerId;
+                                                            // userName은 한글이어서 UTF-8로 인코딩
+            redirectUrl += "/addinfo" + "?token=" + token + "&userName=" + encodedUserName + "&userEmail=" + userEmail + "&provider=" + provider + "&providerId=" + providerId;
         }
 
         log.info("Redirecting to: {}", redirectUrl);
