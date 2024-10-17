@@ -61,6 +61,7 @@ public class WebSecurity {
         // HttpSecurity 설정
         http.authorizeHttpRequests((authz) ->
                         authz
+                                .requestMatchers(new AntPathRequestMatcher("/users/verification-email/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "OPTIONS")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/nickname/check", "GET")).permitAll()
