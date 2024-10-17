@@ -9,6 +9,7 @@ import com.dev5ops.healthtart.workout_per_routine.domain.vo.response.ResponseMod
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface WorkoutPerRoutineService {
     List<ResponseFindWorkoutPerRoutineVO> getWorkoutPerRoutines();
@@ -23,4 +24,7 @@ public interface WorkoutPerRoutineService {
 
     @Transactional
     ResponseDeleteWorkoutPerRoutineVO deleteWorkoutPerRoutine(Long workoutPerRoutineCode);
+
+    @Transactional
+    boolean checkForDuplicateRoutines(Map<String, Object> workoutData);
 }

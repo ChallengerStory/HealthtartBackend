@@ -5,8 +5,12 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.exercise_equipment.domain.dto.ExerciseEquipmentDTO;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
+import com.dev5ops.healthtart.routine.domain.dto.RoutineDTO;
+import com.dev5ops.healthtart.routine.service.RoutineServiceImpl;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
+import com.dev5ops.healthtart.workout_per_routine.domain.dto.WorkoutPerRoutineDTO;
+import com.dev5ops.healthtart.workout_per_routine.service.WorkoutPerRoutineServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,8 +35,11 @@ public class GptServiceImpl implements GptService {
     private final RestTemplate restTemplate;
     private final ExerciseEquipmentService exerciseEquipmentService;
     private final UserService userService;
+    private final WorkoutPerRoutineServiceImpl workoutPerRoutineService;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
+    private final RoutineServiceImpl routineServiceImpl;
+    private final WorkoutPerRoutineServiceImpl workoutPerRoutineServiceImpl;
 
     public String callOpenAI(String prompt, int maxTokens) throws JsonProcessingException {
 
@@ -150,9 +157,8 @@ public class GptServiceImpl implements GptService {
         String exercisesContent = contents.split("오늘의 운동 루틴을 추천해 드립니다:")[1].trim();
         String[] exercises = exercisesContent.split("\n\n");
 
-        System.out.println("루틴 제목: " + title);
-        System.out.println("운동 시간: " + totalTime + "분");
-
+        Map<String, Object> workoutData = new HashMap<>();
+        int i = 1;
         for (String exercise : exercises) {
             String exerciseName = extractExerciseName(exercise);
             int exerciseSet = extractExerciseSet(exercise);
@@ -160,15 +166,17 @@ public class GptServiceImpl implements GptService {
             int exerciseWeightPerSet = extractExerciseWeightPerSet(exercise);
             String exerciseVideo = extractExerciseVideo(exercise);
             String musicList = extractMusic(contents);
-
-            System.out.println("운동 이름: " + exerciseName);
-            System.out.println("세트 수: " + exerciseSet);
-            System.out.println("세트당 반복 수: " + exerciseNumberPerSet);
-            System.out.println("세트당 중량: " + exerciseWeightPerSet + "kg");
-            System.out.println("추천 영상: " + exerciseVideo);
-            System.out.println("musicList = " + musicList);
-            System.out.println();
+            workoutData.put("workoutOrder" + i, i);
+            workoutData.put("workoutName" + i, exerciseName);
+            i++;
         }
+        if(!workoutPerRoutineService.checkForDuplicateRoutines(workoutData)){
+            routineServiceImpl.registerRoutine(new RoutineDTO(null,LocalDateTime.now(),LocalDateTime.now()));
+            // 운동 루틴별 운동 저장
+            // 운동 정보 저장
+        }
+
+        // 있는거면 운동정보만 저장
     }
 
     public String extractTitle(String contents){
@@ -197,7 +205,6 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-
     private int extractExerciseNumberPerSet(String exercise) {
         try {
             if (exercise.contains("세트 및 반복: ") && exercise.contains("x")) {
@@ -213,9 +220,9 @@ public class GptServiceImpl implements GptService {
     private int extractExerciseWeightPerSet(String exercise) {
         try {
             String weight = exercise.split("세트당 중량: ")[1].split("kg")[0].trim();
-            // 중량이 "맨몸운동입니다."일 경우 0으로 처리
+
             if (weight.equals("맨몸운동입니다.")) {
-                return 0; // 중량이 필요 없는 경우
+                return 0;
             }
             return Integer.parseInt(weight); // 숫자일 경우 정상 처리
         } catch (Exception e) {
