@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService{
         }
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-
+        if(userDTO.getUserFlag() == false) throw new UsernameNotFoundException("User not found with email: " + userEmail);
         return new CustomUserDetails(
                                     userDTO,
                                     roles,
