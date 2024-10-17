@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 /* 설명. OncePerRequestFilter를 상속받아 doFilterInternal을 오버라이딩 한다.(한번만 실행되는 필터) */
@@ -19,10 +21,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final List<String> excludeUrl
+            = Arrays.asList("/users/verification-email", "/users/verification-email/confirmation");
 
     public JwtFilter(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+    }
+
+    // security 이전에 실행되는 JwtFilter에서 제외할 url 설정
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return excludeUrl.stream()
+                .anyMatch(pattern -> new AntPathMatcher().match(pattern, request.getServletPath()));
     }
 
     /* 설명. 들고 온(Request Header) 토큰이 유효한지 판별 및 인증(Authentication 객체로 관리) */

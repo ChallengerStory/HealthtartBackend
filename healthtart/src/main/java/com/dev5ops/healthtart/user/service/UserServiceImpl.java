@@ -14,6 +14,7 @@ import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,13 +38,17 @@ public class UserServiceImpl implements UserService{
     private ModelMapper modelMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate stringRedisTemplate;  // StringRedisTemplate 사용
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil) {
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.restTemplate = restTemplate;
     }
 
     // 회원가입
@@ -50,8 +56,14 @@ public class UserServiceImpl implements UserService{
     public ResponseInsertUserDTO signUpUser(RequestInsertUserVO request) {
 
         // Redis에서 이메일 인증 여부 확인
-//        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(requestRegisterUserVO.getUserEmail());
-        // -> 레디스 이메일 인증 처리는 일반회원만 해야한다.
+        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(request.getUserEmail());
+
+        if (!"True".equals(emailVerificationStatus)) {
+            log.error("이메일 인증이 완료되지 않았습니다: {}", request.getUserEmail());
+            throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED); // 이메일 인증이 필요하다는 커스텀 예외 던지기
+        }
+
+        if (userRepository.findByUserEmail(request.getUserEmail()) != null) throw new CommonException(StatusEnum.EMAIL_DUPLICATE);
 
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
@@ -138,7 +150,7 @@ public class UserServiceImpl implements UserService{
         }
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-
+        if(userDTO.getUserFlag() == false) throw new UsernameNotFoundException("User not found with email: " + userEmail);
         return new CustomUserDetails(
                                     userDTO,
                                     roles,
