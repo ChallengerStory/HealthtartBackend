@@ -206,21 +206,10 @@ public class UserServiceImpl implements UserService{
 
         String userCode = getUserCode();
 
-        UserEntity userEntity = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        ResponseMypageDTO responseMypageDTO = userRepository.findMypageInfo(userCode);
+        if(responseMypageDTO == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
-        ResponseMypageDTO responseMypageVO = ResponseMypageDTO.builder()
-                .userName(userEntity.getUserName())
-                .userEmail(userEntity.getUserEmail())
-                .userPassword(userEntity.getUserPassword())
-                .userPhone(userEntity.getUserPhone())
-                .userNickname(userEntity.getUserNickname())
-                .userGender(userEntity.getUserGender())
-                .userHeight(userEntity.getUserHeight())
-                .userWeight(userEntity.getUserWeight())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        return responseMypageVO;
+        return responseMypageDTO;
     }
 
     public String getUserCode(){
