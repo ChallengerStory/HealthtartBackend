@@ -4,12 +4,12 @@ import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
+import com.dev5ops.healthtart.user.domain.dto.ResponseInsertUserDTO;
 import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
 
     // 회원가입
     @Override
-    public ResponseInsertUserVO signUpUser(RequestInsertUserVO request) {
+    public ResponseInsertUserDTO signUpUser(RequestInsertUserVO request) {
 
         // Redis에서 이메일 인증 여부 확인
 //        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(requestRegisterUserVO.getUserEmail());
@@ -82,7 +82,9 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(insertUser);
 
-        return new ResponseInsertUserVO(userDTO);
+        ResponseInsertUserDTO insertUserDTO= modelMapper.map(insertUser, ResponseInsertUserDTO.class);
+
+        return insertUserDTO;
     }
 
     // 회원 전체 조회
@@ -204,21 +206,10 @@ public class UserServiceImpl implements UserService{
 
         String userCode = getUserCode();
 
-        UserEntity userEntity = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        ResponseMypageDTO responseMypageDTO = userRepository.findMypageInfo(userCode);
+        if(responseMypageDTO == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
-        ResponseMypageDTO responseMypageVO = ResponseMypageDTO.builder()
-                .userName(userEntity.getUserName())
-                .userEmail(userEntity.getUserEmail())
-                .userPassword(userEntity.getUserPassword())
-                .userPhone(userEntity.getUserPhone())
-                .userNickname(userEntity.getUserNickname())
-                .userGender(userEntity.getUserGender())
-                .userHeight(userEntity.getUserHeight())
-                .userWeight(userEntity.getUserWeight())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        return responseMypageVO;
+        return responseMypageDTO;
     }
 
     public String getUserCode(){

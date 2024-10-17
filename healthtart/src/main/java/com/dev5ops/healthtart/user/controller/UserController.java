@@ -48,8 +48,10 @@ public class UserController {
         if (request.getUserType() == null) {
             request.setUserType("MEMBER");
         }
-        ResponseInsertUserVO responseUser = userService.signUpUser(request);
-        log.info("여기 오긴 왔나요??");
+
+        ResponseInsertUserVO responseUser =
+                modelMapper.map(userService.signUpUser(request), ResponseInsertUserVO.class);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 

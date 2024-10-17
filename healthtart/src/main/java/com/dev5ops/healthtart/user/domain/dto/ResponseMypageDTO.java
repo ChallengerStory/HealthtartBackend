@@ -20,4 +20,12 @@ public class ResponseMypageDTO {
     private Double userHeight;
     private Double userWeight;
     private LocalDateTime updatedAt;
+
+    // gym
+    private Long gymCode;
+    private String gymName;
+
+    // rival
+    private String rivalUserCode;
+    private String rivalNickname;
 }

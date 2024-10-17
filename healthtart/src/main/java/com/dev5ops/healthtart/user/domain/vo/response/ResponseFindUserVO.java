@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.user.domain.vo.response;
 
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,9 @@ public class ResponseFindUserVO {
     private Integer userAge;
     private String provider;
     private String providerId;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
     private Long gymCode;
 }
