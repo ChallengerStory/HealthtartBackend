@@ -16,6 +16,7 @@ public enum StatusEnum {
     EQUIPMENT_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 운동기구입니다."),
     DAY_OF_INBODY_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록한 인바디 정보입니다."),
     ROUTINES_CREATED_ERROR(400, HttpStatus.BAD_REQUEST, "운동 루틴 생성 중 오류가 발생했습니다."),
+    EQUIPMENT_ALREADY_REGISTERED(400, HttpStatus.BAD_REQUEST, "이 헬스장에 이미 등록된 운동기구입니다."),
 
     RESTRICTED(403, HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
 
