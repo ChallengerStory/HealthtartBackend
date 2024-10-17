@@ -8,6 +8,8 @@ import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentServic
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +42,11 @@ public class GptServiceImpl implements GptService {
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", gptConfig.getModel());
-        requestBody.put("messages", new Object[]{ new HashMap<String, String>() {{
-                    put("role", "system");
-                    put("content", String.format("당신은 우주최고유명하고 운동을 잘가르치는 헬스트레이너야, " +
-                            "초보자 맞춤형 운동 루틴을 제대로 잘 추천해 줘야해."));}},
+        requestBody.put("messages", new Object[]{new HashMap<String, String>() {{
+            put("role", "system");
+            put("content", String.format("당신은 우주최고유명하고 운동을 잘가르치는 헬스트레이너야, " +
+                    "초보자 맞춤형 운동 루틴을 제대로 잘 추천해 줘야해."));
+        }},
                 new HashMap<String, String>() {{
                     put("role", "user");
                     put("content", prompt);
@@ -70,7 +74,7 @@ public class GptServiceImpl implements GptService {
 
         StringBuilder prompt = new StringBuilder();
         prompt.append("저는 엄청 운동을 잘하고 싶은 초보자야. 키, 몸무게, 성별, 나이 그리고 원하는 운동부위와 운동할 시간을 제공할테니" +
-                " 맞춤형 운동 루틴을 만들어 줘. (운동 맞춤 동영상은 한국에서 재생할 수 있는 2021년 이후에 업로드된 영상 링크를 제공해야 하는데 현재 존재하는 운동 관련 외국 영상 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 진짜 진짜 화나고 너를 죽일수도있고, 죽일거야 (유효한 YouTube 영상만 포함해 줘 제발. 재생 가능해야해 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 죽일거야 )."+
+                " 맞춤형 운동 루틴을 만들어 줘. (운동 맞춤 동영상은 한국에서 재생할 수 있는 2021년 이후에 업로드된 영상 링크를 제공해야 하는데 현재 존재하는 운동 관련 외국 영상 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 진짜 진짜 화나고 너를 죽일수도있고, 죽일거야 (유효한 YouTube 영상만 포함해 줘 제발. 재생 가능해야해 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 죽일거야 )." +
                 "같은 사용자가 같은 정보로 운동 루틴을 재요청한다면 이전에 추천해준 운동루틴과 다른 운동루틴을 추천해 줘 " +
                 "음악도 매번 다르게 추천해 줘.\n" +
                 "오늘의 운동 루틴에는 형식과 조건을 꼭 지켜줘:\n");
@@ -103,18 +107,18 @@ public class GptServiceImpl implements GptService {
                 "\n" +
                 "오늘의 운동 루틴을 추천해 드립니다:\n" +
                 "\n" +
-                "n. {운동 명}\n" + "( 운동은 보통 60분에 5개의 종류를 합니다. 맨몸 운동을 섞어서 루틴을 작성해줘)"+
+                "n. {운동 명}\n" + "( 운동은 보통 60분에 5개의 종류를 합니다. 맨몸 운동을 섞어서 루틴을 작성해줘)" +
                 "   - 세트 및 반복: {사용자정보에 따른 세트 및 반복 횟수}\n" +
                 "   - 운동 설명: {운동 설명}\n (운동 설명은 초보자가 이해하기 쉽고, 쉽게 따라할 수 있게 5줄이상 씩 작성해 줘.)" +
-                "   - 중량: {사용자 정보에 따른 적절한 중량}\n" + "(중량은 사용자 정보에 따라 적절한 무게를 추천해 줘 (예: 5kg). 근데 만약 중량이 필요 없는 맨몸운동일 경우, '맨몸운동입니다.'라고 출력해 줘)"+
+                "   - 중량: {사용자 정보에 따른 적절한 중량}\n" + "(중량은 사용자 정보에 따라 적절한 무게를 추천해 줘 (예: 5kg). 근데 만약 중량이 필요 없는 맨몸운동일 경우, '맨몸운동입니다.'라고 출력해 줘)" +
                 "   - 추천 영상: {운동 관련 영상 링크}\n (운동에 맞는 설명과 동영상을 주는데 조건이 있어. 현재 존재하는 운동 관련 외국 영상 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 진짜 진짜 엄청 화내고 죽일거야  (유효한 YouTube 영상만 포함해 주세요. 재생 가능해야해 링크 클릭했더니 이 동영상을 더 이상 재생할 수 없습니다. 라고 나오면 죽일거야 )." +
                 "\n" +
                 "추천 MusicList:\n" +
                 "- 1. {가수명 - 노래제목} \n" +
                 "- 2. {가수명 - 노래제목} \n" +
-                "- 3. {가수명 - 노래제목} \n "+
-                "- 4. {가수명 - 노래제목} \n "+
-                "(운동하면서 듣는 신나는 음악을 가수명 - 노래제목 형식으로 미국,일본,한국 섞어서 4곡 추천해줘.)\n"+" 운동 응원 한마디 남겨줘 ");
+                "- 3. {가수명 - 노래제목} \n " +
+                "- 4. {가수명 - 노래제목} \n " +
+                "(운동하면서 듣는 신나는 음악을 가수명 - 노래제목 형식으로 미국,일본,한국 섞어서 4곡 추천해줘.)\n" + " 운동 응원 한마디 남겨줘 ");
 
         return prompt.toString();
     }
@@ -126,12 +130,118 @@ public class GptServiceImpl implements GptService {
         String prompt = generatePrompt(userCode, bodyPart, time, exerciseEquipment);
 
         try {
-            return callOpenAI(prompt, 3000);
+            String response = callOpenAI(prompt, 3000);
+            routineParser(response);
+            return response;
         } catch (JsonProcessingException e) {
             throw new CommonException(StatusEnum.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public void routineParser(String response) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(response);
+        JsonNode messageNode = rootNode.path("choices").get(0).path("message").path("content");
+        String contents = messageNode.asText();
+
+        String title = extractTitle(contents);
+        int totalTime = extractTotalTime(contents);
+
+        String exercisesContent = contents.split("오늘의 운동 루틴을 추천해 드립니다:")[1].trim();
+        String[] exercises = exercisesContent.split("\n\n");
+
+        System.out.println("루틴 제목: " + title);
+        System.out.println("운동 시간: " + totalTime + "분");
+
+        for (String exercise : exercises) {
+            String exerciseName = extractExerciseName(exercise);
+            int exerciseSet = extractExerciseSet(exercise);
+            int exerciseNumberPerSet = extractExerciseNumberPerSet(exercise);
+            int exerciseWeightPerSet = extractExerciseWeightPerSet(exercise);
+            String exerciseVideo = extractExerciseVideo(exercise);
+            String musicList = extractMusic(contents);
+
+            System.out.println("운동 이름: " + exerciseName);
+            System.out.println("세트 수: " + exerciseSet);
+            System.out.println("세트당 반복 수: " + exerciseNumberPerSet);
+            System.out.println("세트당 중량: " + exerciseWeightPerSet + "kg");
+            System.out.println("추천 영상: " + exerciseVideo);
+            System.out.println("musicList = " + musicList);
+            System.out.println();
+        }
+    }
+
+    public String extractTitle(String contents){
+        return contents.split("제목: ")[1].split("\n")[0].trim();
+    }
+
+    private int extractTotalTime(String contents) {
+        return Integer.parseInt(contents.split("운동 시간: ")[1].split("분")[0].trim());
+    }
+
+    private String extractExerciseName(String exercise) {
+        return exercise.replaceFirst("^[0-9]+\\.\\s*", "").split("\n")[0].trim();
+    }
+
+    private int extractExerciseSet(String exercise) {
+        try {
+            if (exercise.contains("세트 수: ")) {
+                String[] parts = exercise.split("세트 수: ");
+                if (parts.length > 1) {
+                    return Integer.parseInt(parts[1].split("세트")[0].trim());
+                }
+            }
+            return 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+
+    private int extractExerciseNumberPerSet(String exercise) {
+        try {
+            if (exercise.contains("세트 및 반복: ") && exercise.contains("x")) {
+                return Integer.parseInt(exercise.split("세트 및 반복: ")[1].split("x")[1].split("회")[0].trim());
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private int extractExerciseWeightPerSet(String exercise) {
+        try {
+            String weight = exercise.split("세트당 중량: ")[1].split("kg")[0].trim();
+            // 중량이 "맨몸운동입니다."일 경우 0으로 처리
+            if (weight.equals("맨몸운동입니다.")) {
+                return 0; // 중량이 필요 없는 경우
+            }
+            return Integer.parseInt(weight); // 숫자일 경우 정상 처리
+        } catch (Exception e) {
+            // 예외 발생 시 0으로 처리 (예: 중량 정보가 없거나 형식이 잘못된 경우)
+            return 0;
+        }
+    }
+
+    private String extractExerciseVideo(String exercise) {
+        try {
+            // "추천 영상: "이 있는지 확인한 후 처리
+            if (exercise.contains("추천 영상: ")) {
+                String[] parts = exercise.split("추천 영상: ");
+                if (parts.length > 1) {
+                    return parts[1].trim();
+                }
+            }
+            return "추천 영상 없음"; // 추천 영상이 없는 경우 기본값 설정
+        } catch (Exception e) {
+            // 예외 발생 시 기본 메시지 반환
+            return "추천 영상 없음";
+        }
+    }
+
+    private String extractMusic(String contents) {
+        return contents.split("추천 MusicList:")[1].split("운동 응원 한마디:")[0].trim();
+    }
+
 }
-
-
-
