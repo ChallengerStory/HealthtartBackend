@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.security;
 
 import com.dev5ops.healthtart.security.JwtUtil;
+import com.dev5ops.healthtart.user.domain.UserTypeEnum;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         log.info("OAuth2User attributes: {}", oAuth2User.getAttributes());
 
-        // OAuth2 제공자 정보 추출
-        String provider = extractProvider(authentication);
-
         // User 객체 추출
         Object userObj = oAuth2User.getAttribute("user");
         if (!(userObj instanceof UserEntity)) {
@@ -49,14 +47,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userCode = user.getUserCode();
         String userEmail = user.getUserEmail();
         String userNickname = user.getUserNickname();
-
-        log.info("userCode: {}", userCode);
-        log.info("userEmail: {}", userEmail);
-        log.info("userNickname: {}", userNickname);
-        log.info("provider: {}", provider);
+        String userName = user.getUserName();
+        String provider = user.getProvider();
+        String providerId = user.getProviderId();
 
         // 사용자 권한 설정 (예: "ROLE_USER")
-        List<String> roles = List.of("ROLE_MEMBER");
+        List<String> roles = List.of("MEMBER");
 
         // JWT 토큰에 들어갈 데이터(JwtTokenDTO)
         JwtTokenDTO tokenDTO = new JwtTokenDTO(userCode, userEmail, userNickname);
@@ -65,16 +61,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String token = jwtUtil.generateToken(tokenDTO, roles, provider);
         log.info("Generated JWT token: {}", token);
 
-        // 응답 헤더에 토큰 추가
-        response.addHeader("Authorization", "Bearer " + token);
-
+        // 리다이렉트 url 설정
         String redirectUrl = String.format("http://localhost:5173");
-//        String redirectUrl = String.format("http://localhost:5173/add-info/%s", provider.toLowerCase());
-//        String redirectUrl = String.format("/users/login/%s", provider.toLowerCase());
-        redirectUrl = redirectUrl + "?token=" + token;
+
+        // 추가정보를 받을 회원 구분
+        if(userNickname != null){ // 이미 회원가입된 회원
+            redirectUrl += "token?=" + token;
+        }else{ // 신규 가입회원 -> 추가정보 페이지로 리다이렉트
+            redirectUrl += "/addinfo" + "?token=" + token + "&userName=" + userName + "&userEmail=" + userEmail + "&provider=" + provider + "&providerId=" + providerId;
+        }
+
         log.info("Redirecting to: {}", redirectUrl);
 
-        // 프론트엔드 리다이렉트 URL 설정 (필요에 따라 수정)
+        // 프론트엔드 리다이렉트
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
