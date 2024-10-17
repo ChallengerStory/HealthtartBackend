@@ -224,13 +224,22 @@ public class UserServiceImpl implements UserService{
         return responseMypageDTO;
     }
 
-    public String getUserCode(){
+    public String getUserCode() {
         // 현재 인증된 사용자 가져오기
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
-        log.info("userDetails {}", userDetails.toString());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // 현재 로그인한 유저의 유저코드
+        // 인증된 사용자가 문자열(String)인 경우 (로그인하지 않은 상태)
+        if (principal instanceof String) {
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+        }
+
+        // 인증된 사용자가 CustomUserDetails인 경우
+        CustomUserDetails userDetails = (CustomUserDetails) principal;
+
+        log.info("Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails: {}", userDetails.toString());
+
+        // 현재 로그인한 유저의 유저코드 반환
         return userDetails.getUserDTO().getUserCode();
     }
 }
