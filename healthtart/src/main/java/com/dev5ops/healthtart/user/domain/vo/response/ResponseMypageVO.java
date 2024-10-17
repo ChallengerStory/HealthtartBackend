@@ -23,4 +23,12 @@ public class ResponseMypageVO {
     private Double userWeight;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
+
+    // gym
+    private Long gymCode;
+    private String gymName;
+
+    // rival
+    private String rivalUserCode;
+    private String rivalNickname;
 }
