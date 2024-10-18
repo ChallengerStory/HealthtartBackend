@@ -25,4 +25,5 @@ public class InbodyDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserEntity user;
+    private String userCode;
 }
