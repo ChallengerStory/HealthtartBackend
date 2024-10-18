@@ -9,7 +9,7 @@ import com.dev5ops.healthtart.user.domain.vo.ResponseEmailMessageVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
@@ -63,6 +63,28 @@ public class UserController {
         }
 
         // 이메일 로 인증번호 전송
+        try {
+            emailVerificationService.sendVerificationEmail(request.getEmail());
+
+            ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
+            responseEmailMessageVO.setMessage("인증 코드가 이메일로 전송되었습니다.");
+            return ResponseEmailDTO.ok(responseEmailMessageVO);
+        } catch (Exception e) {
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    //설명. 이메일 전송 API -> 비밀번호 재설정시 사용
+    @PostMapping("/verification-email/password")
+    public ResponseEmailDTO<?> sendVerificationEmailPassword(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 중복체크
+        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
+        if(userByEmail == null){
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
+        }
+
+        // 이메일로 인증번호 전송
         try {
             emailVerificationService.sendVerificationEmail(request.getEmail());
 
@@ -178,9 +200,19 @@ public class UserController {
         // userCode는 여기서 생성해서 저장하자.
         // member type도 여기서
         // flag도 여기서
-
+        // 이것들 모두 oauth 로그인 과정에서 저장되어서 저걸 안해도 됨.
         userService.saveOauth2User(requestOauth2VO);
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
     }
+
+    @PostMapping("/password")
+    public ResponseEntity<String> resetPassword(@RequestBody RequestResetPasswordVO request) {
+
+        userService.resetPassword(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
+    }
+
+
 }

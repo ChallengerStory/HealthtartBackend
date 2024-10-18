@@ -8,6 +8,7 @@ import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -238,7 +239,17 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
     }
 
+    @Override
+    public void resetPassword(RequestResetPasswordVO request) {
 
+        UserEntity findUser = userRepository.findByUserEmail(request.getUserEmail());
+        if(findUser == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
+        // 비밀번호 bcrypt 해야함.
+        findUser.setUserPassword(bCryptPasswordEncoder.encode(request.getUserPassword()));
+
+        userRepository.save(findUser);
+    }
 
     public String getUserCode() {
         // 현재 인증된 사용자 가져오기
