@@ -26,33 +26,33 @@ public class RecommendedWorkoutHistoryController {
     private final RecommendedWorkoutHistoryService recommendedWorkoutHistoryService;
     private final ModelMapper modelMapper;
 
-    @Operation(summary = "유저 - 운동루틴별 만족도 내림차순 조회")
+    @Operation(summary = "운동루틴별 만족도 내림차순 조회")
     @GetMapping("/ratings")
-    public ResponseEntity<List<ResponseFindByRatingOrderVO>> getRating() {
+    public ResponseEntity<List<ResponseFindByRatingOrderVO>> getRatingOrder() {
         List<Map.Entry<Long, Double>> ratingList = recommendedWorkoutHistoryService.findByRatingOrder();
 
-        List <ResponseFindByRatingOrderVO> responseList = ratingList.stream()
-                .map(entry -> new ResponseFindByRatingOrderVO(entry.getKey(),entry.getValue()))
+        List<ResponseFindByRatingOrderVO> responseList = ratingList.stream()
+                .map(entry -> new ResponseFindByRatingOrderVO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
-    @Operation(summary = "유저 - 만족도 등록")
+    @Operation(summary = "운동 추천 만족도 등록")
     @PostMapping("/register")
-    public ResponseEntity<ResponseRegisterRecommendedWorkoutHistoryVO> registerRating
-            (@RequestBody RequestRegisterRecommendedWorkoutHistoryVO request){
-        RecommendedWorkoutHistoryDTO recommendedWorkoutHistoryDTO = modelMapper
-                .map(request, RecommendedWorkoutHistoryDTO.class);
-        RecommendedWorkoutHistoryDTO registerRating = recommendedWorkoutHistoryService
-                .registerRating(recommendedWorkoutHistoryDTO);
+    public ResponseEntity<ResponseRegisterRecommendedWorkoutHistoryVO> registerRating(
+            @RequestBody RequestRegisterRecommendedWorkoutHistoryVO request) {
+
+        RecommendedWorkoutHistoryDTO recommendedWorkoutHistoryDTO = modelMapper.map(request, RecommendedWorkoutHistoryDTO.class);
+
+        RecommendedWorkoutHistoryDTO registeredDTO = recommendedWorkoutHistoryService.registerRating(recommendedWorkoutHistoryDTO);
 
         ResponseRegisterRecommendedWorkoutHistoryVO response = new ResponseRegisterRecommendedWorkoutHistoryVO(
-                registerRating.getHistoryCode(),
-                registerRating.getRoutineRatings(),
-                registerRating.getCreatedAt(),
-                registerRating.getUpdatedAt(),
-                registerRating.getRoutineCode()
+                registeredDTO.getHistoryCode(),
+                registeredDTO.getRoutineRatings(),
+                registeredDTO.getCreatedAt(),
+                registeredDTO.getUpdatedAt(),
+                registeredDTO.getWorkoutInfoCode().getWorkoutInfoCode()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
