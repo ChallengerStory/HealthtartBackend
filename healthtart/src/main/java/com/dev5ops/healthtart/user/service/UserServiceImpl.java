@@ -115,7 +115,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDTO findUserByEmail(String userEmail) {
         UserEntity findUser = userRepository.findByUserEmail(userEmail);
-
+        if(findUser == null) {
+            return null;
+        }
         return modelMapper.map(findUser, UserDTO.class);
     }
 
@@ -178,7 +180,12 @@ public class UserServiceImpl implements UserService{
         if (userNickname.matches(".*" + specialCharacters + ".*")) return response;
 
         UserEntity user = userRepository.findByUserNickname(userNickname);
-        if(user == null) response = false;
+        log.info(String.valueOf(response));
+        if(user == null){
+            response = false;
+            log.info(String.valueOf(response));
+        }
+        log.info(String.valueOf(response));
 
         return response;
     }

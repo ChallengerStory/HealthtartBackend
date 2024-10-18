@@ -160,7 +160,7 @@ public class UserController {
 
 
     @GetMapping("/nickname/check") // users/nickname/check
-    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(String userNickname){
+    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
         Boolean isDuplicate = userService.checkDuplicateNickname(userNickname);
 
