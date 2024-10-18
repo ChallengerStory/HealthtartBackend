@@ -44,7 +44,6 @@ class RecommendedWorkoutHistoryServiceImplTests {
 
     @BeforeEach
     void setUp() {
-        // 1. 운동 루틴 세팅 (빌더 패턴 사용)
         routine1 = Routine.builder()
                 .routineCode(1L)
                 .createdAt(LocalDateTime.now())
@@ -57,7 +56,6 @@ class RecommendedWorkoutHistoryServiceImplTests {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        // 2. 운동 정보 세팅 (빌더 패턴 사용)
         workoutInfo1 = WorkoutInfo.builder()
                 .workoutInfoCode(101L)
                 .routineCode(routine1)
@@ -72,7 +70,6 @@ class RecommendedWorkoutHistoryServiceImplTests {
                 .time(45)
                 .build();
 
-        // 3. 추천 내역 세팅 (빌더 패턴 사용)
         history1 = RecommendedWorkoutHistory.builder()
                 .historyCode(1L)
                 .routineRatings(5.0)
@@ -93,10 +90,8 @@ class RecommendedWorkoutHistoryServiceImplTests {
     @Test
     @DisplayName("만족도 조회 및 평균별 추천 테스트")
     void testFindByRatingOrder() {
-        // 1. mock 객체 설정
         when(recommendedWorkoutHistoryRepository.findAll()).thenReturn(Arrays.asList(history1, history2));
 
-        // DTO 변환 모의(Mock)
         RecommendedWorkoutHistoryDTO dto1 = RecommendedWorkoutHistoryDTO.builder()
                 .historyCode(1L)
                 .routineRatings(4.5)
@@ -123,6 +118,5 @@ class RecommendedWorkoutHistoryServiceImplTests {
         assertEquals(2L, result.get(1).getKey());
         assertEquals(3.0, result.get(1).getValue());
     }
-
 
 }
