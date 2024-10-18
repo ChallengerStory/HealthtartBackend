@@ -3,6 +3,8 @@ package com.dev5ops.healthtart.workoutinfo.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
+import com.dev5ops.healthtart.routine.domain.entity.Routine;
+import com.dev5ops.healthtart.routine.service.RoutineService;
 import com.dev5ops.healthtart.workoutinfo.domain.dto.WorkoutInfoDTO;
 import com.dev5ops.healthtart.workoutinfo.domain.entity.WorkoutInfo;
 import com.dev5ops.healthtart.workoutinfo.domain.vo.EditWorkoutInfoVO;
@@ -26,6 +28,7 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
 
     private final WorkoutInfoRepository workoutInfoRepository;
     private final ModelMapper modelMapper;
+    private final RoutineService  routineService;
 
     @Override
     public List<ResponseFindWorkoutInfoVO> getWorkoutInfos() {
@@ -46,17 +49,16 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
     @Override
     @Transactional
     public ResponseInsertWorkoutInfoVO registerWorkoutInfo(WorkoutInfoDTO workoutInfoDTO) {
-        validateWorkoutInfoDTO(workoutInfoDTO);
+        Routine routine = routineService.getRoutineByCode(workoutInfoDTO.getRoutineCode());
 
         WorkoutInfo workoutInfo = WorkoutInfo.builder()
                 .workoutInfoCode(workoutInfoDTO.getWorkoutInfoCode())
                 .title(workoutInfoDTO.getTitle())
                 .time(workoutInfoDTO.getTime())
-                .link(workoutInfoDTO.getLink())
                 .recommendMusic(workoutInfoDTO.getRecommendMusic())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .routineCode(workoutInfoDTO.getRoutineCode())
+                .routineCode(routine)
                 .build();
 
         workoutInfoRepository.save(workoutInfo);
