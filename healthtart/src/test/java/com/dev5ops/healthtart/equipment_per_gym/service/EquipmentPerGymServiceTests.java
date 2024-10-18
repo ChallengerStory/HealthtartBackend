@@ -580,9 +580,10 @@ class EquipmentPerGymServiceTests {
     @Test
     void testFindEquipmentByBodyPart_Success() {
         // Given
+        Long gymCode = 1L;
         String bodyPart = "이두";
 
-        Gym gym = Gym.builder().gymCode(1L).gymName("Test Gym").build();
+        Gym gym = Gym.builder().gymCode(gymCode).gymName("Test Gym").build();
         ExerciseEquipment exerciseEquipment = ExerciseEquipment.builder()
                 .exerciseEquipmentCode(1L)
                 .exerciseEquipmentName("Test Equipment")
@@ -598,34 +599,38 @@ class EquipmentPerGymServiceTests {
         List<EquipmentPerGym> equipmentPerGymList = new ArrayList<>();
         equipmentPerGymList.add(equipmentPerGym);
 
-        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(equipmentPerGymList);
+        when(equipmentPerGymRepository.findByGym_GymCodeAndExerciseEquipment_BodyPart(gymCode, bodyPart)).thenReturn(equipmentPerGymList);
         when(modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class)).thenReturn(
                 new EquipmentPerGymDTO(1L, LocalDateTime.now(), LocalDateTime.now(), gym, exerciseEquipment)
         );
 
         // When
-        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(gymCode, bodyPart);
 
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(bodyPart, result.get(0).getExerciseEquipment().getBodyPart());
-        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
+        verify(equipmentPerGymRepository, times(1)).findByGym_GymCodeAndExerciseEquipment_BodyPart(gymCode, bodyPart);
     }
 
-    @DisplayName("부위별 운동기구 조회 실패 - 해당 부위에 운동기구가 없음")
+    @DisplayName("부위별 운동기구 조회 실패 - 해당 부위 운동기구가 없음")
     @Test
     void testFindEquipmentByBodyPart_NotFound() {
         // Given
+        Long gymCode = 1L;
         String bodyPart = "등";
-        when(equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart)).thenReturn(new ArrayList<>());
+
+        // 헬스장 코드와 부위를 기준으로 조회할 때 빈 리스트 반환
+        when(equipmentPerGymRepository.findByGym_GymCodeAndExerciseEquipment_BodyPart(gymCode, bodyPart)).thenReturn(new ArrayList<>());
 
         // When
-        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+        List<EquipmentPerGymDTO> result = equipmentPerGymService.findEquipmentByBodyPart(gymCode, bodyPart);
 
         // Then
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(equipmentPerGymRepository, times(1)).findByExerciseEquipment_BodyPart(bodyPart);
+        verify(equipmentPerGymRepository, times(1)).findByGym_GymCodeAndExerciseEquipment_BodyPart(gymCode, bodyPart);
     }
+
 }

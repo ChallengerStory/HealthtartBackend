@@ -5,6 +5,10 @@ import jdk.jfr.Registered;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface WorkoutPerRoutineRepository extends JpaRepository<WorkoutPerRoutine, Long> {
+    List<WorkoutPerRoutine> findByWorkoutOrderAndWorkoutName(Integer workoutOrder, String workoutName);
+    List<WorkoutPerRoutine> findByRoutineCode(Long routineCode);
 }

@@ -1,9 +1,8 @@
 package com.dev5ops.healthtart.user.service;
 
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import java.util.List;
 
 @Service
 public interface UserService extends UserDetailsService {
-    ResponseInsertUserVO signUpUser(RequestInsertUserVO request);
+    ResponseInsertUserDTO signUpUser(RequestInsertUserVO request);
 
     List<UserDTO> findAllUsers();
 
@@ -24,4 +23,8 @@ public interface UserService extends UserDetailsService {
     Boolean checkDuplicateNickname(String userNickname);
 
     void saveOauth2User(RequestOauth2VO requestOauth2VO);
+
+    ResponseMypageDTO getMypageInfo();
+
+    EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
 }

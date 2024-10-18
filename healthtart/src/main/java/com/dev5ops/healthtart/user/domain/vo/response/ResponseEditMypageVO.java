@@ -10,24 +10,18 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
-public class ResponseInsertUserVO {
+@Getter
+@Setter
+public class ResponseEditMypageVO {
 
-    private String userCode;
-    private String userType;
     private String userName;
     private String userEmail;
     private String userPassword;
     private String userPhone;
     private String userNickname;
-    private String userAddress;
-    private Boolean userFlag;
     private String userGender;
     private Double userHeight;
     private Double userWeight;
-    private Integer userAge;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 }

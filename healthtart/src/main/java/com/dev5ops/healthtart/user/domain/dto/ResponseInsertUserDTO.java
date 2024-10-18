@@ -1,17 +1,14 @@
-package com.dev5ops.healthtart.user.domain.vo.response;
+package com.dev5ops.healthtart.user.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
-public class ResponseInsertUserVO {
+public class ResponseInsertUserDTO {
 
     private String userCode;
     private String userType;
@@ -26,8 +23,6 @@ public class ResponseInsertUserVO {
     private Double userHeight;
     private Double userWeight;
     private Integer userAge;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 }
