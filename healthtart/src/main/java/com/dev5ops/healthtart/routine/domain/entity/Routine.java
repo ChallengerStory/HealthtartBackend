@@ -2,7 +2,6 @@
 package com.dev5ops.healthtart.routine.domain.entity;
 
 import com.dev5ops.healthtart.routine.domain.vo.EditRoutineVO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 
 @Entity(name = "WorkoutRoutine")
-@Table(name = "workout_routine")
+@Table(name = "routines")
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString

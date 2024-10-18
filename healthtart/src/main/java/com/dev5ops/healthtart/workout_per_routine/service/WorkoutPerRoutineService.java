@@ -27,4 +27,6 @@ public interface WorkoutPerRoutineService {
 
     @Transactional
     boolean checkForDuplicateRoutines(Map<String, Object> workoutData);
+
+    Long findRoutineCodeByWorkoutData(Map<String, Object> workoutData);
 }

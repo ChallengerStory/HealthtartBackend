@@ -1,7 +1,8 @@
 package com.dev5ops.healthtart.workout_per_routine.domain.entity;
 
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
+import com.dev5ops.healthtart.routine.domain.entity.Routine;
 import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -15,10 +16,12 @@ import java.time.LocalDateTime;
 @ToString
 @Getter
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class WorkoutPerRoutine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @Column(name="workout_per_routine_code")
     private Long workoutPerRoutineCode;
 
@@ -27,6 +30,9 @@ public class WorkoutPerRoutine {
 
     @Column(name ="workout_name")
     private String workoutName;
+
+    @Column(name = "link")
+    private String link;
 
     @Column(name = "weight_set")
     private int weightSet;
@@ -46,15 +52,18 @@ public class WorkoutPerRoutine {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "routine_code")
-    private Long routineCode;
+    @ManyToOne
+    @JoinColumn(name = "routine_code")
+    private Routine routineCode;
 
-    @Column(name = "exercise_equipment_code")
-    private Long exerciseEquipmentCode;
+    @ManyToOne
+    @JoinColumn(name = "exercise_equipment_code")
+    private ExerciseEquipment exerciseEquipmentCode;
 
     public void toUpdate(@Validated EditWorkoutPerRoutineVO editRoutineVO) {
         this.workoutOrder = editRoutineVO.getWorkoutOrder();
         this.workoutName = editRoutineVO.getWorkoutName();
+        this.link = editRoutineVO.getLink();
         this.weightSet = editRoutineVO.getWeightSet();
         this.numberPerSet = editRoutineVO.getNumberPerSet();
         this.weightPerSet = editRoutineVO.getWeightPerSet();
