@@ -77,7 +77,12 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "PATCH")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "POST")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "OPTIONS")).hasRole("MEMBER")
 //                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "OPTIONS")).permitAll() // OPTIONS 요청은 안해줘도 작동
+
                                 .anyRequest().authenticated()
                 )
                 /* UserDetails를 상속받는 Service 계층 + BCrypt 암호화 */
