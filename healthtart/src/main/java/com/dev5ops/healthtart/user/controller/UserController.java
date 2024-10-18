@@ -1,13 +1,19 @@
 package com.dev5ops.healthtart.user.controller;
 
-import com.dev5ops.healthtart.user.domain.dto.ResponseMypageDTO;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.StatusEnum;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.security.JwtUtil;
+import com.dev5ops.healthtart.user.domain.vo.EmailVerificationVO;
+import com.dev5ops.healthtart.user.domain.vo.ResponseEmailMessageVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
+import com.dev5ops.healthtart.user.service.EmailVerificationService;
 import com.dev5ops.healthtart.user.service.UserService;
 //import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.dev5ops.healthtart.user.domain.UserTypeEnum.MEMBER;
 
 @RestController
 @RequestMapping("users")
@@ -34,13 +39,43 @@ public class UserController {
     private Environment env;
     private ModelMapper modelMapper;
     private UserService userService;
+    private EmailVerificationService emailVerificationService;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService) {
         this.jwtUtil = jwtUtil;
         this.env = env;
         this.modelMapper = modelMapper;
         this.userService = userService;
+        this.emailVerificationService = emailVerificationService;
+    }
+
+    //설명. 이메일 전송 API (회원가입전 실행)
+    @PostMapping("/verification-email")
+    public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
+        try {
+            emailVerificationService.sendVerificationEmail(request.getEmail());
+
+            ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
+            responseEmailMessageVO.setMessage("인증 코드가 이메일로 전송되었습니다.");
+            return ResponseEmailDTO.ok(responseEmailMessageVO);
+        } catch (Exception e) {
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    //설명. 이메일 인증번호 검증 API (회원가입전 실행)
+    @PostMapping("/verification-email/confirmation")
+    public ResponseEmailDTO<?> verifyEmail(@RequestBody @Validated EmailVerificationVO request) {
+        boolean isVerified = emailVerificationService.verifyCode(request.getEmail(), request.getCode());
+
+        ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
+        responseEmailMessageVO.setMessage("이메일 인증이 완료되었습니다.");
+        if (isVerified) {
+            return ResponseEmailDTO.ok(responseEmailMessageVO);
+        } else {
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INVALID_VERIFICATION_CODE));
+        }
     }
 
     @PostMapping("/signup")
@@ -61,6 +96,18 @@ public class UserController {
         ResponseMypageDTO mypageInfo = userService.getMypageInfo();
 
         ResponseMypageVO response = modelMapper.map(mypageInfo, ResponseMypageVO.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/edit/mypage")
+    public ResponseEntity<ResponseEditMypageVO> editMypageInfo(@RequestBody RequestEditMypageVO request){
+
+        EditMypageDTO editMypageDTO = modelMapper.map(request, EditMypageDTO.class);
+
+        EditMypageDTO afterEditDTO = userService.editMypageInfo(editMypageDTO);
+
+        ResponseEditMypageVO response = modelMapper.map(afterEditDTO, ResponseEditMypageVO.class);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
