@@ -85,10 +85,4 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
         return new ResponseDeleteWorkoutInfoVO();
     }
 
-    // DTO 검증 메서드
-    private void validateWorkoutInfoDTO(WorkoutInfoDTO workoutInfoDTO) {
-        if (workoutInfoDTO.getWorkoutInfoCode() == null || workoutInfoDTO.getTitle().isEmpty()) {
-            throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
-        }
-    }
 }
