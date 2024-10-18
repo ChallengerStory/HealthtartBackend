@@ -20,9 +20,6 @@ public class WorkoutInfoDTO {
     @JsonProperty("time")
     private Integer time;
 
-    @JsonProperty("link")
-    private String link;
-
     @JsonProperty("recommend_music")
     private String recommendMusic;
 
