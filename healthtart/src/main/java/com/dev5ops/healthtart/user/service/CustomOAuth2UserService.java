@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // 이름(nickname == 우리쪽에서 name으로 사용)만 가능
             name = (String) kakaoProfile.get("nickname");
             // 카카오에서 이메일을 제공 안해주기 때문에 임의로 설정
-            email = "카카오@카카오.com";
+            email = null;
         } else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + provider);
         }
