@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,6 +151,7 @@ public class GptServiceImpl implements GptService {
         }
     }
 
+    @Override
     public Map<String, Object> routineParser(String response) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response);
@@ -180,6 +182,7 @@ public class GptServiceImpl implements GptService {
             int exerciseTime = extractExerciseTime(exercise);
             int exerciseSet = extractExerciseSet(exercise);
             int exerciseNumberPerSet = extractExerciseNumberPerSet(exercise);
+            String exerciseExplanation = extractExerciseExplanation(exercise);
             int exerciseWeightPerSet = extractExerciseWeightPerSet(exercise);
             String exerciseVideo = extractExerciseVideo(exercise);
 
@@ -189,14 +192,11 @@ public class GptServiceImpl implements GptService {
             workoutData.put("workoutTime" + i, exerciseTime);
             workoutData.put("weightSet" + i, exerciseSet);
             workoutData.put("numberPerSet" + i, exerciseNumberPerSet);
+            workoutData.put("exerciseExplanation" + i, exerciseExplanation);
             workoutData.put("weightPerSet" + i, exerciseWeightPerSet);
             workoutData.put("exerciseVideo" + i, exerciseVideo);
-
-
             i++;
-
         }
-
         String musicList = extractMusic(contents);
         workoutData.put("musicList" , musicList);
 
@@ -280,7 +280,6 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-
     // 제목 추출
     public String extractTitle(String contents) {
         try {
@@ -356,7 +355,20 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-    // 세트당 중량 추출
+    public String extractExerciseExplanation(String exercise) {
+
+        try {
+            String[] explanation = exercise.split("운동 설명: ");
+            if (explanation.length > 1) {
+                return explanation[1].split("\n")[0].trim();
+            }
+            return "설명 없음";
+        } catch (Exception e) {
+            return "설명 없음";
+        }
+    }
+
+        // 세트당 중량 추출
     public int extractExerciseWeightPerSet(String exercise) {
         try {
             String weight = exercise.split("중량: ")[1].split("kg")[0].trim();
@@ -392,4 +404,6 @@ public class GptServiceImpl implements GptService {
             return "추천 음악 없음";
         }
     }
+
+
 }
