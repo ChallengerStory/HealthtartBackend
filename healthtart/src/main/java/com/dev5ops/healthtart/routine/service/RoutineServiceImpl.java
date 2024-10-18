@@ -42,20 +42,26 @@ public class RoutineServiceImpl implements RoutineService {
         return modelMapper.map(routine, ResponseFindRoutineVO.class);
     }
 
+    public Routine getRoutineByCode(Long routineCode) {
+        if (routineCode == null) {
+            throw new IllegalArgumentException("조회할 루틴 코드가 null입니다.");
+        }
+        return routineRepository.findById(routineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+    }
+
     @Override
     @Transactional
-    public ResponseInsertRoutineVO registerRoutine(RoutineDTO routineDTO) {
-        validateRoutineDTO(routineDTO);
+    public RoutineDTO registerRoutine(RoutineDTO routineDTO) {
 
         Routine routine = Routine.builder()
-                .routineCode(routineDTO.getRoutineCode())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        routineRepository.save(routine);
-
-        return modelMapper.map(routine, ResponseInsertRoutineVO.class);
+        Routine savedRoutine = routineRepository.save(routine);
+        System.out.println("저장된 루틴 코드: " + savedRoutine.getRoutineCode());
+        return modelMapper.map(routine, RoutineDTO.class);
     }
 
     @Override
@@ -77,11 +83,6 @@ public class RoutineServiceImpl implements RoutineService {
         return new ResponseDeleteRoutineVO();
     }
 
-    private void validateRoutineDTO(RoutineDTO routineDTO) {
-        if (routineDTO.getRoutineCode() == null ) {
-            throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
-        }
-    }
 }
 
 
