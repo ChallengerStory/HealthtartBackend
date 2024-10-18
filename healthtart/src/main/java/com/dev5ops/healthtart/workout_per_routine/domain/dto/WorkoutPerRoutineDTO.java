@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.workout_per_routine.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,9 @@ public class WorkoutPerRoutineDTO {
 
     @JsonProperty("workout_name")
     private String workoutName;
+
+    @JsonProperty("link")
+    private String link;
 
     @JsonProperty("weight_set")
     private int weightSet;

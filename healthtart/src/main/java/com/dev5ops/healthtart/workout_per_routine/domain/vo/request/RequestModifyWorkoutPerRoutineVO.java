@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class RequestModifyWorkoutPerRoutineVO {
     private int workoutOrder;
     private String workoutName;
+    private String link;
     private int weightSet;
     private int numberPerSet;
     private int weightPerSet;

@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class RequestInsertRoutineVO {
-    private Long routineCode;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

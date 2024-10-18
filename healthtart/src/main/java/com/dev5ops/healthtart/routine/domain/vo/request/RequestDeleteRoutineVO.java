@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class RequestDeleteRoutineVO {
-    private Long routineCode;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

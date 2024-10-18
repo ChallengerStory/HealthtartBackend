@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,25 +95,25 @@ class RoutineServiceImplTests {
     @Transactional
     @DisplayName("루틴 등록 테스트")
     void registerRoutineSuccess() {
-        RoutineDTO routineDTO = new RoutineDTO();
-        routineDTO.setRoutineCode(1L);
-
-        Routine routine = Routine.builder()
-                .routineCode(routineDTO.getRoutineCode())
+        Routine savedRoutine = Routine.builder()
+                .routineCode(1L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        when(routineRepository.save(any(Routine.class))).thenReturn(routine);
+        RoutineDTO routineDTO = new RoutineDTO();
 
-        ResponseInsertRoutineVO responseVO = new ResponseInsertRoutineVO();
-        when(modelMapper.map(any(Routine.class), eq(ResponseInsertRoutineVO.class)))
-                .thenReturn(responseVO);
+        when(routineRepository.save(any(Routine.class))).thenReturn(savedRoutine);
+        when(modelMapper.map(any(Routine.class), any())).thenReturn(routineDTO);
 
-        ResponseInsertRoutineVO result = routineService.registerRoutine(routineDTO);
+        RoutineDTO result = routineService.registerRoutine(routineDTO);
 
         assertNotNull(result);
         verify(routineRepository).save(any(Routine.class));
-        verify(modelMapper).map(any(Routine.class), eq(ResponseInsertRoutineVO.class));
+        verify(modelMapper).map(any(Routine.class), any());
     }
+
+
 
     @Test
     @Transactional

@@ -11,16 +11,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class ResponseInsertWorkoutPerRoutineVO {
-    private Long workoutPerRoutineCode;
     private int workoutOrder;
     private String workoutName;
+    private String link;
     private int weightSet;
     private int numberPerSet;
     private int weightPerSet;
     private int workoutTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long routineCode;
-    private Long exerciseEquipmentCode;
 
 }
