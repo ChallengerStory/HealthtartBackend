@@ -93,7 +93,7 @@ public class  WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         return new ResponseDeleteWorkoutPerRoutineVO();
     }
 
-    // 순서번호, 운동명으로 운동루틴별운동 조회
+    // 존재하는 루틴인지 확인
     @Override
     @Transactional
     public boolean checkForDuplicateRoutines(Map<String, Object> workoutData){
