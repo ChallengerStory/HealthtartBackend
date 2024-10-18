@@ -22,5 +22,4 @@ public class ResponseFindInbodyVO {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dayOfInbody;
     private Integer basalMetabolicRate;
-    private UserEntity user;
 }

@@ -8,6 +8,7 @@ import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseInbodyUserVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseFindInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseRegisterInbodyVO;
+import com.dev5ops.healthtart.inbody.dto.FilterRequestDTO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.dto.InbodyUserDTO;
 import com.dev5ops.healthtart.inbody.service.InbodyService;
@@ -122,8 +123,7 @@ public class InbodyController {
                 inbodyDTO.getBmi(),
                 inbodyDTO.getFatPercentage(),
                 inbodyDTO.getDayOfInbody(),
-                inbodyDTO.getBasalMetabolicRate(),
-                inbodyDTO.getUser()
+                inbodyDTO.getBasalMetabolicRate()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -145,21 +145,19 @@ public class InbodyController {
                     inbodyDTO.getBmi(),
                     inbodyDTO.getFatPercentage(),
                     inbodyDTO.getDayOfInbody(),
-                    inbodyDTO.getBasalMetabolicRate(),
-                    inbodyDTO.getUser()
+                    inbodyDTO.getBasalMetabolicRate()
             );
 
             responseList.add(response);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/inbody_ranking")
     public ResponseEntity<List<ResponseInbodyUserVO>> findInbodyUserInbody(){
         List<InbodyUserDTO> AllInbodyList = inbodyService.findInbodyUserInbody();
         List<ResponseInbodyUserVO> response = new ArrayList<>();
-        log.info("response: {}", response);
         for (InbodyUserDTO inbodyUserDTO : AllInbodyList) {
             ResponseInbodyUserVO responseInbodyUserVO = new ResponseInbodyUserVO(
                     inbodyUserDTO.getUserNickname(),
@@ -173,7 +171,6 @@ public class InbodyController {
             );
             response.add(responseInbodyUserVO);
         }
-        log.info("response: {}", response);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -192,8 +189,7 @@ public class InbodyController {
                 inbodyDTO.getBmi(),
                 inbodyDTO.getFatPercentage(),
                 inbodyDTO.getDayOfInbody(),
-                inbodyDTO.getBasalMetabolicRate(),
-                inbodyDTO.getUser()
+                inbodyDTO.getBasalMetabolicRate()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -215,8 +211,7 @@ public class InbodyController {
                     inbodyDTO.getBmi(),
                     inbodyDTO.getFatPercentage(),
                     inbodyDTO.getDayOfInbody(),
-                    inbodyDTO.getBasalMetabolicRate(),
-                    inbodyDTO.getUser()
+                    inbodyDTO.getBasalMetabolicRate()
             );
             responseList.add(response);
         }
@@ -224,4 +219,26 @@ public class InbodyController {
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
+    @Operation(summary = "유저 - 인바디 필터링")
+    @PostMapping("/filter")
+    public ResponseEntity<List<ResponseInbodyUserVO>> filterInbody(@RequestBody FilterRequestDTO filterRequest) {
+        List<InbodyUserDTO> filteredInbodyList = inbodyService.filterInbody(filterRequest);
+        List<ResponseInbodyUserVO> response = new ArrayList<>();
+
+        for (InbodyUserDTO inbodyUserDTO : filteredInbodyList) {
+            ResponseInbodyUserVO responseInbodyUserVO = new ResponseInbodyUserVO(
+                    inbodyUserDTO.getUserNickname(),
+                    inbodyUserDTO.getUserGender(),
+                    inbodyUserDTO.getHeight(),
+                    inbodyUserDTO.getWeight(),
+                    inbodyUserDTO.getMuscleWeight(),
+                    inbodyUserDTO.getFatPercentage(),
+                    inbodyUserDTO.getBasalMetabolicRate(),
+                    inbodyUserDTO.getInbodyScore()
+            );
+            response.add(responseInbodyUserVO);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
