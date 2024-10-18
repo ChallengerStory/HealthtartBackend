@@ -173,15 +173,4 @@ public class  WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
     }
 
 
-
-
-    // DTO 검증
-    private void validateWorkoutPerRoutineDTO(WorkoutPerRoutineDTO workoutPerRoutineDTO) {
-        if (workoutPerRoutineDTO.getWorkoutPerRoutineCode() == null ||
-                workoutPerRoutineDTO.getWorkoutOrder() <= 0 ||
-                workoutPerRoutineDTO.getWorkoutTime() <= 0) {
-            throw new CommonException(StatusEnum.INVALID_PARAMETER_FORMAT);
-        }
-    }
-
 }

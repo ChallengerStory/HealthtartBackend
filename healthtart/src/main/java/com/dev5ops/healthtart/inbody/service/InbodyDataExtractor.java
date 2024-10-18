@@ -1,6 +1,9 @@
 package com.dev5ops.healthtart.inbody.service;
 
 import net.minidev.json.JSONObject;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.List;
@@ -35,7 +38,8 @@ public class InbodyDataExtractor {
             inbodyData.put("height", extractHeight(lines));
 
             // 2. 검사일시: 날짜 형태의 값을 추출 (YYYY.MM.DD)
-            inbodyData.put("dayOfInbody", extractDate(lines));
+            LocalDateTime date = extractDate(lines);
+            inbodyData.put("dayOfInbody", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
             // 3. 인바디 점수: 00/100 형태의 점수 추출
             inbodyData.put("inbodyScore", extractScore(lines));
@@ -86,25 +90,31 @@ public class InbodyDataExtractor {
     }
 
     // 검사일시 추출
-    private static String extractDate(String[] lines) {
+    private static LocalDateTime extractDate(String[] lines) {
         for (String line : lines) {
             Matcher matcher = Pattern.compile("\\d{4}\\.\\d{2}\\.\\d{2}").matcher(line);
             if (matcher.find()) {
-                return matcher.group();
+                String dateString = matcher.group();
+                // 마침표를 하이픈으로 변경
+                dateString = dateString.replace(".", "-");
+                // LocalDateTime으로 변환, 시간 부분은 기본적으로 00:00:00으로 설정
+                return LocalDateTime.parse(dateString + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             }
         }
-        return "N/A";
+        return null; // 값을 찾지 못했을 경우 null 반환
     }
 
     // 인바디 점수 추출
-    private static String extractScore(String[] lines) {
+    private static Integer extractScore(String[] lines) {
         for (String line : lines) {
             Matcher matcher = Pattern.compile("\\d+/100").matcher(line);
             if (matcher.find()) {
-                return matcher.group();
+                String scoreString = matcher.group();
+                String[] scoreParts = scoreString.split("/");
+                return Integer.parseInt(scoreParts[0]);
             }
         }
-        return "N/A";
+        return null;
     }
 
     // 특정 키워드 뒤의 기본 틀과 다른 값을 추출 (소수점 포함 숫자)

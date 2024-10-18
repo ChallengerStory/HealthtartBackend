@@ -20,5 +20,5 @@ public class RequestRegisterInbodyVO {
     private double fatPercentage;
     private LocalDateTime dayOfInbody;
     private Integer basalMetabolicRate;
-    private UserEntity user;
+    private String userCode;
 }
