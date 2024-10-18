@@ -31,8 +31,19 @@ public class EquipmentPerGymService {
 
     @Transactional
     public EquipmentPerGymDTO registerEquipmentPerGym(EquipmentPerGymDTO equipmentPerGymDTO) {
+        if (equipmentPerGymDTO.getGym() == null || equipmentPerGymDTO.getGym().getGymCode() == null) {
+            throw new CommonException(StatusEnum.GYM_NOT_FOUND);
+        }
+        if (equipmentPerGymDTO.getExerciseEquipment() == null || equipmentPerGymDTO.getExerciseEquipment().getExerciseEquipmentCode() == null) {
+            throw new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND);
+        }
+
         Gym gym = gymRepository.findById(equipmentPerGymDTO.getGym().getGymCode()).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
         ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(equipmentPerGymDTO.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+        boolean isAlreadyRegistered = equipmentPerGymRepository.existsByGymAndExerciseEquipment(gym, exerciseEquipment);
+        if (isAlreadyRegistered) {
+            throw new CommonException(StatusEnum.EQUIPMENT_ALREADY_REGISTERED); // 이미 등록된 헬스 기구 예외 발생
+        }
 
         EquipmentPerGym equipmentPerGym = modelMapper.map(equipmentPerGymDTO, EquipmentPerGym.class);
         equipmentPerGym.setGym(gym);
@@ -47,13 +58,13 @@ public class EquipmentPerGymService {
 
     @Transactional
     public EquipmentPerGymDTO editEquipmentPerGym(Long equipmentPerGymCode, RequestEditEquipmentPerGymVO request) {
-        Gym gym = gymRepository.findById(request.getGym().getGymCode()).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
-        ExerciseEquipment exerciseEquipment = exerciseEquipmentRepository.findById(request.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+        gymRepository.findById(request.getGym().getGymCode()).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+        exerciseEquipmentRepository.findById(request.getExerciseEquipment().getExerciseEquipmentCode()).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
 
         EquipmentPerGym equipmentPerGym = equipmentPerGymRepository.findById(equipmentPerGymCode).orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND));
 
-        equipmentPerGym.setGym(gym);
-        equipmentPerGym.setExerciseEquipment(exerciseEquipment);
+        equipmentPerGym.setGym(request.getGym());
+        equipmentPerGym.setExerciseEquipment(request.getExerciseEquipment());
         equipmentPerGym.setUpdatedAt(LocalDateTime.now());
 
         EquipmentPerGym savedEquipmentPerGym = equipmentPerGymRepository.save(equipmentPerGym);
@@ -85,8 +96,8 @@ public class EquipmentPerGymService {
                 .collect(Collectors.toList());
     }
 
-    public List<EquipmentPerGymDTO> findEquipmentByBodyPart(String bodyPart) {
-        List<EquipmentPerGym> equipmentPerGyms = equipmentPerGymRepository.findByExerciseEquipment_BodyPart(bodyPart);
+    public List<EquipmentPerGymDTO> findEquipmentByBodyPart(Long equipmentPerGymCode, String bodyPart) {
+        List<EquipmentPerGym> equipmentPerGyms = equipmentPerGymRepository.findByGym_GymCodeAndExerciseEquipment_BodyPart(equipmentPerGymCode, bodyPart);
 
         return equipmentPerGyms.stream()
                 .map(equipmentPerGym -> modelMapper.map(equipmentPerGym, EquipmentPerGymDTO.class))

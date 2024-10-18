@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController("equipmentPerGymController")
-@RequestMapping("equipmentPerGym")
+@RequestMapping("equipment_per_gym")
 @Slf4j
 public class EquipmentPerGymController {
 
@@ -36,6 +36,7 @@ public class EquipmentPerGymController {
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterEquipmentPerGymVO> registerEquipmentPerGym(@RequestBody RequestRegisterEquipmentPerGymVO request) {
         EquipmentPerGymDTO equipmentPerGymDTO = modelMapper.map(request, EquipmentPerGymDTO.class);
+        System.out.println(equipmentPerGymDTO.toString());
         EquipmentPerGymDTO registeredEquipment = equipmentPerGymService.registerEquipmentPerGym(equipmentPerGymDTO);
 
         ResponseRegisterEquipmentPerGymVO response = new ResponseRegisterEquipmentPerGymVO(
@@ -102,10 +103,10 @@ public class EquipmentPerGymController {
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
-    @Operation(summary = "관리자, 유저 - 부위별 운동기구 조회")
-    @GetMapping("/equipment_per_gym_list/body_part")
-    public ResponseEntity<List<ResponseFindEquipmentPerGymVO>> getEquipmentPerGymByBodyPart(@RequestParam("bodyPart") String bodyPart) {
-        List<EquipmentPerGymDTO> equipmentPerGymDTOList = equipmentPerGymService.findEquipmentByBodyPart(bodyPart);
+    @Operation(summary = "관리자, 유저 - 특정한 헬스장 내 부위 별 운동기구 조회")
+    @GetMapping("/{equipmentPerGymCode}/body_part")
+    public ResponseEntity<List<ResponseFindEquipmentPerGymVO>> getEquipmentPerGymByBodyPart(@PathVariable Long equipmentPerGymCode, @RequestParam("bodyPart") String bodyPart) {
+        List<EquipmentPerGymDTO> equipmentPerGymDTOList = equipmentPerGymService.findEquipmentByBodyPart(equipmentPerGymCode, bodyPart);
         List<ResponseFindEquipmentPerGymVO> responseList = new ArrayList<>();
 
         for (EquipmentPerGymDTO equipmentPerGymDTO : equipmentPerGymDTOList) {
@@ -119,5 +120,4 @@ public class EquipmentPerGymController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
-
 }

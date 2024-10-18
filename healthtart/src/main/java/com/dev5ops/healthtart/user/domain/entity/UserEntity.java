@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.user.domain.entity;
 
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,10 @@ public class UserEntity {
     @Column(name = "user_type")
     private UserTypeEnum userType = UserTypeEnum.MEMBER;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "user_email", nullable = false)
+    @Column(name = "user_email")
     private String userEmail;
 
     @Column(name = "user_password")
@@ -68,10 +69,9 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-//    @ManyToOne
-//    @JoinColumn(name = "gym_code", nullable = true)
-    @Column(name = "gym_code")
-    private Long gymCode;
+    @ManyToOne
+    @JoinColumn(name = "gym_code", nullable = true)
+    private Gym gym;
 
     public void removeRequest(UserEntity user) {
         this.userCode = user.getUserCode();

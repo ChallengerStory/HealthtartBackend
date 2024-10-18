@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // 이름(nickname == 우리쪽에서 name으로 사용)만 가능
             name = (String) kakaoProfile.get("nickname");
             // 카카오에서 이메일을 제공 안해주기 때문에 임의로 설정
-            email = "카카오@카카오.com";
+            email = null;
         } else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + provider);
         }
@@ -102,7 +102,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 제공자별 ID를 주요 식별자로 사용 -> 카카오는 "id"
         String nameAttributeKey = "google".equals(provider) ? "sub" : "id";
-
+        log.info("userAttributes:{}", userAttributes);
+        log.info("userAttributes:{}", userAttributes.toString());
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getUserType().name())),
                 userAttributes,

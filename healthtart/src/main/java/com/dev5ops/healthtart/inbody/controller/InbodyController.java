@@ -1,5 +1,7 @@
 package com.dev5ops.healthtart.inbody.controller;
 
+import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestRegisterInbodyVO;
 import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseInbodyUserVO;
@@ -9,6 +11,9 @@ import com.dev5ops.healthtart.inbody.aggregate.vo.response.ResponseRegisterInbod
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.dto.InbodyUserDTO;
 import com.dev5ops.healthtart.inbody.service.InbodyService;
+import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.dev5ops.healthtart.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -25,41 +30,56 @@ import java.util.List;
 @Slf4j
 public class InbodyController {
     private final InbodyService inbodyService;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public InbodyController(InbodyService inbodyService, ModelMapper modelMapper) {
+    public InbodyController(InbodyService inbodyService, UserService userService, ModelMapper modelMapper) {
         this.inbodyService = inbodyService;
+        this.userService = userService;
         this.modelMapper = modelMapper;
     }
 
     @Operation(summary = "관리자, 유저 - 인바디 등록")
     @PostMapping("/register")
-    public ResponseEntity<ResponseRegisterInbodyVO> registerInbody(@RequestBody RequestRegisterInbodyVO request) {
-        InbodyDTO inbodyDTO = modelMapper.map(request, InbodyDTO.class);
-        InbodyDTO registerInbody = inbodyService.registerInbody(inbodyDTO);
+    public ResponseEntity<?> registerInbody(@RequestBody RequestRegisterInbodyVO request) {
+        log.info("인바디 등록 요청 : {}", request);
+        try {
+            UserDTO userDTO = userService.findById(request.getUserCode());
+            if (userDTO == null) {
+                log.warn("존재하지 않는 사용자: {}", request.getUserCode());
+                throw new CommonException(StatusEnum.USER_NOT_FOUND);
+            }
 
-        ResponseRegisterInbodyVO response = new ResponseRegisterInbodyVO(
-                registerInbody.getInbodyCode(),
-                registerInbody.getInbodyScore(),
-                registerInbody.getWeight(),
-                registerInbody.getHeight(),
-                registerInbody.getMuscleWeight(),
-                registerInbody.getFatWeight(),
-                registerInbody.getBmi(),
-                registerInbody.getFatPercentage(),
-                registerInbody.getDayOfInbody(),
-                registerInbody.getBasalMetabolicRate(),
-                registerInbody.getCreatedAt(),
-                registerInbody.getUpdatedAt(),
-                registerInbody.getUser()
-        );
+            UserEntity user = modelMapper.map(userDTO, UserEntity.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            InbodyDTO inbodyDTO = new InbodyDTO();
+            inbodyDTO.setInbodyScore(request.getInbodyScore());
+            inbodyDTO.setWeight(request.getWeight());
+            inbodyDTO.setHeight(request.getHeight());
+            inbodyDTO.setMuscleWeight(request.getMuscleWeight());
+            inbodyDTO.setFatWeight(request.getFatWeight());
+            inbodyDTO.setBmi(request.getBmi());
+            inbodyDTO.setFatPercentage(request.getFatPercentage());
+            inbodyDTO.setDayOfInbody(request.getDayOfInbody());
+            inbodyDTO.setBasalMetabolicRate(request.getBasalMetabolicRate());
+            inbodyDTO.setUser(user);
+
+            InbodyDTO registerInbody = inbodyService.registerInbody(inbodyDTO);
+
+            log.info("인바디 등록 성공: {}", registerInbody);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registerInbody);
+        } catch (CommonException e) {
+            log.error("인바디 등록 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예상치 못한 오류가 발생했습니다");
+        }
     }
 
     @Operation(summary = "관리자, 유저 - 인바디 수정")
-    @PostMapping("/{inbodyCode}/edit")
+    @PatchMapping("/{inbodyCode}/edit")
     public ResponseEntity<ResponseEditInbodyVO> editInbody(@PathVariable("inbodyCode") Long inbodyCode, @RequestBody RequestEditInbodyVO request) {
         InbodyDTO inbodyDTO = inbodyService.editInbody(inbodyCode, request);
 
@@ -135,9 +155,8 @@ public class InbodyController {
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
-    @GetMapping
+    @GetMapping("/inbody_ranking")
     public ResponseEntity<List<ResponseInbodyUserVO>> findInbodyUserInbody(){
-        log.info("heeeelejoeajoea");
         List<InbodyUserDTO> AllInbodyList = inbodyService.findInbodyUserInbody();
         List<ResponseInbodyUserVO> response = new ArrayList<>();
         log.info("response: {}", response);
