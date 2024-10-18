@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO) {
+    public void editMypageInfo(EditMypageDTO editUserDTO) {
 
         String userCode = getUserCode();
         UserEntity user = userRepository.findById(userCode).orElseThrow(()
@@ -240,8 +240,8 @@ public class UserServiceImpl implements UserService{
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
-        return modelMapper.map(user, EditMypageDTO.class);
     }
+
 
 
     public String getUserCode() {

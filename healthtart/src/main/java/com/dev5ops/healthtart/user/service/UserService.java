@@ -26,5 +26,5 @@ public interface UserService extends UserDetailsService {
 
     ResponseMypageDTO getMypageInfo();
 
-    EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
+    void editMypageInfo(EditMypageDTO editUserDTO);
 }
