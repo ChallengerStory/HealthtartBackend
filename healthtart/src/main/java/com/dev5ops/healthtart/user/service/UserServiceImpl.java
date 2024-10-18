@@ -115,15 +115,17 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDTO findUserByEmail(String userEmail) {
         UserEntity findUser = userRepository.findByUserEmail(userEmail);
-        if(findUser == null) {
-            return null;
-        }
+
+        if(findUser == null)
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
         return modelMapper.map(findUser, UserDTO.class);
     }
 
     @Override
     public UserDTO findById(String userCode) {
-        UserEntity user = userRepository.findById(userCode).get();
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         return modelMapper.map(user, UserDTO.class);
     }
@@ -134,7 +136,6 @@ public class UserServiceImpl implements UserService{
 
         UserEntity user = userRepository.findByUserEmail(userEmail);
 
-        // 사용자가 없을 경우 예외 발생
         if (user == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         // 사용자의 권한 설정
@@ -148,24 +149,27 @@ public class UserServiceImpl implements UserService{
         }
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        if(userDTO.getUserFlag() == false) throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        if(userDTO.getUserFlag() == false) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
         return new CustomUserDetails(
-                                    userDTO,
-                                    roles,
-                                    true,
-                                    true,
-                                    true,
-                                    user.getUserFlag());
+                                userDTO,
+                                roles,
+                                true,
+                                true,
+                                true,
+                                user.getUserFlag());
     }
 
     @Override
     public void deleteUser(String userCode) {
-        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         user.removeRequest(user);
         userRepository.save(user);
     }
 
+    // userNickname 유효성 검사하는 서비스코드 -> 회원가입, 마이페이지에서 사용
     @Override
     public Boolean checkValideNickname(String userNickname) {
         return isValidAndUniqueNickname(userNickname);
@@ -175,7 +179,8 @@ public class UserServiceImpl implements UserService{
     public void saveOauth2User(RequestOauth2VO request) {
 
         String userCode = getUserCode();
-        UserEntity findUser = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity findUser = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         findUser.setUserPhone(request.getUserPhone());
         findUser.setUserNickname(request.getUserNickname());
@@ -204,8 +209,8 @@ public class UserServiceImpl implements UserService{
     public void editMypageInfo(EditMypageDTO editUserDTO) {
 
         String userCode = getUserCode();
-        UserEntity user = userRepository.findById(userCode).orElseThrow(()
-                -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         user.setUserName(editUserDTO.getUserName());
         user.setUserEmail(editUserDTO.getUserEmail());
@@ -226,7 +231,7 @@ public class UserServiceImpl implements UserService{
         UserEntity findUser = userRepository.findByUserEmail(request.getUserEmail());
         if(findUser == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
-        // 비밀번호 bcrypt 해야함.
+        // 비밀번호 bCrypt 암호화.
         findUser.setUserPassword(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
         userRepository.save(findUser);
@@ -237,9 +242,7 @@ public class UserServiceImpl implements UserService{
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // 인증된 사용자가 문자열(String)인 경우 (로그인하지 않은 상태)
-        if (principal instanceof String) {
-            throw new CommonException(StatusEnum.USER_NOT_FOUND);
-        }
+        if (principal instanceof String) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         // 인증된 사용자가 CustomUserDetails인 경우
         CustomUserDetails userDetails = (CustomUserDetails) principal;
