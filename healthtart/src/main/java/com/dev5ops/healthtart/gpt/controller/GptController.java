@@ -6,11 +6,15 @@ import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.service.UserService;
 import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gpt")
@@ -36,7 +40,14 @@ public class GptController {
             }
 
             String routine = gptService.generateRoutine(userCode, bodyPart, time);
-            return ResponseEntity.ok(routine);
+            Map<String, Object> workoutData = gptService.routineParser(routine);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(workoutData);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonResponse);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(StatusEnum.ROUTINES_CREATED_ERROR.getMessage());
