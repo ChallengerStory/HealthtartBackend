@@ -53,6 +53,16 @@ public class UserController {
     //설명. 이메일 전송 API (회원가입전 실행)
     @PostMapping("/verification-email")
     public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 중복체크
+        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
+        log.info("userByEmail: {}", userByEmail);
+        if(userByEmail != null){
+            log.info("중복됨");
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
+        }
+
+        // 이메일 로 인증번호 전송
         try {
             emailVerificationService.sendVerificationEmail(request.getEmail());
 
@@ -101,15 +111,13 @@ public class UserController {
     }
 
     @PostMapping("/edit/mypage")
-    public ResponseEntity<ResponseEditMypageVO> editMypageInfo(@RequestBody RequestEditMypageVO request){
+    public ResponseEntity<String> editMypageInfo(@RequestBody RequestEditMypageVO request){
 
         EditMypageDTO editMypageDTO = modelMapper.map(request, EditMypageDTO.class);
 
-        EditMypageDTO afterEditDTO = userService.editMypageInfo(editMypageDTO);
+        userService.editMypageInfo(editMypageDTO);
 
-        ResponseEditMypageVO response = modelMapper.map(afterEditDTO, ResponseEditMypageVO.class);
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐어용");
     }
 
     // 회원 전체 조회
@@ -175,5 +183,4 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
     }
-
 }
