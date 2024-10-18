@@ -3,6 +3,7 @@ package com.dev5ops.healthtart.user.service;
 import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,7 @@ public interface UserService extends UserDetailsService {
 
     ResponseMypageDTO getMypageInfo();
 
-    EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
+    void editMypageInfo(EditMypageDTO editUserDTO);
+
+    void resetPassword(RequestResetPasswordVO request);
 }
