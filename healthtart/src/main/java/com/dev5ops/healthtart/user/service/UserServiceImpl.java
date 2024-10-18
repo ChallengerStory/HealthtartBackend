@@ -61,8 +61,8 @@ public class UserServiceImpl implements UserService{
             log.error("이메일 인증이 완료되지 않았습니다: {}", request.getUserEmail());
             throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED); // 이메일 인증이 필요하다는 커스텀 예외 던지기
         }
-
         if (userRepository.findByUserEmail(request.getUserEmail()) != null) throw new CommonException(StatusEnum.EMAIL_DUPLICATE);
+        if(!isValidAndUniqueNickname(request.getUserNickname())) throw new CommonException(StatusEnum.INVALID_NICKNAME_LENGTH);
 
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
@@ -131,14 +131,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+
         UserEntity user = userRepository.findByUserEmail(userEmail);
 
-        log.info("여기");
-
         // 사용자가 없을 경우 예외 발생
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
-        }
+        if (user == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         // 사용자의 권한 설정
         // ADMIN인 경우 MEMBER 속성도 가짐.
@@ -170,24 +167,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Boolean checkDuplicateNickname(String userNickname) {
-
-        Boolean response = true;
-
-        // 특수기호 확인을 위한 정규표현식
-        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
-        // 특수기호가 포함되어 있는지 확인
-        if (userNickname.matches(".*" + specialCharacters + ".*")) return response;
-
-        UserEntity user = userRepository.findByUserNickname(userNickname);
-        log.info(String.valueOf(response));
-        if(user == null){
-            response = false;
-            log.info(String.valueOf(response));
-        }
-        log.info(String.valueOf(response));
-
-        return response;
+    public Boolean checkValideNickname(String userNickname) {
+        return isValidAndUniqueNickname(userNickname);
     }
 
     @Override
@@ -225,6 +206,7 @@ public class UserServiceImpl implements UserService{
         String userCode = getUserCode();
         UserEntity user = userRepository.findById(userCode).orElseThrow(()
                 -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
         user.setUserName(editUserDTO.getUserName());
         user.setUserEmail(editUserDTO.getUserEmail());
         user.setUserPassword(editUserDTO.getUserPassword());
@@ -267,5 +249,42 @@ public class UserServiceImpl implements UserService{
 
         // 현재 로그인한 유저의 유저코드 반환
         return userDetails.getUserDTO().getUserCode();
+    }
+
+    public boolean isValidAndUniqueNickname(String nickname) {
+        int maxAllowedLength = 15;  // 한글 7자, 영어 15자 기준 (혼합 시 한글은 2배로 계산)
+        int currentLength = 0;
+
+        // 특수기호 확인을 위한 정규표현식
+        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
+
+        // 특수기호가 포함되어 있는지 확인
+        if (nickname.matches(".*" + specialCharacters + ".*")) {
+            return false;  // 특수기호가 포함되어 있으면 false 반환
+        }
+
+        // 닉네임의 길이 체크 (한글은 2글자, 영어는 1글자 계산)
+        for (int i = 0; i < nickname.length(); i++) {
+            char ch = nickname.charAt(i);
+
+            if (ch >= 0xAC00 && ch <= 0xD7A3) {
+                currentLength += 2;  // 한글은 2로 계산
+            } else {
+                currentLength += 1;  // 영어 및 기타 문자는 1로 계산
+            }
+
+            // 길이가 초과되면 false 반환
+            if (currentLength > maxAllowedLength) {
+                return false;
+            }
+        }
+
+        // 중복 확인
+        UserEntity user = userRepository.findByUserNickname(nickname);
+        if (user != null) {
+            return false;  // 중복된 닉네임이 있으면 false 반환
+        }
+
+        return true;  // 길이와 특수문자, 중복 체크를 모두 통과한 경우 true 반환
     }
 }

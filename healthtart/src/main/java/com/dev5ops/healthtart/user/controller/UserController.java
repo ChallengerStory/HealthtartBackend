@@ -183,13 +183,13 @@ public class UserController {
     @GetMapping("/nickname/check") // users/nickname/check
     public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
-        Boolean isDuplicate = userService.checkDuplicateNickname(userNickname);
+        Boolean isValid = userService.checkValideNickname(userNickname);
 
         // JSON 형태로 반환할 Map 생성
         Map<String, Boolean> response = new HashMap<>();
-        response.put("isDuplicate", isDuplicate);
+        response.put("isValid", isValid);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response); // true이면 사용 불가
+        return ResponseEntity.status(HttpStatus.OK).body(response); // false면 사용 불가
     }
 
     // 여기서 회원가입 시킬 예정

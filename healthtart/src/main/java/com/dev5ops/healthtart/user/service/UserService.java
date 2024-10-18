@@ -21,7 +21,7 @@ public interface UserService extends UserDetailsService {
 
     void deleteUser(String userCode);
 
-    Boolean checkDuplicateNickname(String userNickname);
+    Boolean checkValideNickname(String userNickname);
 
     void saveOauth2User(RequestOauth2VO requestOauth2VO);
 

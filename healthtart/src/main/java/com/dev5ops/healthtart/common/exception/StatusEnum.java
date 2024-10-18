@@ -33,7 +33,8 @@ public enum StatusEnum {
 
     INVALID_VERIFICATION_CODE(400, HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     EMAIL_VERIFICATION_REQUIRED(400, HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다."),
-    NICKNAME_DUPLICATE(409, HttpStatus.CONFLICT, "중복된 닉네임입니다..");
+    NICKNAME_DUPLICATE(409, HttpStatus.CONFLICT, "중복된 닉네임입니다.."),
+    INVALID_NICKNAME_LENGTH(400, HttpStatus.BAD_REQUEST, "닉네임은 한글 7자 또는 영어 15자 이내로 입력해주세요.");
 
     private final int statusCode;
     private final HttpStatus httpStatus;
