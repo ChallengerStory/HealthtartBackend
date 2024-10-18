@@ -4,6 +4,7 @@ import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -32,4 +33,6 @@ public interface UserService extends UserDetailsService {
     void updateUserGym(RegisterGymPerUserRequest registerGymRequest);
 
     void deleteUserGym(RegisterGymPerUserRequest registerGymRequest);
+
+    void resetPassword(RequestResetPasswordVO request);
 }
