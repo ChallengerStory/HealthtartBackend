@@ -11,7 +11,7 @@ public enum StatusEnum {
     MISSING_REQUEST_PARAMETER(400, HttpStatus.BAD_REQUEST, "필수 요청 파라미터가 누락되었습니다."),
     DATA_INTEGRITY_VIOLATION(400, HttpStatus.BAD_REQUEST, "데이터 무결성 위반입니다. 필수 값이 누락되었거나 유효하지 않습니다."),
     INVALID_PARAMETER_FORMAT(400, HttpStatus.BAD_REQUEST, "요청에 유효하지 않은 인자 형식입니다."),
-    EMAIL_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다."),
+    EMAIL_DUPLICATE(409, HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
     GYM_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 헬스장입니다."),
     EQUIPMENT_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록된 운동기구입니다."),
     DAY_OF_INBODY_DUPLICATE(400, HttpStatus.BAD_REQUEST, "이미 등록한 인바디 정보입니다."),
@@ -32,7 +32,8 @@ public enum StatusEnum {
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),
 
     INVALID_VERIFICATION_CODE(400, HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
-    EMAIL_VERIFICATION_REQUIRED(400, HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다.");
+    EMAIL_VERIFICATION_REQUIRED(400, HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다."),
+    NICKNAME_DUPLICATE(409, HttpStatus.CONFLICT, "중복된 닉네임입니다..");
 
     private final int statusCode;
     private final HttpStatus httpStatus;
