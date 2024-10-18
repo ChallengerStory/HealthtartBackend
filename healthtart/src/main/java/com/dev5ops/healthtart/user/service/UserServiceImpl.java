@@ -2,13 +2,15 @@ package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
+import com.dev5ops.healthtart.gym.repository.GymRepository;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
 import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,6 +35,7 @@ import java.util.UUID;
 @Slf4j
 public class UserServiceImpl implements UserService{
 
+    private GymRepository gymRepository;
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -41,7 +44,8 @@ public class UserServiceImpl implements UserService{
     private final RestTemplate restTemplate;
 
     @Autowired
-    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
+    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
+        this.gymRepository = gymRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
@@ -131,8 +135,6 @@ public class UserServiceImpl implements UserService{
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUserEmail(userEmail);
 
-        log.info("여기");
-
         // 사용자가 없을 경우 예외 발생
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email: " + userEmail);
@@ -213,25 +215,48 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO) {
-
+    public void editPassword(EditPasswordDTO editPasswordDTO) {
         String userCode = getUserCode();
-        UserEntity user = userRepository.findById(userCode).orElseThrow(()
-                -> new CommonException(StatusEnum.USER_NOT_FOUND));
-        user.setUserName(editUserDTO.getUserName());
-        user.setUserEmail(editUserDTO.getUserEmail());
-        user.setUserPassword(editUserDTO.getUserPassword());
-        user.setUserPhone(editUserDTO.getUserPhone());
-        user.setUserNickname(editUserDTO.getUserNickname());
-        user.setUserGender(editUserDTO.getUserGender());
-        user.setUserHeight(editUserDTO.getUserHeight());
-        user.setUserWeight(editUserDTO.getUserWeight());
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        // 현재 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(editPasswordDTO.getCurrentPassword(), user.getUserPassword())) {
+            throw new CommonException(StatusEnum.INVALID_PASSWORD);
+        }
+
+        // 새 비밀번호 설정
+        user.setUserPassword(bCryptPasswordEncoder.encode(editPasswordDTO.getNewPassword()));
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
-        return modelMapper.map(user, EditMypageDTO.class);
     }
 
+    @Override
+    public void updateUserGym(RegisterGymPerUserRequest registerGymRequest) {
+        String userCode = registerGymRequest.getUserCode();
+        String businessNumber = registerGymRequest.getBusinessNumber().trim();
+
+        log.info(businessNumber);
+
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        Gym gym = gymRepository.findByBusinessNumber(businessNumber).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+
+        log.info(businessNumber);
+
+        user.setGym(gym);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUserGym(RegisterGymPerUserRequest registerGymRequest) {
+        String userCode = registerGymRequest.getUserCode();
+
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.setGym(null);
+        userRepository.save(user);
+    }
 
     public String getUserCode() {
         // 현재 인증된 사용자 가져오기
