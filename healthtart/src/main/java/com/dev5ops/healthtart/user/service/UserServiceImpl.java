@@ -186,30 +186,19 @@ public class UserServiceImpl implements UserService{
     @Override
     public void saveOauth2User(RequestOauth2VO request) {
 
-        String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String uuid = UUID.randomUUID().toString();
+        String userCode = getUserCode();
+        UserEntity findUser = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
-        String userCode = curDate + "-" + uuid.substring(0);
+        findUser.setUserPhone(request.getUserPhone());
+        findUser.setUserNickname(request.getUserNickname());
+        findUser.setUserAddress(request.getUserAddress());
+        findUser.setUserGender(request.getUserGender());
+        findUser.setUserHeight(request.getUserHeight());
+        findUser.setUserWeight(request.getUserWeight());
+        findUser.setUserAge(request.getUserAge());
+        findUser.setUpdatedAt(LocalDateTime.now());
 
-        UserEntity oauth2User = UserEntity.builder()
-                .userCode(userCode)
-                .userName(request.getUserName())
-                .userEmail(request.getUserEmail())
-                .userPhone(request.getUserPhone())
-                .userNickname(request.getUserNickname())
-                .userAddress(request.getUserAddress())
-                .userFlag(true)
-                .userGender(request.getUserGender())
-                .userHeight(request.getUserHeight())
-                .userWeight(request.getUserWeight())
-                .userAge(request.getUserAge())
-                .provider(request.getProvider())
-                .providerId(request.getProviderId())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        userRepository.save(oauth2User);
+        userRepository.save(findUser);
     }
 
     @Override
