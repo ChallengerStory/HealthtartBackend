@@ -102,7 +102,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 제공자별 ID를 주요 식별자로 사용 -> 카카오는 "id"
         String nameAttributeKey = "google".equals(provider) ? "sub" : "id";
-
+        log.info("userAttributes:{}", userAttributes);
+        log.info("userAttributes:{}", userAttributes.toString());
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getUserType().name())),
                 userAttributes,
