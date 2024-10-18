@@ -12,5 +12,6 @@ import lombok.ToString;
 public class RequestResetPasswordVO {
 
     String userEmail;
+
     String userPassword;
 }

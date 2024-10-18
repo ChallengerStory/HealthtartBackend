@@ -58,11 +58,10 @@ public class UserController {
         UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
         log.info("userByEmail: {}", userByEmail);
         if(userByEmail != null){
-            log.info("중복됨");
             return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
         }
 
-        // 이메일 로 인증번호 전송
+        // 이메일로 인증번호 전송
         try {
             emailVerificationService.sendVerificationEmail(request.getEmail());
 

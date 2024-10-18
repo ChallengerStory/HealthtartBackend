@@ -9,7 +9,6 @@ import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

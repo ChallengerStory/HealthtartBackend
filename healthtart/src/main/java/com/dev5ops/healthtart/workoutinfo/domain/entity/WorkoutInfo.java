@@ -1,6 +1,6 @@
 package com.dev5ops.healthtart.workoutinfo.domain.entity;
 
-import com.dev5ops.healthtart.routine.domain.vo.EditRoutineVO;
+import com.dev5ops.healthtart.routine.domain.entity.Routine;
 import com.dev5ops.healthtart.workoutinfo.domain.vo.EditWorkoutInfoVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -25,11 +25,8 @@ public class WorkoutInfo {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "time")
+    @Column(name = "workout_time")
     private Integer time;
-
-    @Column(name = "link")
-    private String link;
 
     @JsonProperty("recommend_music")
     private String recommendMusic;
@@ -40,8 +37,9 @@ public class WorkoutInfo {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name ="routine_code")
-    private Long routineCode;
+    @ManyToOne
+    @JoinColumn(name ="routine_code")
+    private Routine routineCode;
 
     public void toUpdate(@Validated EditWorkoutInfoVO editWorkoutInfoVO) {
         this.title = editWorkoutInfoVO.getTitle();
