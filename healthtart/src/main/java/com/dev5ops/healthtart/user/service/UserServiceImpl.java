@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -171,29 +172,28 @@ public class UserServiceImpl implements UserService{
     @Override
     public void saveOauth2User(RequestOauth2VO request) {
 
-        String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String uuid = UUID.randomUUID().toString();
+        String userCode = getUserCode();
+        UserEntity findUser = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
-        String userCode = curDate + "-" + uuid.substring(0);
+        findUser.setUserPhone(request.getUserPhone());
+        findUser.setUserNickname(request.getUserNickname());
+        findUser.setUserAddress(request.getUserAddress());
+        findUser.setUserGender(request.getUserGender());
+        findUser.setUserHeight(request.getUserHeight());
+        findUser.setUserWeight(request.getUserWeight());
+        findUser.setUserAge(request.getUserAge());
+        findUser.setUpdatedAt(LocalDateTime.now());
 
-        UserEntity oauth2User = UserEntity.builder()
-                .userCode(userCode)
-                .userName(request.getUserName())
-                .userEmail(request.getUserEmail())
-                .userPhone(request.getUserPhone())
-                .userNickname(request.getUserNickname())
-                .userAddress(request.getUserAddress())
-                .userFlag(true)
-                .userGender(request.getUserGender())
-                .userHeight(request.getUserHeight())
-                .userWeight(request.getUserWeight())
-                .userAge(request.getUserAge())
-                .provider(request.getProvider())
-                .providerId(request.getProviderId())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        userRepository.save(findUser);
+    }
 
-        userRepository.save(oauth2User);
+    public String getUserCode(){
+        // 현재 인증된 사용자 가져오기
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails {}", userDetails.toString());
+
+        // 현재 로그인한 유저의 유저코드
+        return userDetails.getUserDTO().getUserCode();
     }
 }
