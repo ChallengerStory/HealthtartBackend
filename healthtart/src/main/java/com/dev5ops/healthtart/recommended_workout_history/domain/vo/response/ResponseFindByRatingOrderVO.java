@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ResponseFindByRatingOrderVO {
-    private Long routineCode;
+    private Long workoutInfoCode;
     private Double routineRatings;
 
 }
