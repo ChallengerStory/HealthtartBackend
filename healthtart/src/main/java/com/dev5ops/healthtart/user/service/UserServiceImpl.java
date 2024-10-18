@@ -201,16 +201,6 @@ public class UserServiceImpl implements UserService{
         userRepository.save(findUser);
     }
 
-    public String getUserCode(){
-        // 현재 인증된 사용자 가져오기
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Authentication :{}", SecurityContextHolder.getContext().getAuthentication());
-        log.info("userDetails {}", userDetails.toString());
-
-        // 현재 로그인한 유저의 유저코드
-        return userDetails.getUserDTO().getUserCode();
-    }
-
     @Override
     public ResponseMypageDTO getMypageInfo() {
 
