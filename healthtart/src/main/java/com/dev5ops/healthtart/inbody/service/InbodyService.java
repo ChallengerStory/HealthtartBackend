@@ -7,7 +7,10 @@ import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestEditInbodyVO;
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.dto.InbodyUserDTO;
 import com.dev5ops.healthtart.inbody.repository.InbodyRepository;
+import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.repository.UserRepository;
+import com.dev5ops.healthtart.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,22 +27,50 @@ import java.util.stream.Collectors;
 @Service("inbodyService")
 public class InbodyService {
     private final InbodyRepository inbodyRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     @Transactional
     public InbodyDTO registerInbody(InbodyDTO inbodyDTO) {
-        Optional<Inbody> existingInbody = inbodyRepository.findByDayOfInbodyAndUser(inbodyDTO.getDayOfInbody(), inbodyDTO.getUser());
-        if (existingInbody.isPresent()) {
-            throw new CommonException(StatusEnum.DAY_OF_INBODY_DUPLICATE);
-        }
+        log.info("인바디 등록 중: {}", inbodyDTO);
+        inbodyDTO.setUserCode(inbodyDTO.getUser().getUserCode());
 
-        Inbody inbody = modelMapper.map(inbodyDTO, Inbody.class);
+        UserDTO userDTO = userService.findById(inbodyDTO.getUserCode());
+        if (userDTO == null) {
+            log.warn("존재하지 않는 사용자: {}", inbodyDTO.getUserCode());
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+        }
+        log.info(userDTO.toString());
+
+        UserEntity user = convertToUserEntity(userDTO);
+
+        Inbody inbody = new Inbody();
+        inbody.setInbodyScore(inbodyDTO.getInbodyScore());
+        inbody.setWeight(inbodyDTO.getWeight());
+        inbody.setHeight(inbodyDTO.getHeight());
+        inbody.setMuscleWeight(inbodyDTO.getMuscleWeight());
+        inbody.setFatWeight(inbodyDTO.getFatWeight());
+        inbody.setBmi(inbodyDTO.getBmi());
+        inbody.setFatPercentage(inbodyDTO.getFatPercentage());
+        inbody.setDayOfInbody(inbodyDTO.getDayOfInbody());
+        inbody.setBasalMetabolicRate(inbodyDTO.getBasalMetabolicRate());
+        inbody.setUser(user);
         inbody.setCreatedAt(LocalDateTime.now());
         inbody.setUpdatedAt(LocalDateTime.now());
 
+        Optional<Inbody> existingInbody = inbodyRepository.findByDayOfInbodyAndUser(inbodyDTO.getDayOfInbody(), user);
+        if (existingInbody.isPresent()) {
+            log.warn("중복 인바디 항목 발견: 날짜: {} 사용자: {}", inbodyDTO.getDayOfInbody(), user);
+            throw new CommonException(StatusEnum.DAY_OF_INBODY_DUPLICATE);
+        }
+
+        log.info("데이터베이스에 인바디 저장 중: {}", inbody);
         Inbody savedInbody = inbodyRepository.save(inbody);
+
+        log.info("저장된 인바디 객체: {}", savedInbody);
         return modelMapper.map(savedInbody, InbodyDTO.class);
     }
+
 
     @Transactional
     public InbodyDTO editInbody(Long inbodyCode, RequestEditInbodyVO request) {
@@ -98,9 +129,12 @@ public class InbodyService {
 
 
     public List<InbodyUserDTO> findInbodyUserInbody() {
-        log.info("aweaew");
         List<InbodyUserDTO> dtoList = inbodyRepository.findLatestInbodyRankings();
         log.info("dtoList:{}", dtoList.toString());
         return dtoList;
+    }
+
+    public UserEntity convertToUserEntity(UserDTO userDTO) {
+        return modelMapper.map(userDTO, UserEntity.class);
     }
 }
