@@ -12,9 +12,11 @@ import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
+import com.dev5ops.healthtart.user.domain.vo.request.*;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
+import com.dev5ops.healthtart.user.service.CoolSmsService;
 import com.dev5ops.healthtart.user.service.EmailVerificationService;
 import com.dev5ops.healthtart.user.service.UserService;
 //import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController {
 
+    private final CoolSmsService coolSmsService;
     private JwtUtil jwtUtil;
     private Environment env;
     private ModelMapper modelMapper;
@@ -44,12 +47,13 @@ public class UserController {
     private EmailVerificationService emailVerificationService;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService, CoolSmsService coolSmsService) {
         this.jwtUtil = jwtUtil;
         this.env = env;
         this.modelMapper = modelMapper;
         this.userService = userService;
         this.emailVerificationService = emailVerificationService;
+        this.coolSmsService = coolSmsService;
     }
 
     //설명. 이메일 전송 API (회원가입전 실행)
@@ -224,5 +228,18 @@ public class UserController {
         userService.resetPassword(request);
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
+    }
+    // 핸드폰 인증번호 전송
+    @PostMapping(value = "/send-sms", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<String> sendSmsVerification(@RequestBody SmsVerificationRequestVO smsVerificationRequestVO) {
+        String verificationCode = userService.sendSmsForVerification(smsVerificationRequestVO.getUserPhone());
+        return ResponseEntity.ok("[Healthtart] 다음 인증번호를 입력해주세요\n " + verificationCode);
+    }
+
+    // 인증번호 확인 후 이메일 반환
+    @PostMapping("/verify-code")
+    public ResponseEntity<String> verifyCodeAndGetEmail(@RequestBody EmailRequestVO emailRequestVO) {
+        String email = userService.verifyCodeAndFindEmail(emailRequestVO.getUserPhone(), emailRequestVO.getVerificationCode());
+        return ResponseEntity.ok("사용자의 이메일은: " + email + "입니다.");
     }
 }

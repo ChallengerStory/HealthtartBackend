@@ -36,5 +36,9 @@ public interface UserService extends UserDetailsService {
 
     void resetPassword(RequestResetPasswordVO request);
 
+    String sendSmsForVerification(String userPhone);
+
+    String verifyCodeAndFindEmail(String userPhone, String verificationCode);
+
     void findUserByEmail2(String email);
 }

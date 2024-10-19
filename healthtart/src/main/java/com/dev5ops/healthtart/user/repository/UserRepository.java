@@ -25,4 +25,8 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
             "WHERE u.userCode = :userCode")
     ResponseMypageDTO findMypageInfo(@Param("userCode") String userCode);
 
+    // 핸드폰 번호로 이메일 조회
+    String findUserEmailByUserPhone(String userPhone);
+
+
 }
