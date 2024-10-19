@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class RecommendedWorkoutHistoryController {
                 .map(entry -> new ResponseFindByRatingOrderVO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(responseList);
     }
 
     @Operation(summary = "운동 추천 만족도 등록")
