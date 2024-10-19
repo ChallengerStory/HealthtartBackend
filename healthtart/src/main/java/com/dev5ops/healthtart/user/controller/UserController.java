@@ -57,11 +57,7 @@ public class UserController {
     public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
 
         // 이메일 중복체크
-        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
-        log.info("userByEmail: {}", userByEmail);
-
-        if(userByEmail != null)
-            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
+        userService.findUserByEmail2(request.getEmail());
 
         return getResponseEmailDTO(request);
     }

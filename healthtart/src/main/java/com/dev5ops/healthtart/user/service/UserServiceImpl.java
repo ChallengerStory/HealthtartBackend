@@ -122,6 +122,15 @@ public class UserServiceImpl implements UserService{
         return modelMapper.map(findUser, UserDTO.class);
     }
 
+    // 회원 가입 전 중복 이메일 체크 메서드
+    @Override
+    public void findUserByEmail2(String userEmail){
+        UserEntity findUser = userRepository.findByUserEmail(userEmail);
+
+        if(findUser != null)
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+    }
+
     @Override
     public UserDTO findById(String userCode) {
         UserEntity user = userRepository.findById(userCode)
