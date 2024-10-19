@@ -2,7 +2,6 @@ package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
-import com.dev5ops.healthtart.user.domain.dto.ResponseInsertUserDTO;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
@@ -10,7 +9,6 @@ import com.dev5ops.healthtart.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
