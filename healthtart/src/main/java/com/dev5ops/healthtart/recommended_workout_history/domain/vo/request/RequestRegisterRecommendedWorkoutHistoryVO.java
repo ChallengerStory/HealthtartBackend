@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RequestRegisterRecommendedWorkoutHistoryVO {
     private Double routineRatings;
-    private Long routineCode;
+    private Long workoutInfoCode;
 }
 

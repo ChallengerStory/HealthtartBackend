@@ -105,6 +105,8 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/register", "POST")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**/edit", "PATCH")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "DELETE")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/history/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/workoutInfos/**", "GET")).hasRole("MEMBER")
 
 //                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "OPTIONS")).permitAll() // OPTIONS 요청은 안해줘도 작동
                                 .anyRequest().authenticated()

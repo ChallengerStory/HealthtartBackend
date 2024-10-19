@@ -1,10 +1,8 @@
 package com.dev5ops.healthtart.recommended_workout_history.domain.entity;
 
+import com.dev5ops.healthtart.workoutinfo.domain.entity.WorkoutInfo;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Getter
+@Builder
 public class RecommendedWorkoutHistory {
 
     @Id
@@ -30,7 +29,8 @@ public class RecommendedWorkoutHistory {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name="routine_code")
-    private Long routineCode;
+    @ManyToOne
+    @JoinColumn(name="workout_info_code")
+    private WorkoutInfo workoutInfoCode;
 
 }

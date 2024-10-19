@@ -14,5 +14,5 @@ public class ResponseRegisterRecommendedWorkoutHistoryVO {
     private Double routineRatings;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long routineCode;
+    private Long workoutInfoCode;
 }
