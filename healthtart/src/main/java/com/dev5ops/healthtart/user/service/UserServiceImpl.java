@@ -252,6 +252,7 @@ public class UserServiceImpl implements UserService{
         user.setGym(null);
         userRepository.save(user);
     }
+
     @Override
     public void resetPassword(RequestResetPasswordVO request) {
 
