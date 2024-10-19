@@ -14,12 +14,11 @@ import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.*;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
 import com.dev5ops.healthtart.user.service.CoolSmsService;
 import com.dev5ops.healthtart.user.service.EmailVerificationService;
 import com.dev5ops.healthtart.user.service.UserService;
-//import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +56,7 @@ public class UserController {
     }
 
     //설명. 이메일 전송 API (회원가입전 실행)
+    @Operation(summary = "회원가입 전 이메일 전송 API")
     @PostMapping("/verification-email")
     public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
 
@@ -67,6 +67,7 @@ public class UserController {
     }
 
     //설명. 이메일 전송 API -> 비밀번호 재설정시 사용
+    @Operation(summary = "비밀번호 재설정시 이메일 전송 API")
     @PostMapping("/verification-email/password")
     public ResponseEmailDTO<?> sendVerificationEmailPassword(@RequestBody @Validated EmailVerificationVO request) {
 
@@ -93,6 +94,7 @@ public class UserController {
     }
 
     //설명. 이메일 인증번호 검증 API (회원가입전 실행)
+    @Operation(summary = "회원가입 전 이메일 인증번호 검증")
     @PostMapping("/verification-email/confirmation")
     public ResponseEmailDTO<?> verifyEmail(@RequestBody @Validated EmailVerificationVO request) {
         boolean isVerified = emailVerificationService.verifyCode(request.getEmail(), request.getCode());
@@ -106,6 +108,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<String> insertUser(@RequestBody RequestInsertUserVO request) {
 
@@ -118,6 +121,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
 
+    @Operation(summary = "유저 마이페이지 조회")
     @GetMapping("/mypage")
     public ResponseEntity<ResponseMypageVO> getMypageInfo(){
 
@@ -128,6 +132,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "유저 마이페이지 비밀번호 수정")
     @PatchMapping("/mypage/edit/password")
     public ResponseEntity<ResponseEditPasswordVO> editPassword(@RequestBody RequestEditPasswordVO request) {
         EditPasswordDTO editPasswordDTO = modelMapper.map(request, EditPasswordDTO.class);
@@ -140,6 +145,7 @@ public class UserController {
     }
 
     // 회원 전체 조회
+    @Operation(summary = "회원 전체 조회")
     @GetMapping
     public ResponseEntity<List<ResponseFindUserVO>> getAllUsers() {
 
@@ -152,6 +158,7 @@ public class UserController {
     }
 
     // 이메일로 회원 정보 조회
+    @Operation(summary = "이메일로 회원 단건 조회")
     @GetMapping("/email/{email}")
     public ResponseEntity<ResponseFindUserVO> findUserByEmail(@PathVariable String email) {
         UserDTO userDTO = userService.findUserByEmail(email);
@@ -161,6 +168,7 @@ public class UserController {
     }
 
     // 회원 코드로 회원 정보 조회
+    @Operation(summary = "회원코드로 회원 단건 조회")
     @GetMapping("/usercode/{userCode}")
     public ResponseEntity<ResponseFindUserVO> findUserById(@PathVariable String userCode) {
         UserDTO userDTO = userService.findById(userCode);
@@ -170,6 +178,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
+    @Operation(summary = "회원 탈퇴")
     @PatchMapping("/delete/{userCode}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userCode) {
         userService.deleteUser(userCode);
@@ -178,6 +187,7 @@ public class UserController {
     }
 
 
+    @Operation(summary = "닉네임 중복체크")
     @GetMapping("/nickname/check") // users/nickname/check
     public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
@@ -191,6 +201,7 @@ public class UserController {
     }
 
     // 여기서 회원가입 시킬 예정
+    @Operation(summary = "OAuth2 유저 회원가입")
     @PostMapping("/oauth2")
     public ResponseEntity<String> saveOauth2User(@RequestBody RequestOauth2VO requestOauth2VO){
 
@@ -203,6 +214,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
     }
 
+    @Operation(summary = "회원 헬스장 등록")
     @PostMapping("/register-gym")
     public ResponseEntity<String> registerGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
         try {
@@ -213,6 +225,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "회원 헬스장 삭제")
     @PostMapping("/remove-gym")
     public ResponseEntity<String> removeGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
         try {
@@ -222,6 +235,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("헬스장 삭제에 실패했습니다.");
         }
     }
+
+    @Operation(summary = "비밀번호 재설정")
     @PostMapping("/password")
     public ResponseEntity<String> resetPassword(@RequestBody RequestResetPasswordVO request) {
 
@@ -229,7 +244,9 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
     }
+
     // 핸드폰 인증번호 전송
+    @Operation(summary = "아이디(이메일) 찾기- 유저 핸드폰 인증번호 전송")
     @PostMapping(value = "/send-sms", produces = "application/json; charset=UTF-8")
     public ResponseEntity<String> sendSmsVerification(@RequestBody SmsVerificationRequestVO smsVerificationRequestVO) {
         String verificationCode = userService.sendSmsForVerification(smsVerificationRequestVO.getUserPhone());
@@ -237,6 +254,7 @@ public class UserController {
     }
 
     // 인증번호 확인 후 이메일 반환
+    @Operation(summary = "아이디(이메일) 찾기 - 유저 이메일 반환")
     @PostMapping("/verify-code")
     public ResponseEntity<String> verifyCodeAndGetEmail(@RequestBody EmailRequestVO emailRequestVO) {
         String email = userService.verifyCodeAndFindEmail(emailRequestVO.getUserPhone(), emailRequestVO.getVerificationCode());

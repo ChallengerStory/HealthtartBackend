@@ -4,6 +4,7 @@ import com.dev5ops.healthtart.rival.domain.dto.RivalDTO;
 import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO;
 import com.dev5ops.healthtart.rival.domain.vo.response.ResponseRivalVO;
 import com.dev5ops.healthtart.rival.service.RivalService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class RivalController {
         this.rivalService = rivalService;
     }
 
+    @Operation(summary = "내 라이벌 조회")
     @GetMapping
     public ResponseEntity<ResponseRivalVO> findRivalMatch(){
         RivalDTO rival = rivalService.findRivalMatch();
@@ -35,6 +37,7 @@ public class RivalController {
     }
 
     // 2. 선택한 라이벌 조회하는 기능
+    @Operation(summary = "선택한 라이벌 조회")
     @GetMapping("/{rivalusercode}")
     public ResponseEntity<List<RivalUserInbodyDTO>> findRival(@PathVariable String rivalusercode){
 
@@ -44,6 +47,7 @@ public class RivalController {
     }
 
     // 3. 선택한 라이벌 삭제
+    @Operation(summary = "선택한 라이벌 삭제")
     @DeleteMapping("/{rivalMatchCode}")
     public ResponseEntity<String> deleteRival(@PathVariable Long rivalMatchCode){
 
@@ -53,6 +57,7 @@ public class RivalController {
     }
 
     // 4. 선택한 유저 라이벌 등록
+    @Operation(summary = "선택한 라이벌 등록")
     @PostMapping("/{rivalUserCode}")
     public ResponseEntity insertRival(@PathVariable String rivalUserCode){
         RivalDTO rivalDTO = rivalService.insertRival(rivalUserCode);
