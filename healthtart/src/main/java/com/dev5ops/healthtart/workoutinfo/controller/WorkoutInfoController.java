@@ -42,6 +42,13 @@ public class WorkoutInfoController {
         return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
     }
 
+    @GetMapping("/{RoutineCode}")
+    @Operation(summary = "루틴 코드별 운동 정보 단일 조회")
+    public ResponseEntity<ResponseFindWorkoutInfoVO> getWorkoutInfoByRoutineCode(@PathVariable Long routineCode) {
+        ResponseFindWorkoutInfoVO workoutInfo = workoutInfoService.findWorkoutInfoByCode(routineCode);
+        return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
+    }
+
     @PostMapping
     @Operation(summary = "운동 정보 등록")
     public ResponseEntity<ResponseInsertWorkoutInfoVO> registerWorkoutInfo(@RequestBody RequestInsertWorkoutInfoVO requestInsertWorkoutInfoVO) {
