@@ -5,12 +5,14 @@ import com.dev5ops.healthtart.routine.domain.entity.Routine;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class ResponseFindWorkoutPerRoutineVO {
     private Long workoutPerRoutineCode;
     private int workoutOrder;
