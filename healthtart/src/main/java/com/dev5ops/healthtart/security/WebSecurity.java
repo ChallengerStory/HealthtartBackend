@@ -68,6 +68,7 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/users/oauth2", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/mypage/edit/password", "PATCH")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "OPTIONS")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "GET")).permitAll()
