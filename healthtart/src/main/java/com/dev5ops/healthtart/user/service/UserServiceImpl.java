@@ -218,15 +218,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public void editPassword(EditPasswordDTO editPasswordDTO) {
         String userCode = getUserCode();
-        UserEntity user = userRepository.findById(userCode)
-                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
-        // 현재 비밀번호 확인
         if (!bCryptPasswordEncoder.matches(editPasswordDTO.getCurrentPassword(), user.getUserPassword())) {
             throw new CommonException(StatusEnum.INVALID_PASSWORD);
         }
 
-        // 새 비밀번호 설정
         user.setUserPassword(bCryptPasswordEncoder.encode(editPasswordDTO.getNewPassword()));
         user.setUpdatedAt(LocalDateTime.now());
 

@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173")  // 프론트엔드 도메인
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 허용할 메서드
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")  // 허용할 메서드
                 .allowedHeaders("*");  // 모든 헤더 허용
     }
 }
