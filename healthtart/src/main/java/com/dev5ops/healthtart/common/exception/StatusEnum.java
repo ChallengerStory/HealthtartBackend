@@ -30,12 +30,14 @@ public enum StatusEnum {
     INBODY_NOT_FOUND(404, HttpStatus.NOT_FOUND, "인바디 데이터가 존재하지 않습니다."),
     RIVAL_NOT_FOUND(404, HttpStatus.NOT_FOUND, "라이벌 데이터가 존재하지 않습니다."),
     RECORD_NOT_FOUND(404, HttpStatus.NOT_FOUND, "DB에 해당 운동기록이 존재하지 않습니다."),
+    EMAIL_NOT_FOUND(404, HttpStatus.NOT_FOUND, "회원가입 되지않은 아이디 입니다."),
 
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),
 
     INVALID_VERIFICATION_CODE(400, HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     EMAIL_VERIFICATION_REQUIRED(400, HttpStatus.BAD_REQUEST, "이메일 인증이 필요합니다."),
-    NICKNAME_DUPLICATE(409, HttpStatus.CONFLICT, "중복된 닉네임입니다..");
+    NICKNAME_DUPLICATE(409, HttpStatus.CONFLICT, "중복된 닉네임입니다.."),
+    INVALID_NICKNAME_LENGTH(400, HttpStatus.BAD_REQUEST, "닉네임은 한글 7자 또는 영어 15자 이내로 입력해주세요.");
 
     private final int statusCode;
     private final HttpStatus httpStatus;

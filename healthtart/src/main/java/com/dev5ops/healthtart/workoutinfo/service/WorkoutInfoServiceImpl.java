@@ -47,6 +47,13 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
     }
 
     @Override
+    public ResponseFindWorkoutInfoVO getWorkoutInfoByRoutineCode(Long routineCode) {
+        WorkoutInfo workoutInfo = workoutInfoRepository.findById(routineCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        return modelMapper.map(workoutInfo, ResponseFindWorkoutInfoVO.class);
+    }
+
+    @Override
     @Transactional
     public ResponseInsertWorkoutInfoVO registerWorkoutInfo(WorkoutInfoDTO workoutInfoDTO) {
         Routine routine = routineService.getRoutineByCode(workoutInfoDTO.getRoutineCode());

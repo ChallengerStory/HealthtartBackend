@@ -59,32 +59,27 @@ public class UserController {
         // 이메일 중복체크
         UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
         log.info("userByEmail: {}", userByEmail);
-        if(userByEmail != null){
+
+        if(userByEmail != null)
             return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
-        }
 
-        // 이메일로 인증번호 전송
-        try {
-            emailVerificationService.sendVerificationEmail(request.getEmail());
-
-            ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
-            responseEmailMessageVO.setMessage("인증 코드가 이메일로 전송되었습니다.");
-            return ResponseEmailDTO.ok(responseEmailMessageVO);
-        } catch (Exception e) {
-            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INTERNAL_SERVER_ERROR));
-        }
+        return getResponseEmailDTO(request);
     }
 
     //설명. 이메일 전송 API -> 비밀번호 재설정시 사용
     @PostMapping("/verification-email/password")
     public ResponseEmailDTO<?> sendVerificationEmailPassword(@RequestBody @Validated EmailVerificationVO request) {
 
-        // 이메일 중복체크
+        // 이메일 존재 확인
         UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
-        if(userByEmail == null){
-            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
-        }
+        if(userByEmail == null)
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_NOT_FOUND));
 
+        // 이메일로 인증번호 전송
+        return getResponseEmailDTO(request);
+    }
+
+    private ResponseEmailDTO<?> getResponseEmailDTO(EmailVerificationVO request) {
         // 이메일로 인증번호 전송
         try {
             emailVerificationService.sendVerificationEmail(request.getEmail());
@@ -113,9 +108,10 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
-        if (request.getUserType() == null) {
+
+        // USER_TYPE이 없는 경우 MEMBER로 설정
+        if (request.getUserType() == null)
             request.setUserType("MEMBER");
-        }
 
         ResponseInsertUserVO responseUser =
                 modelMapper.map(userService.signUpUser(request), ResponseInsertUserVO.class);
@@ -147,7 +143,7 @@ public class UserController {
     // 회원 전체 조회
     @GetMapping
     public ResponseEntity<List<ResponseFindUserVO>> getAllUsers() {
-        // service에서 DTO 형태로 찾은 애를 VO로 바꿔야한다
+
         List<UserDTO> userDTOList = userService.findAllUsers();
         List<ResponseFindUserVO> userVOList = userDTOList.stream()
                 .map(userDTO -> modelMapper.map(userDTO, ResponseFindUserVO.class))
@@ -186,13 +182,13 @@ public class UserController {
     @GetMapping("/nickname/check") // users/nickname/check
     public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
-        Boolean isDuplicate = userService.checkDuplicateNickname(userNickname);
+        Boolean isValid = userService.checkValideNickname(userNickname);
 
         // JSON 형태로 반환할 Map 생성
         Map<String, Boolean> response = new HashMap<>();
-        response.put("isDuplicate", isDuplicate);
+        response.put("isValid", isValid);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response); // true이면 사용 불가
+        return ResponseEntity.status(HttpStatus.OK).body(response); // false면 사용 불가
     }
 
     // 여기서 회원가입 시킬 예정
@@ -234,6 +230,4 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
     }
-
-
 }

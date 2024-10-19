@@ -66,8 +66,8 @@ public class UserServiceImpl implements UserService{
             log.error("이메일 인증이 완료되지 않았습니다: {}", request.getUserEmail());
             throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED); // 이메일 인증이 필요하다는 커스텀 예외 던지기
         }
-
         if (userRepository.findByUserEmail(request.getUserEmail()) != null) throw new CommonException(StatusEnum.EMAIL_DUPLICATE);
+        if(!isValidAndUniqueNickname(request.getUserNickname())) throw new CommonException(StatusEnum.INVALID_NICKNAME_LENGTH);
 
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
@@ -121,12 +121,16 @@ public class UserServiceImpl implements UserService{
     public UserDTO findUserByEmail(String userEmail) {
         UserEntity findUser = userRepository.findByUserEmail(userEmail);
 
+        if(findUser == null)
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
         return modelMapper.map(findUser, UserDTO.class);
     }
 
     @Override
     public UserDTO findById(String userCode) {
-        UserEntity user = userRepository.findById(userCode).get();
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         return modelMapper.map(user, UserDTO.class);
     }
@@ -136,10 +140,7 @@ public class UserServiceImpl implements UserService{
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUserEmail(userEmail);
 
-        // 사용자가 없을 경우 예외 발생
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
-        }
+        if (user == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         // 사용자의 권한 설정
         // ADMIN인 경우 MEMBER 속성도 가짐.
@@ -152,45 +153,38 @@ public class UserServiceImpl implements UserService{
         }
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        if(userDTO.getUserFlag() == false) throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        if(userDTO.getUserFlag() == false) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
         return new CustomUserDetails(
-                                    userDTO,
-                                    roles,
-                                    true,
-                                    true,
-                                    true,
-                                    user.getUserFlag());
+                                userDTO,
+                                roles,
+                                true,
+                                true,
+                                true,
+                                user.getUserFlag());
     }
 
     @Override
     public void deleteUser(String userCode) {
-        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         user.removeRequest(user);
         userRepository.save(user);
     }
 
+    // userNickname 유효성 검사하는 서비스코드 -> 회원가입, 마이페이지에서 사용
     @Override
-    public Boolean checkDuplicateNickname(String userNickname) {
-
-        Boolean response = true;
-
-        // 특수기호 확인을 위한 정규표현식
-        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
-        // 특수기호가 포함되어 있는지 확인
-        if (userNickname.matches(".*" + specialCharacters + ".*")) return response;
-
-        UserEntity user = userRepository.findByUserNickname(userNickname);
-        if(user == null) response = false;
-
-        return response;
+    public Boolean checkValideNickname(String userNickname) {
+        return isValidAndUniqueNickname(userNickname);
     }
 
     @Override
     public void saveOauth2User(RequestOauth2VO request) {
 
         String userCode = getUserCode();
-        UserEntity findUser = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity findUser = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         findUser.setUserPhone(request.getUserPhone());
         findUser.setUserNickname(request.getUserNickname());
@@ -255,13 +249,14 @@ public class UserServiceImpl implements UserService{
         user.setGym(null);
         userRepository.save(user);
     }
+
     @Override
     public void resetPassword(RequestResetPasswordVO request) {
 
         UserEntity findUser = userRepository.findByUserEmail(request.getUserEmail());
         if(findUser == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
-        // 비밀번호 bcrypt 해야함.
+        // 비밀번호 bCrypt 암호화.
         findUser.setUserPassword(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
         userRepository.save(findUser);
@@ -272,9 +267,7 @@ public class UserServiceImpl implements UserService{
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // 인증된 사용자가 문자열(String)인 경우 (로그인하지 않은 상태)
-        if (principal instanceof String) {
-            throw new CommonException(StatusEnum.USER_NOT_FOUND);
-        }
+        if (principal instanceof String) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         // 인증된 사용자가 CustomUserDetails인 경우
         CustomUserDetails userDetails = (CustomUserDetails) principal;
@@ -284,5 +277,42 @@ public class UserServiceImpl implements UserService{
 
         // 현재 로그인한 유저의 유저코드 반환
         return userDetails.getUserDTO().getUserCode();
+    }
+
+    public boolean isValidAndUniqueNickname(String nickname) {
+        int maxAllowedLength = 15;  // 한글 7자, 영어 15자 기준 (혼합 시 한글은 2배로 계산)
+        int currentLength = 0;
+
+        // 특수기호 확인을 위한 정규표현식
+        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
+
+        // 특수기호가 포함되어 있는지 확인
+        if (nickname.matches(".*" + specialCharacters + ".*")) {
+            return false;  // 특수기호가 포함되어 있으면 false 반환
+        }
+
+        // 닉네임의 길이 체크 (한글은 2글자, 영어는 1글자 계산)
+        for (int i = 0; i < nickname.length(); i++) {
+            char ch = nickname.charAt(i);
+
+            if (ch >= 0xAC00 && ch <= 0xD7A3) {
+                currentLength += 2;  // 한글은 2로 계산
+            } else {
+                currentLength += 1;  // 영어 및 기타 문자는 1로 계산
+            }
+
+            // 길이가 초과되면 false 반환
+            if (currentLength > maxAllowedLength) {
+                return false;
+            }
+        }
+
+        // 중복 확인
+        UserEntity user = userRepository.findByUserNickname(nickname);
+        if (user != null) {
+            return false;  // 중복된 닉네임이 있으면 false 반환
+        }
+
+        return true;  // 길이와 특수문자, 중복 체크를 모두 통과한 경우 true 반환
     }
 }
