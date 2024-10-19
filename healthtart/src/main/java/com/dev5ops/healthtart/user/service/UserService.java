@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public interface UserService extends UserDetailsService {
-    ResponseInsertUserDTO signUpUser(RequestInsertUserVO request);
+    void signUpUser(RequestInsertUserVO request);
 
     List<UserDTO> findAllUsers();
 
@@ -39,4 +39,6 @@ public interface UserService extends UserDetailsService {
     String sendSmsForVerification(String userPhone);
 
     String verifyCodeAndFindEmail(String userPhone, String verificationCode);
+
+    void findUserByEmail2(String email);
 }
