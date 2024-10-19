@@ -13,7 +13,6 @@ import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.*;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
@@ -48,7 +47,7 @@ public class UserController {
     private EmailVerificationService emailVerificationService;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService, CoolSmsService coolSmsService) {
         this.jwtUtil = jwtUtil;
         this.env = env;
         this.modelMapper = modelMapper;
@@ -235,10 +234,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
     }
     // 핸드폰 인증번호 전송
-    @PostMapping("/send-sms")
+    @PostMapping(value = "/send-sms", produces = "application/json; charset=UTF-8")
     public ResponseEntity<String> sendSmsVerification(@RequestBody SmsVerificationRequestVO smsVerificationRequestVO) {
         String verificationCode = userService.sendSmsForVerification(smsVerificationRequestVO.getUserPhone());
-        return ResponseEntity.ok("[Healthtart] 다음 인증번호를 입력해주세요 " + verificationCode + " 입니다.");
+        return ResponseEntity.ok("[Healthtart] 다음 인증번호를 입력해주세요\n " + verificationCode);
     }
 
     // 인증번호 확인 후 이메일 반환

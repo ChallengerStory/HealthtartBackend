@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public interface UserService extends UserDetailsService {
-    void signUpUser(RequestInsertUserVO request);
+    ResponseInsertUserDTO signUpUser(RequestInsertUserVO request);
 
     List<UserDTO> findAllUsers();
 
@@ -35,7 +35,6 @@ public interface UserService extends UserDetailsService {
     void deleteUserGym(RegisterGymPerUserRequest registerGymRequest);
 
     void resetPassword(RequestResetPasswordVO request);
-    EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
 
     String sendSmsForVerification(String userPhone);
 

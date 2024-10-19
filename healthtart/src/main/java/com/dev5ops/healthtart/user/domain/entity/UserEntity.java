@@ -78,4 +78,6 @@ public class UserEntity {
         this.userFlag = false;
         this.updatedAt = LocalDateTime.now();
     }
+
+
 }

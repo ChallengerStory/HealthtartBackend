@@ -45,8 +45,7 @@ public class UserServiceImpl implements UserService{
     private final CoolSmsService coolSmsService;
 
     @Autowired
-    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate, CoolSmsService coolSmsService) {
-    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
+    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate, CoolSmsService coolSmsService) {
         this.gymRepository = gymRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
@@ -98,6 +97,7 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         userRepository.save(insertUser);
+        return null;
     }
 
     // 회원 전체 조회
@@ -315,7 +315,7 @@ public class UserServiceImpl implements UserService{
 
     // userPhone으로 userEmail 조회
     public String getUserEmailByUserPhone(String userPhone) {
-        String userEmail = userRepository.finduserEmaillByuserPhone(userPhone);
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
         if (userEmail == null) {
             throw new IllegalArgumentException("해당 핸드폰 번호로 등록된 이메일이 없습니다.");
         }
@@ -346,15 +346,15 @@ public class UserServiceImpl implements UserService{
         }
 
         // 핸드폰 번호로 이메일 조회
-        String email = userRepository.finduserEmaillByuserPhone(userPhone);
-        if (email == null) {
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
+        if (userEmail == null) {
             throw new IllegalArgumentException("해당 번호로 등록된 이메일이 없습니다.");
         }
 
         // 인증이 성공했으면 캐시에서 삭제
         phoneVerificationMap.remove(userPhone);
 
-        return email;
+        return userEmail;
     }
 
 
