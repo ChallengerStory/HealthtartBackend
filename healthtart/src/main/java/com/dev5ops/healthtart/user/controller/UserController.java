@@ -6,6 +6,12 @@ import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.vo.EmailVerificationVO;
 import com.dev5ops.healthtart.user.domain.vo.ResponseEmailMessageVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestEditPasswordVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditPasswordVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.*;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
@@ -41,9 +47,8 @@ public class UserController {
     private UserService userService;
     private EmailVerificationService emailVerificationService;
 
-
     @Autowired
-    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService, CoolSmsService coolSmsService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService) {
         this.jwtUtil = jwtUtil;
         this.env = env;
         this.modelMapper = modelMapper;
@@ -55,6 +60,32 @@ public class UserController {
     //설명. 이메일 전송 API (회원가입전 실행)
     @PostMapping("/verification-email")
     public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 중복체크
+        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
+        log.info("userByEmail: {}", userByEmail);
+
+        if(userByEmail != null)
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_DUPLICATE));
+
+        return getResponseEmailDTO(request);
+    }
+
+    //설명. 이메일 전송 API -> 비밀번호 재설정시 사용
+    @PostMapping("/verification-email/password")
+    public ResponseEmailDTO<?> sendVerificationEmailPassword(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 존재 확인
+        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
+        if(userByEmail == null)
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_NOT_FOUND));
+
+        // 이메일로 인증번호 전송
+        return getResponseEmailDTO(request);
+    }
+
+    private ResponseEmailDTO<?> getResponseEmailDTO(EmailVerificationVO request) {
+        // 이메일로 인증번호 전송
         try {
             emailVerificationService.sendVerificationEmail(request.getEmail());
 
@@ -81,15 +112,15 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
-        if (request.getUserType() == null) {
-            request.setUserType("MEMBER");
-        }
+    public ResponseEntity<String> insertUser(@RequestBody RequestInsertUserVO request) {
 
-        ResponseInsertUserVO responseUser =
-                modelMapper.map(userService.signUpUser(request), ResponseInsertUserVO.class);
+        // USER_TYPE이 없는 경우 MEMBER로 설정
+        if (request.getUserType() == null)
+                request.setUserType("MEMBER");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+        userService.signUpUser(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
 
     @GetMapping("/mypage")
@@ -102,14 +133,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/edit/mypage")
-    public ResponseEntity<ResponseEditMypageVO> editMypageInfo(@RequestBody RequestEditMypageVO request){
+    @PatchMapping("/mypage/edit/password")
+    public ResponseEntity<ResponseEditPasswordVO> editPassword(@RequestBody RequestEditPasswordVO request) {
+        EditPasswordDTO editPasswordDTO = modelMapper.map(request, EditPasswordDTO.class);
 
-        EditMypageDTO editMypageDTO = modelMapper.map(request, EditMypageDTO.class);
+        userService.editPassword(editPasswordDTO);
 
-        EditMypageDTO afterEditDTO = userService.editMypageInfo(editMypageDTO);
-
-        ResponseEditMypageVO response = modelMapper.map(afterEditDTO, ResponseEditMypageVO.class);
+        ResponseEditPasswordVO response = new ResponseEditPasswordVO("비밀번호가 성공적으로 변경되었습니다.");
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -117,7 +147,7 @@ public class UserController {
     // 회원 전체 조회
     @GetMapping
     public ResponseEntity<List<ResponseFindUserVO>> getAllUsers() {
-        // service에서 DTO 형태로 찾은 애를 VO로 바꿔야한다
+
         List<UserDTO> userDTOList = userService.findAllUsers();
         List<ResponseFindUserVO> userVOList = userDTOList.stream()
                 .map(userDTO -> modelMapper.map(userDTO, ResponseFindUserVO.class))
@@ -154,15 +184,15 @@ public class UserController {
 
 
     @GetMapping("/nickname/check") // users/nickname/check
-    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(String userNickname){
+    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
-        Boolean isDuplicate = userService.checkDuplicateNickname(userNickname);
+        Boolean isValid = userService.checkValideNickname(userNickname);
 
         // JSON 형태로 반환할 Map 생성
         Map<String, Boolean> response = new HashMap<>();
-        response.put("isDuplicate", isDuplicate);
+        response.put("isValid", isValid);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response); // true이면 사용 불가
+        return ResponseEntity.status(HttpStatus.OK).body(response); // false면 사용 불가
     }
 
     // 여기서 회원가입 시킬 예정
@@ -172,12 +202,38 @@ public class UserController {
         // userCode는 여기서 생성해서 저장하자.
         // member type도 여기서
         // flag도 여기서
-
+        // 이것들 모두 oauth 로그인 과정에서 저장되어서 저걸 안해도 됨.
         userService.saveOauth2User(requestOauth2VO);
 
         return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
     }
 
+    @PostMapping("/register-gym")
+    public ResponseEntity<String> registerGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
+        try {
+            userService.updateUserGym(registerGymRequest);
+            return ResponseEntity.ok("헬스장 등록이 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("헬스장 등록에 실패했습니다.");
+        }
+    }
+
+    @PostMapping("/remove-gym")
+    public ResponseEntity<String> removeGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
+        try {
+            userService.deleteUserGym(registerGymRequest);
+            return ResponseEntity.ok("헬스장이 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("헬스장 삭제에 실패했습니다.");
+        }
+    }
+    @PostMapping("/password")
+    public ResponseEntity<String> resetPassword(@RequestBody RequestResetPasswordVO request) {
+
+        userService.resetPassword(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
+    }
     // 핸드폰 인증번호 전송
     @PostMapping("/send-sms")
     public ResponseEntity<String> sendSmsVerification(@RequestBody SmsVerificationRequestVO smsVerificationRequestVO) {

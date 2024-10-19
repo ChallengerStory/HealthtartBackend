@@ -68,6 +68,7 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/users/oauth2", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "PATCH")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/mypage/edit/password", "PATCH")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "OPTIONS")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/login/**", "GET")).permitAll()
@@ -95,12 +96,18 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "PATCH")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "POST")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "OPTIONS")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/inbody_ranking", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/my-inbody/**", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/inbody_list", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/register", "POST")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**/edit", "PATCH")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "DELETE")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/history/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/workoutInfos/**", "GET")).hasRole("MEMBER")
 
 //                                .requestMatchers(new AntPathRequestMatcher("/inbody/**", "OPTIONS")).permitAll() // OPTIONS 요청은 안해줘도 작동
                                 .anyRequest().authenticated()
@@ -133,7 +140,7 @@ public class WebSecurity {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // 프론트엔드 도메인 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 설정
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // 허용할 HTTP 메서드 설정
         configuration.setAllowCredentials(true); // 인증 정보 허용 (쿠키 등)
         configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
         configuration.setExposedHeaders(Arrays.asList("Authorization")); // 노출할 헤더 설정

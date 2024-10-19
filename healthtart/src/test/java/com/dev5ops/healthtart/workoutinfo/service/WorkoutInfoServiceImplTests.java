@@ -3,7 +3,7 @@ package com.dev5ops.healthtart.workoutinfo.service;
 import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.routine.domain.entity.Routine;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseModifyRoutineVO;
+import com.dev5ops.healthtart.routine.service.RoutineService;
 import com.dev5ops.healthtart.workoutinfo.domain.dto.WorkoutInfoDTO;
 import com.dev5ops.healthtart.workoutinfo.domain.entity.WorkoutInfo;
 import com.dev5ops.healthtart.workoutinfo.domain.vo.EditWorkoutInfoVO;
@@ -37,6 +37,9 @@ class WorkoutInfoServiceImplTests {
 
     @Mock
     private WorkoutInfoRepository workoutInfoRepository;
+
+    @Mock
+    private RoutineService routineService;
 
     @Mock
     private ModelMapper modelMapper;
@@ -98,32 +101,43 @@ class WorkoutInfoServiceImplTests {
     @Transactional
     @DisplayName("운동 정보 등록 테스트")
     void registerWorkoutInfoSuccess() {
-        WorkoutInfoDTO workoutInfoDTO = new WorkoutInfoDTO(1L,"김정은도 10kg 감량한 모닝 루틴 !!!",
-                60,"http://healthtart.com","삐딱하게 - G-DRAGON",
-                LocalDateTime.now(),LocalDateTime.now(),1L);
+        WorkoutInfoDTO workoutInfoDTO = new WorkoutInfoDTO();
+        workoutInfoDTO.setWorkoutInfoCode(1L);
+        workoutInfoDTO.setTitle("스쿼트 루틴");
+        workoutInfoDTO.setTime(30);
+        workoutInfoDTO.setRecommendMusic("운동할 때 듣는 음악");
+        workoutInfoDTO.setRoutineCode(1L);
+        workoutInfoDTO.setCreatedAt(LocalDateTime.now());
+        workoutInfoDTO.setUpdatedAt(LocalDateTime.now());
 
-        WorkoutInfo workoutInfo = WorkoutInfo.builder()
-                .workoutInfoCode(workoutInfoDTO.getWorkoutInfoCode())
-                .title(workoutInfoDTO.getTitle())
-                .time(workoutInfoDTO.getTime())
-                .link(workoutInfoDTO.getLink())
-                .recommendMusic(workoutInfoDTO.getRecommendMusic())
+        Routine routine = Routine.builder()
+                .routineCode(1L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .routineCode(workoutInfoDTO.getRoutineCode())
                 .build();
 
-        when(workoutInfoRepository.save(any(WorkoutInfo.class))).thenReturn(workoutInfo);
+        WorkoutInfo savedWorkoutInfo = WorkoutInfo.builder()
+                .workoutInfoCode(1L)
+                .title("스쿼트 루틴")
+                .time(30)
+                .recommendMusic("운동할 때 듣는 음악")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .routineCode(routine)
+                .build();
 
         ResponseInsertWorkoutInfoVO responseVO = new ResponseInsertWorkoutInfoVO();
-        when(modelMapper.map(any(WorkoutInfo.class), eq(ResponseInsertWorkoutInfoVO.class)))
-                .thenReturn(responseVO);
+
+        when(routineService.getRoutineByCode(1L)).thenReturn(routine);
+        when(workoutInfoRepository.save(any(WorkoutInfo.class))).thenReturn(savedWorkoutInfo);
+        when(modelMapper.map(any(WorkoutInfo.class), any())).thenReturn(responseVO);
 
         ResponseInsertWorkoutInfoVO result = workoutInfoService.registerWorkoutInfo(workoutInfoDTO);
 
         assertNotNull(result);
+        verify(routineService).getRoutineByCode(1L);
         verify(workoutInfoRepository).save(any(WorkoutInfo.class));
-        verify(modelMapper).map(any(WorkoutInfo.class), eq(ResponseInsertWorkoutInfoVO.class));
+        verify(modelMapper).map(any(WorkoutInfo.class), any());
     }
 
     @Test

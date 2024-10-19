@@ -1,6 +1,10 @@
 package com.dev5ops.healthtart.workout_per_routine.service;
 
 
+import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
+import com.dev5ops.healthtart.exercise_equipment.service.ExerciseEquipmentService;
+import com.dev5ops.healthtart.routine.domain.entity.Routine;
+import com.dev5ops.healthtart.routine.service.RoutineService;
 import com.dev5ops.healthtart.workout_per_routine.domain.dto.WorkoutPerRoutineDTO;
 import com.dev5ops.healthtart.workout_per_routine.domain.entity.WorkoutPerRoutine;
 import com.dev5ops.healthtart.workout_per_routine.domain.vo.EditWorkoutPerRoutineVO;
@@ -33,6 +37,12 @@ class WorkoutPerRoutineServiceImplTests {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private RoutineService routineService;
+
+    @Mock
+    private ExerciseEquipmentService exerciseEquipmentService;
 
     @BeforeEach
     void setUp() {
@@ -69,40 +79,61 @@ class WorkoutPerRoutineServiceImplTests {
 
     @Test
     @Transactional
-    @DisplayName("운동 루틴 등록 테스트")
+    @DisplayName("운동 루틴별 운동 등록 테스트")
     void registerWorkoutPerRoutineSuccess() {
-        WorkoutPerRoutineDTO dto = new WorkoutPerRoutineDTO();
-        dto.setWorkoutPerRoutineCode(1L);
-        dto.setWorkoutName("데드리프트");
-        dto.setWorkoutOrder(1);
-        dto.setWeightSet(3);
-        dto.setNumberPerSet(10);
-        dto.setWorkoutTime(30);
-        dto.setExerciseEquipmentCode(100L);
-        dto.setRoutineCode(200L);
+        WorkoutPerRoutineDTO workoutPerRoutineDTO = new WorkoutPerRoutineDTO();
+        workoutPerRoutineDTO.setRoutineCode(1L);
+        workoutPerRoutineDTO.setExerciseEquipmentCode(1L);
+        workoutPerRoutineDTO.setWorkoutOrder(1);
+        workoutPerRoutineDTO.setWorkoutName("스쿼트");
+        workoutPerRoutineDTO.setLink("http://example.com/video");
+        workoutPerRoutineDTO.setWeightSet(3);
+        workoutPerRoutineDTO.setNumberPerSet(10);
+        workoutPerRoutineDTO.setWeightPerSet(60);
+        workoutPerRoutineDTO.setWorkoutTime(30);
 
-        WorkoutPerRoutine routine = WorkoutPerRoutine.builder()
-                .workoutPerRoutineCode(dto.getWorkoutPerRoutineCode())
-                .workoutName(dto.getWorkoutName())
-                .workoutOrder(dto.getWorkoutOrder())
-                .weightSet(dto.getWeightSet())
-                .numberPerSet(dto.getNumberPerSet())
-                .workoutTime(dto.getWorkoutTime())
-                .exerciseEquipmentCode(dto.getExerciseEquipmentCode())
-                .routineCode(dto.getRoutineCode())
+        Routine routine = Routine.builder()
+                .routineCode(1L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        when(workoutPerRoutineRepository.save(any(WorkoutPerRoutine.class))).thenReturn(routine);
-        when(modelMapper.map(any(WorkoutPerRoutine.class), eq(ResponseInsertWorkoutPerRoutineVO.class)))
-                .thenReturn(new ResponseInsertWorkoutPerRoutineVO());
+        ExerciseEquipment exerciseEquipment = ExerciseEquipment.builder()
+                .exerciseEquipmentCode(1L)
+                .exerciseEquipmentName("덤벨")
+                .build();
 
-        ResponseInsertWorkoutPerRoutineVO result = workoutPerRoutineService.registerWorkoutPerRoutine(dto);
+        WorkoutPerRoutine savedWorkoutPerRoutine = WorkoutPerRoutine.builder()
+                .workoutPerRoutineCode(1L)
+                .workoutOrder(1)
+                .workoutName("스쿼트")
+                .link("http://example.com/video")
+                .weightSet(3)
+                .numberPerSet(10)
+                .weightPerSet(60)
+                .workoutTime(30)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .routineCode(routine)
+                .exerciseEquipmentCode(exerciseEquipment)
+                .build();
+
+        ResponseInsertWorkoutPerRoutineVO responseVO = new ResponseInsertWorkoutPerRoutineVO();
+
+        when(routineService.getRoutineByCode(1L)).thenReturn(routine);
+        when(exerciseEquipmentService.getEquipmentByCode(1L)).thenReturn(exerciseEquipment);
+        when(workoutPerRoutineRepository.save(any(WorkoutPerRoutine.class))).thenReturn(savedWorkoutPerRoutine);
+        when(modelMapper.map(any(WorkoutPerRoutine.class), any())).thenReturn(responseVO);
+
+        ResponseInsertWorkoutPerRoutineVO result = workoutPerRoutineService.registerWorkoutPerRoutine(workoutPerRoutineDTO);
 
         assertNotNull(result);
+        verify(routineService).getRoutineByCode(1L);
+        verify(exerciseEquipmentService).getEquipmentByCode(1L);
         verify(workoutPerRoutineRepository).save(any(WorkoutPerRoutine.class));
+        verify(modelMapper).map(any(WorkoutPerRoutine.class), any());
     }
+
 
     @Test
     @Transactional
@@ -111,6 +142,7 @@ class WorkoutPerRoutineServiceImplTests {
         WorkoutPerRoutine existingRoutine = WorkoutPerRoutine.builder()
                 .workoutPerRoutineCode(1L)
                 .workoutName("바벨 로우")
+                .link("http://healthtart.com")
                 .workoutOrder(1)
                 .weightSet(3)
                 .numberPerSet(10)
@@ -119,7 +151,7 @@ class WorkoutPerRoutineServiceImplTests {
 
         when(workoutPerRoutineRepository.findById(1L)).thenReturn(Optional.of(existingRoutine));
 
-        EditWorkoutPerRoutineVO editVO = new EditWorkoutPerRoutineVO(2,"데드리프트", 4,
+        EditWorkoutPerRoutineVO editVO = new EditWorkoutPerRoutineVO(2,"데드리프트","http://healthtart.com", 4,
                 12, 20, 40,LocalDateTime.now());
 
         workoutPerRoutineService.modifyWorkoutPerRoutine(1L, editVO);
@@ -127,6 +159,7 @@ class WorkoutPerRoutineServiceImplTests {
         assertAll(
                 () -> assertEquals(2, existingRoutine.getWorkoutOrder()),
                 () -> assertEquals("데드리프트", existingRoutine.getWorkoutName()),
+                () -> assertEquals("http://healthtart.com", existingRoutine.getLink()),
                 () -> assertEquals(4, existingRoutine.getWeightSet()),
                 () -> assertEquals(12, existingRoutine.getNumberPerSet()),
                 () -> assertEquals(20, existingRoutine.getWeightPerSet()),
