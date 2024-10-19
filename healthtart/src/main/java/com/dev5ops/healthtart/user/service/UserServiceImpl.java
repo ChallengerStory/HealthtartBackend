@@ -6,6 +6,7 @@ import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
+import com.dev5ops.healthtart.user.domain.UserTypeEnum;
 import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
@@ -57,8 +58,7 @@ public class UserServiceImpl implements UserService{
 
     // 회원가입
     @Override
-    public ResponseInsertUserDTO signUpUser(RequestInsertUserVO request) {
-
+    public void signUpUser(RequestInsertUserVO request) {
         // Redis에서 이메일 인증 여부 확인
         String emailVerificationStatus = stringRedisTemplate.opsForValue().get(request.getUserEmail());
 
@@ -76,31 +76,26 @@ public class UserServiceImpl implements UserService{
 
         request.changePwd(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
-        UserDTO userDTO = UserDTO.builder()
-                .userCode(userCode)
-                .userType(request.getUserType())
-                .userName(request.getUserName())
-                .userEmail(request.getUserEmail())
-                .userPassword(request.getUserPassword())
-                .userPhone(request.getUserPhone())
-                .userNickname(request.getUserNickname())
-                .userAddress(request.getUserAddress())
-                .userFlag(true)
-                .userGender("M")
-                .userHeight(request.getUserHeight())
-                .userWeight(request.getUserWeight())
-                .userAge(request.getUserAge())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+        // modelMapper 대신 빌더 패턴을 사용하여 UserEntity 생성
+        UserEntity insertUser = UserEntity.builder()
+                .userCode(null) // UserCode는 생성 후 나중에 설정하거나 생성할 수 있습니다.
+                .userType(UserTypeEnum.valueOf(request.getUserType())) // UserTypeEnum으로 변환
+                .userName(request.getUserName()) // 이름 설정
+                .userEmail(request.getUserEmail()) // 이메일 설정
+                .userPassword(request.getUserPassword()) // 암호화된 비밀번호 설정
+                .userPhone(request.getUserPhone()) // 전화번호 설정
+                .userNickname(request.getUserNickname()) // 닉네임 설정
+                .userAddress(request.getUserAddress()) // 주소 설정
+                .userFlag(true) // 회원 활성 상태 설정
+                .userGender(request.getUserGender()) // 성별 설정
+                .userHeight(request.getUserHeight()) // 키 설정
+                .userWeight(request.getUserWeight()) // 몸무게 설정
+                .userAge(request.getUserAge()) // 나이 설정
+                .createdAt(LocalDateTime.now()) // 생성일자 설정
+                .updatedAt(LocalDateTime.now()) // 수정일자 설정
                 .build();
 
-        UserEntity insertUser = modelMapper.map(userDTO, UserEntity.class);
-
         userRepository.save(insertUser);
-
-        ResponseInsertUserDTO insertUserDTO= modelMapper.map(insertUser, ResponseInsertUserDTO.class);
-
-        return insertUserDTO;
     }
 
     // 회원 전체 조회

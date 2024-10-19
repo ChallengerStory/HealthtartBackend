@@ -107,16 +107,15 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
+    public ResponseEntity<String> insertUser(@RequestBody RequestInsertUserVO request) {
 
         // USER_TYPE이 없는 경우 MEMBER로 설정
         if (request.getUserType() == null)
-            request.setUserType("MEMBER");
+                request.setUserType("MEMBER");
 
-        ResponseInsertUserVO responseUser =
-                modelMapper.map(userService.signUpUser(request), ResponseInsertUserVO.class);
+        userService.signUpUser(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
 
     @GetMapping("/mypage")
