@@ -22,8 +22,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final List<String> excludeUrl
-            = Arrays.asList("/users/verification-email", "/users/verification-email/confirmation"
-            , "/users/nickname/check", "/users/verification-email/password"
+            = Arrays.asList("/users/verification-email/**"
+            , "/users/nickname/check", "/users/verification-email/password", "/swagger-ui.html", "/swagger-ui/index.html"
             , "/users/password");
 
     public JwtFilter(UserService userService, JwtUtil jwtUtil) {

@@ -61,6 +61,10 @@ public class WebSecurity {
         // HttpSecurity 설정
         http.authorizeHttpRequests((authz) ->
                         authz
+                                .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/index.html", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/verification-email/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "OPTIONS")).permitAll()
@@ -93,8 +97,6 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/equipment_per_gym/**/edit", "PATCH")).hasRole("ADMIN")
                                 .requestMatchers(new AntPathRequestMatcher("/equipment_per_gym/**/delete", "DELETE")).hasRole("ADMIN")
                                 .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/api/gpt/**", "PATCH")).hasRole("MEMBER")
