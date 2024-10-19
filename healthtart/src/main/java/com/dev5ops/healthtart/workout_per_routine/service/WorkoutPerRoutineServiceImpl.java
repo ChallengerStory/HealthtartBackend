@@ -51,12 +51,13 @@ public class  WorkoutPerRoutineServiceImpl implements WorkoutPerRoutineService {
         return modelMapper.map(routine, ResponseFindWorkoutPerRoutineVO.class);
     }
 
-    // 루틴 코드별 우동별 루틴 조회
+    // 루틴 코드별 운동별 루틴 조회
     @Override
-    public ResponseFindWorkoutPerRoutineVO findWorkoutPerRoutineByRoutineCode(Long routineCode) {
-        WorkoutPerRoutine routine = workoutPerRoutineRepository.findById(routineCode)
-                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
-        return modelMapper.map(routine, ResponseFindWorkoutPerRoutineVO.class);
+    public List<ResponseFindWorkoutPerRoutineVO> findWorkoutPerRoutineByRoutineCode(Long routineCode) {
+        List<WorkoutPerRoutine> routinesList = workoutPerRoutineRepository.findByRoutineCode_RoutineCode(routineCode);
+        return routinesList.stream()
+                .map(routine -> modelMapper.map(routine, ResponseFindWorkoutPerRoutineVO.class))
+                .collect(Collectors.toList());
     }
 
     // 운동 루틴별 운동 등록

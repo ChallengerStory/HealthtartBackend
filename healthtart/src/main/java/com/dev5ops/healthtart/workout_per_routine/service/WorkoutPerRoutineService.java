@@ -17,7 +17,7 @@ public interface WorkoutPerRoutineService {
     ResponseFindWorkoutPerRoutineVO findWorkoutPerRoutineByCode(Long workoutPerRoutineCode);
 
     // 루틴 코드별 우동별 루틴 조회
-    ResponseFindWorkoutPerRoutineVO findWorkoutPerRoutineByRoutineCode(Long routineCode);
+    List<ResponseFindWorkoutPerRoutineVO> findWorkoutPerRoutineByRoutineCode(Long routineCode);
 
     @Transactional
     ResponseInsertWorkoutPerRoutineVO registerWorkoutPerRoutine(WorkoutPerRoutineDTO workoutPerRoutineDTO);
