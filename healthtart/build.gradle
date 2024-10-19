@@ -69,6 +69,8 @@ dependencies {
     // smtp를 위한 의존성
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation 'net.nurigo:sdk:4.3.0'
 }
 
 dependencyManagement {

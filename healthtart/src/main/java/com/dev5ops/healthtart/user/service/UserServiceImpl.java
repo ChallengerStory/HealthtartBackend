@@ -8,7 +8,6 @@ import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditMypageVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -25,9 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -39,15 +36,17 @@ public class UserServiceImpl implements UserService{
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate stringRedisTemplate;  // StringRedisTemplate 사용
     private final RestTemplate restTemplate;
+    private final CoolSmsService coolSmsService;
 
     @Autowired
-    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate, CoolSmsService coolSmsService) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.stringRedisTemplate = stringRedisTemplate;
         this.restTemplate = restTemplate;
+        this.coolSmsService = coolSmsService;
     }
 
     // 회원가입
@@ -251,4 +250,50 @@ public class UserServiceImpl implements UserService{
         // 현재 로그인한 유저의 유저코드 반환
         return userDetails.getUserDTO().getUserCode();
     }
+
+    // userPhone으로 userEmail 조회
+    public String getUserEmailByUserPhone(String userPhone) {
+        String userEmail = userRepository.finduserEmaillByuserPhone(userPhone);
+        if (userEmail == null) {
+            throw new IllegalArgumentException("해당 핸드폰 번호로 등록된 이메일이 없습니다.");
+        }
+        return userEmail;
+    }
+
+    // 인증 코드 저장을 위한 메모리 캐시
+    private final Map<String, String> phoneVerificationMap = new HashMap<>();
+
+    // SMS 인증번호 전송
+    public String sendSmsForVerification(String userPhone) {
+        String verificationCode = coolSmsService.generateRandomNumber();
+        String messageText = "[Healthtart] 아래 인증번호를 입력하세요\n" + verificationCode;
+        coolSmsService.sendSms(userPhone, messageText);
+
+        // 인증 번호를 캐시에 저장
+        phoneVerificationMap.put(userPhone, verificationCode);
+
+        return verificationCode;
+    }
+
+    // 인증 번호 확인 후 이메일 조회
+    public String verifyCodeAndFindEmail(String userPhone, String verificationCode) {
+        String storedCode = phoneVerificationMap.get(userPhone);
+
+        if (storedCode == null || !storedCode.equals(verificationCode)) {
+            throw new IllegalArgumentException("잘못된 인증번호입니다.");
+        }
+
+        // 핸드폰 번호로 이메일 조회
+        String email = userRepository.finduserEmaillByuserPhone(userPhone);
+        if (email == null) {
+            throw new IllegalArgumentException("해당 번호로 등록된 이메일이 없습니다.");
+        }
+
+        // 인증이 성공했으면 캐시에서 삭제
+        phoneVerificationMap.remove(userPhone);
+
+        return email;
+    }
+
+
 }

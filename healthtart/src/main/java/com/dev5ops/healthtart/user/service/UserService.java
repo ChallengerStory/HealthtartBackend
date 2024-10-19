@@ -27,4 +27,8 @@ public interface UserService extends UserDetailsService {
     ResponseMypageDTO getMypageInfo();
 
     EditMypageDTO editMypageInfo(EditMypageDTO editUserDTO);
+
+    String sendSmsForVerification(String userPhone);
+
+    String verifyCodeAndFindEmail(String userPhone, String verificationCode);
 }
