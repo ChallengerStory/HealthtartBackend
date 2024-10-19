@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Getter
+@Setter
 @Builder
 public class RecommendedWorkoutHistoryDTO {
 

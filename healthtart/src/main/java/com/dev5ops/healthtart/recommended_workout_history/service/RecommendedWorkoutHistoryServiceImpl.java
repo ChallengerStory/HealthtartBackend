@@ -52,13 +52,10 @@ public class RecommendedWorkoutHistoryServiceImpl implements RecommendedWorkoutH
     public List<Map.Entry<Long, Double>> findByRatingOrder() {
         // 1. 추천 내역 조회
         List<RecommendedWorkoutHistory> recommendedWorkoutHistoryList = getAllRecommendedWorkoutHistories();
-
         // 2. DTO로 변환
         List<RecommendedWorkoutHistoryDTO> recommendedWorkoutHistoryDTOList = convertToDTO(recommendedWorkoutHistoryList);
-
         // 3. 운동 루틴 번호별로 만족도 평균 계산
         Map<Long, Double> averageRatingsByRoutineCode = calculateAverageRatingsByRoutineCode(recommendedWorkoutHistoryDTOList);
-
         // 4. 결과를 내림차순으로 정렬
         return sortAverageRatings(averageRatingsByRoutineCode);
     }
