@@ -35,4 +35,6 @@ public interface UserService extends UserDetailsService {
     void deleteUserGym(RegisterGymPerUserRequest registerGymRequest);
 
     void resetPassword(RequestResetPasswordVO request);
+
+    void findUserByEmail2(String email);
 }
