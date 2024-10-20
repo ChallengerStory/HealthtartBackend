@@ -5,9 +5,7 @@ import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.routine.domain.dto.RoutineDTO;
 import com.dev5ops.healthtart.routine.domain.entity.Routine;
 import com.dev5ops.healthtart.routine.domain.vo.*;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseDeleteRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseFindRoutineVO;
-import com.dev5ops.healthtart.routine.domain.vo.response.ResponseInsertRoutineVO;
 import com.dev5ops.healthtart.routine.domain.vo.response.ResponseModifyRoutineVO;
 import com.dev5ops.healthtart.routine.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,11 +74,10 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional
-    public ResponseDeleteRoutineVO deleteRoutine(Long routineCode) {
+    public void deleteRoutine(Long routineCode) {
         Routine routine = routineRepository.findById(routineCode)
                 .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
         routineRepository.delete(routine);
-        return new ResponseDeleteRoutineVO();
     }
 
 }
