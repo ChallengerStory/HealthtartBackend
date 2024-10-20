@@ -41,4 +41,6 @@ public interface UserService extends UserDetailsService {
     String verifyCodeAndFindEmail(String userPhone, String verificationCode);
 
     void findUserByEmail2(String email);
+
+    void editUserInfo(UserDTO userDTO);
 }
