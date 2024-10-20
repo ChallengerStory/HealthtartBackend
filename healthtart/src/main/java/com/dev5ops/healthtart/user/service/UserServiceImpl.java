@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService{
 
         // modelMapper 대신 빌더 패턴을 사용하여 UserEntity 생성
         UserEntity insertUser = UserEntity.builder()
-                .userCode(null) // UserCode는 생성 후 나중에 설정하거나 생성할 수 있습니다.
+                .userCode(userCode) // UserCode는 생성 후 나중에 설정하거나 생성할 수 있습니다.
                 .userType(UserTypeEnum.valueOf(request.getUserType())) // UserTypeEnum으로 변환
                 .userName(request.getUserName()) // 이름 설정
                 .userEmail(request.getUserEmail()) // 이메일 설정

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public interface UserService extends UserDetailsService {
-    ResponseInsertUserDTO signUpUser(RequestInsertUserVO request);
+    void signUpUser(RequestInsertUserVO request);
 
     List<UserDTO> findAllUsers();
 
