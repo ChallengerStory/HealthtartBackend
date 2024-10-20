@@ -70,8 +70,8 @@ public class GymService {
     }
 
     public GymDTO findGymByBusinessCode(String businessNumber) {
-        Optional<Gym> gym = gymRepository.findByBusinessNumber(businessNumber);
+        Gym gym = gymRepository.findByBusinessNumber(businessNumber).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));;
 
-        return new GymDTO(gym.get().getGymCode(), gym.get().getGymName(), gym.get().getAddress(), gym.get().getBusinessNumber(), LocalDateTime.now(), LocalDateTime.now());
+        return new GymDTO(gym.getGymCode(), gym.getGymName(), gym.getAddress(), gym.getBusinessNumber(), LocalDateTime.now(), LocalDateTime.now());
     }
 }
