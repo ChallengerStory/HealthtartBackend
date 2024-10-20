@@ -52,9 +52,8 @@ public class RoutineController {
 
     @DeleteMapping("/{routineCode}")
     @Operation(summary = "운동 루틴 삭제")
-    public ResponseEntity<ResponseDeleteRoutineVO> deleteRoutine(@RequestBody RequestModifyRoutineVO requestModifyRoutineVO) {
-        RoutineDTO routineDTO = modelMapper.map(requestModifyRoutineVO, RoutineDTO.class);
-        ResponseDeleteRoutineVO response = routineService.deleteRoutine(routineDTO.getRoutineCode());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<String> deleteRoutine(@PathVariable("routineCode") Long routineCode) {
+        routineService.deleteRoutine(routineCode);
+        return ResponseEntity.ok("운동 루틴이 성공적으로 삭제되었습니다.");
     }
 }
