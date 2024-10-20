@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.CoolSmsException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
@@ -29,9 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -44,9 +43,10 @@ public class UserServiceImpl implements UserService{
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate stringRedisTemplate;  // StringRedisTemplate 사용
     private final RestTemplate restTemplate;
+    private final CoolSmsService coolSmsService;
 
     @Autowired
-    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate) {
+    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate, CoolSmsService coolSmsService) {
         this.gymRepository = gymRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService{
         this.jwtUtil = jwtUtil;
         this.stringRedisTemplate = stringRedisTemplate;
         this.restTemplate = restTemplate;
+        this.coolSmsService = coolSmsService;
     }
 
     // 회원가입
@@ -129,6 +130,17 @@ public class UserServiceImpl implements UserService{
 
         if(findUser != null)
             throw new CommonException(StatusEnum.USER_NOT_FOUND);
+    }
+
+    @Override
+    public void editUserInfo(UserDTO userDTO) {
+        String userCode = getUserCode();
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.setUserHeight(userDTO.getUserHeight());
+        user.setUserWeight(userDTO.getUserWeight());
+
+        userRepository.save(user);
     }
 
     @Override
@@ -319,4 +331,50 @@ public class UserServiceImpl implements UserService{
 
         return true;  // 길이와 특수문자, 중복 체크를 모두 통과한 경우 true 반환
     }
+
+    // userPhone으로 userEmail 조회
+    public String getUserEmailByUserPhone(String userPhone) {
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
+        if (userEmail == null) {
+            throw new IllegalArgumentException("해당 핸드폰 번호로 등록된 이메일이 없습니다.");
+        }
+        return userEmail;
+    }
+
+    // 인증 코드 저장을 위한 메모리 캐시
+    private final Map<String, String> phoneVerificationMap = new HashMap<>();
+
+    // SMS 인증번호 전송
+    public String sendSmsForVerification(String userPhone) {
+        String verificationCode = coolSmsService.generateRandomNumber();
+        String messageText = "[Healthtart] 아래 인증번호를 입력하세요\n" + verificationCode;
+        coolSmsService.sendSms(userPhone, messageText);
+
+        // 인증 번호를 캐시에 저장
+        phoneVerificationMap.put(userPhone, verificationCode);
+
+        return verificationCode;
+    }
+
+    // 인증 번호 확인 후 이메일 조회
+    public String verifyCodeAndFindEmail(String userPhone, String verificationCode) {
+        String storedCode = phoneVerificationMap.get(userPhone);
+
+        if (storedCode == null || !storedCode.equals(verificationCode)) {
+            throw new CoolSmsException("잘못된 인증번호입니다.");
+        }
+
+        // 핸드폰 번호로 이메일 조회
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
+        if (userEmail == null) {
+            throw new CoolSmsException("해당 번호로 등록된 이메일이 없습니다.");
+        }
+
+        // 인증이 성공했으면 캐시에서 삭제
+        phoneVerificationMap.remove(userPhone);
+
+        return userEmail;
+    }
+
+
 }
