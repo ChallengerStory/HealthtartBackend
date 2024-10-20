@@ -39,8 +39,8 @@ public class RecordPerUserDTO {
     @JsonProperty("user_code")
     private String userCode;
 
-    @JsonProperty("workout_per_routine_code")
-    private Long workoutPerRoutineCode;
+    @JsonProperty("routine_code")
+    private Long routineCode;
 
 
 }

@@ -63,6 +63,7 @@ public class RecordPerUserController {
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterRecordPerUserVO> registerRecordPerUser(
             @RequestBody RequestRegisterRecordPerUserVO request) {
+        System.out.println("프론트의 요청: "+request);
         RecordPerUserDTO registerRecordPerUser = recordPerUserService
                 .registerRecordPerUser(request);
 
@@ -74,7 +75,7 @@ public class RecordPerUserController {
                 registerRecordPerUser.getCreatedAt(),
                 registerRecordPerUser.getUpdatedAt(),
                 registerRecordPerUser.getUserCode(),
-                registerRecordPerUser.getWorkoutPerRoutineCode()
+                registerRecordPerUser.getRoutineCode()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

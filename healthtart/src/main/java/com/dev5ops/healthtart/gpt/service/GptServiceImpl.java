@@ -156,7 +156,7 @@ public class GptServiceImpl implements GptService {
         JsonNode rootNode = objectMapper.readTree(response);
         JsonNode messageNode = rootNode.path("choices").get(0).path("message").path("content");
         String contents = messageNode.asText();
-        System.out.println("contents = " + contents);
+
 
         String title = extractTitle(contents);
         int totalTime = extractTotalTime(contents);
@@ -204,11 +204,10 @@ public class GptServiceImpl implements GptService {
 
     // 서비스 계층에서 처리
     @Override
-    public void processRoutine(String response) throws JsonProcessingException {
+    public Long processRoutine(String response) throws JsonProcessingException {
         // 파싱된 데이터를 가져옴
         Map<String, Object> workoutData = routineParser(response);
-        System.out.println("workoutData = " + workoutData);
-
+        Long routineId = null;
         // 1. 중복된 루틴 확인
         boolean isDuplicateRoutine = workoutPerRoutineService.checkForDuplicateRoutines(workoutData);
         System.out.println("isDuplicateRoutine = " + isDuplicateRoutine);
@@ -224,7 +223,7 @@ public class GptServiceImpl implements GptService {
             // 2. 새로운 루틴 등록
             RoutineDTO routineDTO = new RoutineDTO(null, LocalDateTime.now(), LocalDateTime.now());
             RoutineDTO savedRoutine = routineService.registerRoutine(routineDTO);
-            Long routineId = savedRoutine.getRoutineCode();
+            routineId = savedRoutine.getRoutineCode();
 
             if (routineId == null) {
                 throw new IllegalArgumentException("루틴 저장에 실패했습니다.");
@@ -235,6 +234,7 @@ public class GptServiceImpl implements GptService {
             for (int i = 1; i <= workoutData.size() / 2; i++) {
                 // 운동 기구 이름 가져오기
                 String workoutName = (String) workoutData.get("workoutName" + i);
+                System.out.println(workoutName);
                 // null 또는 빈 문자열인 경우 해당 루프 건너뛰기
                 if (workoutName == null || workoutName.trim().isEmpty()) {
                     System.out.println("운동 기구 이름이 null이거나 비어 있습니다. 루프 건너뜁니다.");
@@ -277,6 +277,8 @@ public class GptServiceImpl implements GptService {
                     LocalDateTime.now(), LocalDateTime.now(), routineId);
             workoutInfoService.registerWorkoutInfo(workoutInfoDTO);
         }
+        System.out.println("루틴코드는 이거다 제은아 화내지말자: "+routineId);
+        return routineId;
     }
 
     // 제목 추출

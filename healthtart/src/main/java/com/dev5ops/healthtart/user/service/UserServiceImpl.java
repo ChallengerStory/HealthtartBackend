@@ -99,7 +99,6 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(insertUser);
     }
-
     // 회원 전체 조회
     @Override
     public List<UserDTO> findAllUsers() {

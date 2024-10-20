@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -56,16 +58,22 @@ public class GptController {
 
     @PostMapping("/process-routine")
     @Operation(summary = "GPT 운동 루틴 저장")
-    public ResponseEntity<String> processRoutine(@RequestBody String response) {
+    public ResponseEntity<Map<String, Object>> processRoutine(@RequestBody String response) {
         try {
-            gptService.processRoutine(response);
-            return ResponseEntity.ok("운동 루틴이 성공적으로 저장되었습니다.");
+            Long routineCode = gptService.processRoutine(response);
+
+            // 응답 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("message", "운동 루틴이 성공적으로 저장되었습니다.");
+            responseData.put("routineCode", routineCode);  // routineCode 포함
+
+            return ResponseEntity.ok(responseData);
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("운동 루틴 처리 중 오류가 발생했습니다: " + e.getMessage());
+                    .body(Collections.singletonMap("error", "운동 루틴 처리 중 오류가 발생했습니다: " + e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("루틴 처리 중 오류가 발생했습니다: " + e.getMessage());
+                    .body(Collections.singletonMap("error", "루틴 처리 중 오류가 발생했습니다: " + e.getMessage()));
         }
     }
 }
