@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.user.controller;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.CoolSmsException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.security.JwtUtil;
@@ -257,7 +258,20 @@ public class UserController {
     @Operation(summary = "아이디(이메일) 찾기 - 유저 이메일 반환")
     @PostMapping("/verify-code")
     public ResponseEntity<String> verifyCodeAndGetEmail(@RequestBody EmailRequestVO emailRequestVO) {
-        String email = userService.verifyCodeAndFindEmail(emailRequestVO.getUserPhone(), emailRequestVO.getVerificationCode());
-        return ResponseEntity.ok("사용자의 이메일은: " + email + "입니다.");
+        try {
+            String userEmail = userService.verifyCodeAndFindEmail(emailRequestVO.getUserPhone(), emailRequestVO.getVerificationCode());
+
+            // 성공 시 이메일 응답
+            Map<String, String> response = new HashMap<>();
+            response.put("userEmail", userEmail);
+            return ResponseEntity.ok("사용자의 이메일은 " + userEmail + " 입니다.");
+
+        } catch (CoolSmsException e) {
+
+            // 예외 발생 시 예외 메시지 반환
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("errorMessage", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.dev5ops.healthtart.user.service;
 
-import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
@@ -29,7 +28,7 @@ public class CoolSmsService {
     // SMS 전송
     public void sendSms(String to, String text) {
         Message message = new Message();
-        message.setFrom("01055429727");
+        message.setFrom("01022089727");
         message.setTo(to);
         message.setText(text);
 

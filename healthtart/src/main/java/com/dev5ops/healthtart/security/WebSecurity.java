@@ -66,6 +66,8 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/verification-email/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/verify-code")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/users/send-sms")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/**", "OPTIONS")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/users/nickname/check", "GET")).permitAll()
