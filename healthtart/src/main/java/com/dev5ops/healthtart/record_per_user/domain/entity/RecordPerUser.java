@@ -42,7 +42,7 @@ public class RecordPerUser {
     @JoinColumn(name = "user_code", nullable = false)
     private UserEntity user;
 
-    @Column(name="workout_per_routine_code", nullable = false)
-    private Long workoutPerRoutineCode;
+    @Column(name="routine_code", nullable = false)
+    private Long routineCode;
 
 }
