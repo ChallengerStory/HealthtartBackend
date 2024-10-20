@@ -133,6 +133,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void editUserInfo(UserDTO userDTO) {
+        String userCode = getUserCode();
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.setUserHeight(userDTO.getUserHeight());
+        user.setUserWeight(userDTO.getUserWeight());
+
+        userRepository.save(user);
+    }
+
+    @Override
     public UserDTO findById(String userCode) {
         UserEntity user = userRepository.findById(userCode)
                 .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));

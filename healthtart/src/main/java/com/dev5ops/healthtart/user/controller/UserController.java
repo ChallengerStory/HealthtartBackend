@@ -144,6 +144,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "유저 키, 몸무게 수정")
+    @PatchMapping("/mypage/edit/userinfo")
+    public ResponseEntity<String> editUserInfo(@RequestBody RequestUserInfoVO request) {
+        UserDTO userDTO = modelMapper.map(request, UserDTO.class);
+
+        userService.editUserInfo(userDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("회원 정보가 성공적으로 변경되었습니다.");
+    }
+
     // 회원 전체 조회
     @Operation(summary = "회원 전체 조회")
     @GetMapping
