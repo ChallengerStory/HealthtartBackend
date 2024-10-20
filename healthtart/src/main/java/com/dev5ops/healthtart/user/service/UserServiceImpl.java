@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService{
     // 회원가입
     @Override
     public void signUpUser(RequestInsertUserVO request) {
+
         // Redis에서 이메일 인증 여부 확인
         String emailVerificationStatus = stringRedisTemplate.opsForValue().get(request.getUserEmail());
 
@@ -97,7 +98,6 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(insertUser);
     }
-
     // 회원 전체 조회
     @Override
     public List<UserDTO> findAllUsers() {
