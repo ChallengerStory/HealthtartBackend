@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.CoolSmsException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
 import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.repository.GymRepository;
@@ -351,13 +352,13 @@ public class UserServiceImpl implements UserService{
         String storedCode = phoneVerificationMap.get(userPhone);
 
         if (storedCode == null || !storedCode.equals(verificationCode)) {
-            throw new IllegalArgumentException("잘못된 인증번호입니다.");
+            throw new CoolSmsException("잘못된 인증번호입니다.");
         }
 
         // 핸드폰 번호로 이메일 조회
         String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
         if (userEmail == null) {
-            throw new IllegalArgumentException("해당 번호로 등록된 이메일이 없습니다.");
+            throw new CoolSmsException("해당 번호로 등록된 이메일이 없습니다.");
         }
 
         // 인증이 성공했으면 캐시에서 삭제
