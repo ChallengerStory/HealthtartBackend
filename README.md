@@ -1833,6 +1833,7 @@
 
 # 🚩 프로젝트 아키텍처
 
+https://github.com/Dev5Oops/Healthtart.wiki.git
 
 # 🚩UI 디자인 (Figma)
 
