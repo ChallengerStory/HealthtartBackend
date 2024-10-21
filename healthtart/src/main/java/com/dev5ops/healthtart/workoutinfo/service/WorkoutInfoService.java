@@ -17,7 +17,6 @@ public interface WorkoutInfoService {
     // 운동 루틴 단일 조회
     ResponseFindWorkoutInfoVO findWorkoutInfoByCode(Long WorkoutInfoCode);
 
-
     ResponseFindWorkoutInfoVO getWorkoutInfoByRoutineCode(Long routineCode);
 
     @Transactional
