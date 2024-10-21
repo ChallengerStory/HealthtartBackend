@@ -26,7 +26,7 @@ public class RequestInsertUserVO {
     Integer userAge;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    // Integer gymCode;
+    Long gymCode;
 
     public void changePwd(String encodedPwd) {
         this.userPassword = encodedPwd;
