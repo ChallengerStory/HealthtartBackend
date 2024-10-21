@@ -38,7 +38,7 @@
 ## 💽 DB
 <!--![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420.svg?&logo=ubuntu&logoColor=white)-->
 ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?&logo=mariadb)
-<img src="https://img.shields.io/badge/MyBatis-FF5733?style=flat&logo=MyBatis&logoColor=white">
+<!-- <img src="https://img.shields.io/badge/MyBatis-FF5733?style=flat&logo=MyBatis&logoColor=white"> -->
 <!--!![Redis](https://img.shields.io/badge/Redis-DC382D.svg?&logo=redis&logoColor=white)-->
 
 <!-- ## ⛓️‍💥 Server
