@@ -45,17 +45,14 @@ public class RecommendedWorkoutHistoryController {
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterRecommendedWorkoutHistoryVO> registerRating(
             @RequestBody RequestRegisterRecommendedWorkoutHistoryVO request) {
-
         RecommendedWorkoutHistoryDTO recommendedWorkoutHistoryDTO = modelMapper.map(request, RecommendedWorkoutHistoryDTO.class);
-
         RecommendedWorkoutHistoryDTO registeredDTO = recommendedWorkoutHistoryService.registerRating(recommendedWorkoutHistoryDTO);
-
         ResponseRegisterRecommendedWorkoutHistoryVO response = new ResponseRegisterRecommendedWorkoutHistoryVO(
                 registeredDTO.getHistoryCode(),
                 registeredDTO.getRoutineRatings(),
                 registeredDTO.getCreatedAt(),
                 registeredDTO.getUpdatedAt(),
-                registeredDTO.getWorkoutInfoCode().getWorkoutInfoCode()
+                registeredDTO.getWorkoutInfoCode()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
