@@ -1,9 +1,11 @@
 package com.dev5ops.healthtart.gym.controller;
 
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.gym.domain.vo.request.RequestEditGymVO;
 import com.dev5ops.healthtart.gym.domain.vo.request.RequestRegisterGymVO;
 import com.dev5ops.healthtart.gym.domain.vo.response.ResponseEditGymVO;
 import com.dev5ops.healthtart.gym.domain.vo.response.ResponseFindGymVO;
+import com.dev5ops.healthtart.gym.domain.vo.response.ResponseGymInfoVO;
 import com.dev5ops.healthtart.gym.domain.vo.response.ResponseRegisterGymVO;
 import com.dev5ops.healthtart.gym.domain.dto.GymDTO;
 import com.dev5ops.healthtart.gym.service.GymService;
@@ -101,5 +103,15 @@ public class GymController {
             responseList.add(response);
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
+    }
+
+    @Operation(summary = "사업자 등록 번호로 헬스장 조회")
+    @GetMapping("/businessNumber/{businessNumber}")
+    public ResponseEntity<ResponseGymInfoVO> getGymList(@PathVariable String businessNumber) {
+        GymDTO gymDTO = gymService.findGymByBusinessCode(businessNumber);
+
+        ResponseGymInfoVO response = new ResponseGymInfoVO(gymDTO.getGymCode(), gymDTO.getGymName());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -66,5 +67,11 @@ public class GymService {
         return gymList.stream()
                 .map(gym -> modelMapper.map(gym, GymDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public GymDTO findGymByBusinessCode(String businessNumber) {
+        Gym gym = gymRepository.findByBusinessNumber(businessNumber).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));;
+
+        return new GymDTO(gym.getGymCode(), gym.getGymName(), gym.getAddress(), gym.getBusinessNumber(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

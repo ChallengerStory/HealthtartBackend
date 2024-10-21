@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController("recommendedWorkoutHistoryController")
@@ -39,6 +40,7 @@ public class RecommendedWorkoutHistoryController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(responseList);
     }
 
+
     @Operation(summary = "운동 추천 만족도 등록")
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterRecommendedWorkoutHistoryVO> registerRating(
@@ -55,4 +57,6 @@ public class RecommendedWorkoutHistoryController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 }

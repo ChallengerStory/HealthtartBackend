@@ -11,10 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 public class RecommendedWorkoutHistoryServiceImpl implements RecommendedWorkoutHistoryService {
     private final RecommendedWorkoutHistoryRepository recommendedWorkoutHistoryRepository;
     private final WorkoutInfoService workoutInfoService;
+
     private final ModelMapper modelMapper;
 
     // 1. 운동정보를 타고 ~ 운동 루틴으로 가서 ~ 운동루틴 코드별 운동추천내역 조회
