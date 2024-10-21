@@ -126,9 +126,7 @@ public class InbodyService {
 
     public List<InbodyDTO> findAllInbodyByUser(String userCode) {
         List<Inbody> inbodyList = inbodyRepository.findAllByUser_UserCode(userCode);
-        if (inbodyList.isEmpty()) {
-            throw new CommonException(StatusEnum.INBODY_NOT_FOUND);
-        }
+        if (inbodyList.isEmpty()) return new ArrayList<>();
 
         List<InbodyDTO> inbodyDTOList = new ArrayList<>();
         for (Inbody inbody : inbodyList) {

@@ -57,16 +57,13 @@ public class UserServiceImpl implements UserService{
         this.coolSmsService = coolSmsService;
     }
 
-    // 회원가입
     @Override
     public void signUpUser(RequestInsertUserVO request) {
-
-        // Redis에서 이메일 인증 여부 확인
         String emailVerificationStatus = stringRedisTemplate.opsForValue().get(request.getUserEmail());
 
         if (!"True".equals(emailVerificationStatus)) {
             log.error("이메일 인증이 완료되지 않았습니다: {}", request.getUserEmail());
-            throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED); // 이메일 인증이 필요하다는 커스텀 예외 던지기
+            throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED);
         }
         if (userRepository.findByUserEmail(request.getUserEmail()) != null) throw new CommonException(StatusEnum.EMAIL_DUPLICATE);
         if(!isValidAndUniqueNickname(request.getUserNickname())) throw new CommonException(StatusEnum.INVALID_NICKNAME_LENGTH);
@@ -78,27 +75,34 @@ public class UserServiceImpl implements UserService{
 
         request.changePwd(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
-        // modelMapper 대신 빌더 패턴을 사용하여 UserEntity 생성
-        UserEntity insertUser = UserEntity.builder()
-                .userCode(userCode) // UserCode는 생성 후 나중에 설정하거나 생성할 수 있습니다.
-                .userType(UserTypeEnum.valueOf(request.getUserType())) // UserTypeEnum으로 변환
-                .userName(request.getUserName()) // 이름 설정
-                .userEmail(request.getUserEmail()) // 이메일 설정
-                .userPassword(request.getUserPassword()) // 암호화된 비밀번호 설정
-                .userPhone(request.getUserPhone()) // 전화번호 설정
-                .userNickname(request.getUserNickname()) // 닉네임 설정
-                .userAddress(request.getUserAddress()) // 주소 설정
-                .userFlag(true) // 회원 활성 상태 설정
-                .userGender(request.getUserGender()) // 성별 설정
-                .userHeight(request.getUserHeight()) // 키 설정
-                .userWeight(request.getUserWeight()) // 몸무게 설정
-                .userAge(request.getUserAge()) // 나이 설정
-                .createdAt(LocalDateTime.now()) // 생성일자 설정
-                .updatedAt(LocalDateTime.now()) // 수정일자 설정
-                .build();
+        UserEntity.UserEntityBuilder userBuilder = UserEntity.builder()
+                .userCode(userCode)
+                .userType(UserTypeEnum.valueOf(request.getUserType()))
+                .userName(request.getUserName())
+                .userEmail(request.getUserEmail())
+                .userPassword(request.getUserPassword())
+                .userPhone(request.getUserPhone())
+                .userNickname(request.getUserNickname())
+                .userAddress(request.getUserAddress())
+                .userFlag(true)
+                .userGender(request.getUserGender())
+                .userHeight(request.getUserHeight())
+                .userWeight(request.getUserWeight())
+                .userAge(request.getUserAge())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now());
+
+        if (request.getGymCode() != null) {
+            Gym gym = gymRepository.findById(request.getGymCode())
+                    .orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+            userBuilder.gym(gym);
+        }
+
+        UserEntity insertUser = userBuilder.build();
 
         userRepository.save(insertUser);
     }
+
     // 회원 전체 조회
     @Override
     public List<UserDTO> findAllUsers() {
