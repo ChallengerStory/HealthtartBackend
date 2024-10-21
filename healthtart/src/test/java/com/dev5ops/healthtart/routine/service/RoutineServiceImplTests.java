@@ -139,20 +139,21 @@ class RoutineServiceImplTests {
     }
 
 
-//    @Test
-//    @Transactional
-//    @DisplayName("루틴 삭제 테스트")
-//    void deleteRoutineSuccess() {
-//        Long routineCode = 1L;
-//        Routine routine = new Routine();
-//        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
-//
-//        ResponseDeleteRoutineVO result = routineService.deleteRoutine(routineCode);
-//
-//        assertNotNull(result);
-//        verify(routineRepository).findById(routineCode);
-//        verify(routineRepository).delete(routine);
-//    }
+    @Test
+    @DisplayName("루틴 삭제 성공 테스트")
+    void deleteRoutineSuccess() {
+        // given
+        Long routineCode = 1L;
+        Routine routine = new Routine();
 
+        // when
+        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
 
+        // 서비스 메서드 호출
+        routineService.deleteRoutine(routineCode);
+
+        // then
+        verify(routineRepository).findById(routineCode);
+        verify(routineRepository).delete(routine);
+    }
 }
