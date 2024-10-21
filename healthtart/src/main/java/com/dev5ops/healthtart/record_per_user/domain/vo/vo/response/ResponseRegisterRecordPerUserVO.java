@@ -22,4 +22,5 @@ public class ResponseRegisterRecordPerUserVO {
     private String userCode;
     private Long RoutineCode;
 
+
 }

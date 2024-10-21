@@ -22,7 +22,7 @@ public interface RoutineService {
     ResponseModifyRoutineVO modifyRoutine(Long routineCode, EditRoutineVO modifyRoutine);
 
     @Transactional
-    ResponseDeleteRoutineVO deleteRoutine(Long routineCode);
+    void deleteRoutine(Long routineCode);
 
     Routine getRoutineByCode(Long routineCode);
 }

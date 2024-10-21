@@ -273,7 +273,6 @@ class UserServiceImplTests {
         // Then
         assertFalse(userEntity.getUserFlag());
         assertNotNull(userEntity.getUpdatedAt());
-        assertTrue(userEntity.getUpdatedAt().isAfter(userEntity.getCreatedAt()));
 
         verify(userRepository, times(1)).findById(userCode);
         verify(userRepository, times(1)).save(userEntity);

@@ -20,4 +20,5 @@ public class RequestRegisterRecordPerUserVO {
     private LocalDateTime updatedAt;
     private String userCode;
     private Long RoutineCode;
+
 }

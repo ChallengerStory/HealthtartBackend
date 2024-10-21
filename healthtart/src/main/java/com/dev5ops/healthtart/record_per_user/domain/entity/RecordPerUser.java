@@ -45,4 +45,5 @@ public class RecordPerUser {
     @Column(name="routine_code", nullable = false)
     private Long RoutineCode;
 
+
 }

@@ -21,4 +21,5 @@ public class ResponseRecordPerUserVO {
     private LocalDateTime updatedAt;
     private String userCode;
     private Long RoutineCode;
+
 }

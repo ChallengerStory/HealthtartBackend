@@ -9,5 +9,5 @@ public interface GptService {
 
     Map<String, Object> routineParser(String response) throws JsonProcessingException;
 
-    void processRoutine(String response) throws JsonProcessingException;
+    Long processRoutine(String response) throws JsonProcessingException;
 }
