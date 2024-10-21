@@ -42,11 +42,15 @@ public class WorkoutInfoController {
         return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
     }
 
-    @GetMapping("/datail/{RoutineCode}")
+    @GetMapping("/detail/{routineCode}")
     @Operation(summary = "루틴 코드별 운동 정보 단일 조회")
-    public ResponseEntity<ResponseFindWorkoutInfoVO> getWorkoutInfoByRoutineCode(@PathVariable Long routineCode) {
-        ResponseFindWorkoutInfoVO workoutInfo = workoutInfoService.findWorkoutInfoByCode(routineCode);
-        return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
+    public ResponseEntity<?> getWorkoutInfoByRoutineCode(@PathVariable Long routineCode) {
+        try {
+            ResponseFindWorkoutInfoVO workoutInfo = workoutInfoService.getWorkoutInfoByRoutineCode(routineCode);
+            return new ResponseEntity<>(workoutInfo, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping
