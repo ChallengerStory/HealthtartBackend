@@ -1,12 +1,12 @@
 # 🏋️ 헬스타트 _ Healthtart
 
- <img src="images/1.개요/1.위즈버디_메인.png" alt="배너 이미지 칸" width="900" height="470">
+ <img src="healthtart_readmeimages/01.프로젝트개요/01_healthtart로고.jpg" alt="배너 이미지" width="900">
 <br>
 
 
 # 🐼 Group 4 Team Member - `Dev5oops`
 
-| <img src="images/6.조원/조제훈.png" height=130/> | <img src="images/6.조원/백경석.jpg" height=130/> | <img src="images/6.조원/유제은.jpg" height=130/> | <img src="images/6.조원/이나현.jpg" height=130/> | <img src="images/6.조원/이서현.jpg" height=130/> | 
+| <img src="healthtart_readmeimages/00.조원/조제훈.png" height=130/> | <img src="healthtart_readmeimages/00.조원/백경석.jpg" height=130/> | <img src="healthtart_readmeimages/00.조원/유제은.jpg" height=130/> | <img src="healthtart_readmeimages/00.조원/이나현.jpg" height=130/> | <img src="healthtart_readmeimages/00.조원/이서현.jpg" height=130/> | 
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                            조제훈                            |                            백경석                            |                            유제은                            |                            이나현                            |                            이서현                            |
 | [<img src="https://img.shields.io/badge/Github-Link-181717?logo=Github">](https://github.com/JoJeHuni) <br>` ESFJ `| [<img src="https://img.shields.io/badge/Github-Link-181717?logo=Github">](https://github.com/Hellin22) <br>` ENTP `| [<img src="https://img.shields.io/badge/Github-Link-181717?logo=Github">](https://github.com/YuJeeun) <br>` INFP `| [<img src="https://img.shields.io/badge/Github-Link-181717?logo=Github">](https://github.com/sksmsdlskgus) <br>` ENTJ `| [<img src="https://img.shields.io/badge/Github-Link-181717?logo=Github">](https://github.com/sh694090) <br>` INFJ `|
@@ -68,6 +68,7 @@
 - 라이벌을 설정해 경쟁하며 운동해보세요. 혼자가 아닙니다. 선의의 경쟁을 통해 더욱 건강해지는 나를 느껴보세요.
 
 ## :two: 프로젝트 필요성
+<img src="healthtart_readmeimages/01.프로젝트개요/02_프로젝트필요성자료.png" width="700">
 
 - 헬스, 요가, 필라테스 업종에서 매출이 증가하는 추세를 보아 운동시설에서 운동하는 사람들이 증가하는 것을 볼 수 있습니다.
 - 하지만 처음 운동시설을 방문하는 사람들 중 개인 강습을 받지 않으면 운동을 어렵다고 느끼는 경우가 많습니다.
@@ -76,6 +77,10 @@
 
 ## :three: 유사 서비스 및 차별화 전략
 ### 1. 유사 서비스: 플랜핏 (planfit)
+
+<img src="healthtart_readmeimages/01.프로젝트개요/03_유사서비스1.jpg" width="200"> <img src="healthtart_readmeimages/01.프로젝트개요/04_유사서비스2.jpg" width="200"><img src="healthtart_readmeimages/01.프로젝트개요/05_유사서비스3.jpg" width="200">
+<img src="healthtart_readmeimages/01.프로젝트개요/06_유사서비스4.jpg">
+
 
 - 헬스장 운동기구를 활용한 개인 맞춤형 운동 루틴 추천
 - 커뮤니티를 통한 회원들 간의 소통 창구 마련
@@ -1827,10 +1832,10 @@
 </details>
 
 # 🚩 프로젝트 아키텍처
-<img src="images/3.아키텍처/17.아키텍처.jpg" width=600><br>
-<img src="images/3.아키텍처/18.유레카서버.png" width=600>
+
 
 # 🚩UI 디자인 (Figma)
+
 
 # 🚩 API Test
 ## 📍 01_user
