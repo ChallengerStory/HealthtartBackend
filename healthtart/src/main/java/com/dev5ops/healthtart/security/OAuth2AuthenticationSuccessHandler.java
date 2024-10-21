@@ -67,7 +67,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.info("Generated JWT token: {}", token);
 
         // 리다이렉트 url 설정
-        String redirectUrl = String.format("http://localhost:5173");
+        String redirectUrl = String.format("http://localhost");
 
         // 추가정보를 받을 회원 구분
         if(userNickname != null){ // 이미 회원가입된 회원
