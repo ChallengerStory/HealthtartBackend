@@ -4,6 +4,9 @@ import com.dev5ops.healthtart.recommended_workout_history.domain.dto.Recommended
 import com.dev5ops.healthtart.recommended_workout_history.domain.entity.RecommendedWorkoutHistory;
 import com.dev5ops.healthtart.recommended_workout_history.repository.RecommendedWorkoutHistoryRepository;
 
+import com.dev5ops.healthtart.workout_per_routine.service.WorkoutPerRoutineService;
+import com.dev5ops.healthtart.workoutinfo.domain.vo.response.ResponseFindWorkoutInfoVO;
+import com.dev5ops.healthtart.workoutinfo.service.WorkoutInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -18,6 +23,8 @@ import java.util.stream.Collectors;
 @Service("recommendedWorkoutHistoryService")
 public class RecommendedWorkoutHistoryServiceImpl implements RecommendedWorkoutHistoryService {
     private final RecommendedWorkoutHistoryRepository recommendedWorkoutHistoryRepository;
+    private final WorkoutInfoService workoutInfoService;
+
     private final ModelMapper modelMapper;
 
     // 1. 운동정보를 타고 ~ 운동 루틴으로 가서 ~ 운동루틴 코드별 운동추천내역 조회
