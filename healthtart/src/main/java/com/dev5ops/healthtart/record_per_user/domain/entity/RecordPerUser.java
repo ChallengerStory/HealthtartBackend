@@ -27,7 +27,7 @@ public class RecordPerUser {
     private LocalDate dayOfExercise;
 
     @Column(name="exercise_duration", nullable = false)
-    private LocalDateTime exerciseDuration;
+    private Integer exerciseDuration;
 
     @Column(name="record_flag", nullable = false)
     private boolean recordFlag;
@@ -42,7 +42,8 @@ public class RecordPerUser {
     @JoinColumn(name = "user_code", nullable = false)
     private UserEntity user;
 
-    @Column(name="workout_per_routine_code", nullable = false)
-    private Long workoutPerRoutineCode;
+    @Column(name="routine_code", nullable = false)
+    private Long RoutineCode;
+
 
 }

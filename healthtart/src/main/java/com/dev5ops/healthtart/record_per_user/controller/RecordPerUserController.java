@@ -1,20 +1,24 @@
 package com.dev5ops.healthtart.record_per_user.controller;
 
 
+import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseFindPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
+import com.dev5ops.healthtart.workout_per_routine.service.WorkoutPerRoutineService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +39,8 @@ public class RecordPerUserController {
         List<ResponseFindPerUserVO> response = recordPerUserDTO.stream()
                 .map(record -> new ResponseFindPerUserVO(
                         record.getDayOfExercise(),
-                        record.getExerciseDuration()
+                        record.getExerciseDuration(),
+                        record.getRoutineCode()
                 ))
                 .collect(Collectors.toList());
 
@@ -45,24 +50,32 @@ public class RecordPerUserController {
     @Operation(summary = "유저 - 날짜별 운동기록 조회")
     @GetMapping("/{userCode}/{dayOfExercise}")
     public ResponseEntity<List<ResponseFindPerUserVO>> getRecordPerDate(
-            @PathVariable("userCode") String userCode, @PathVariable("dayOfExercise") LocalDate dayOfExercise) {
-        List<RecordPerUserDTO> recordPerUserDTO = recordPerUserService
-                .findRecordPerDate(userCode, dayOfExercise);
+            @PathVariable("userCode") String userCode,
+            @PathVariable("dayOfExercise") LocalDate dayOfExercise) {
 
+        List<RecordPerUserDTO> recordPerUserDTO = recordPerUserService.findRecordPerDate(userCode, dayOfExercise);
         List<ResponseFindPerUserVO> response = recordPerUserDTO.stream()
                 .map(record -> new ResponseFindPerUserVO(
                         record.getDayOfExercise(),
-                        record.getExerciseDuration()
+                        record.getExerciseDuration(),
+                        record.getRoutineCode()
                 ))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }
 
+
+
+
+
+
+
     @Operation(summary = "유저 - 운동 기록")
     @PostMapping("/register")
     public ResponseEntity<ResponseRegisterRecordPerUserVO> registerRecordPerUser(
             @RequestBody RequestRegisterRecordPerUserVO request) {
+        System.out.println("프론트의 요청: "+request);
         RecordPerUserDTO registerRecordPerUser = recordPerUserService
                 .registerRecordPerUser(request);
 
@@ -74,7 +87,7 @@ public class RecordPerUserController {
                 registerRecordPerUser.getCreatedAt(),
                 registerRecordPerUser.getUpdatedAt(),
                 registerRecordPerUser.getUserCode(),
-                registerRecordPerUser.getWorkoutPerRoutineCode()
+                registerRecordPerUser.getRoutineCode()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

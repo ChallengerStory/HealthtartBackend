@@ -41,6 +41,13 @@ public class WorkoutPerRoutineController {
         return new ResponseEntity<>(routine, HttpStatus.OK);
     }
 
+    @Operation(summary = "루틴코드별 운동 단일 조회")
+    @GetMapping("/detail/{routineCode}")
+    public ResponseEntity<List<ResponseFindWorkoutPerRoutineVO>> getWorkoutPerRoutineByRoutineCode(@PathVariable Long routineCode) {
+        List<ResponseFindWorkoutPerRoutineVO> routines = workoutPerRoutineService.findWorkoutPerRoutineByRoutineCode(routineCode);
+        return new ResponseEntity<>(routines, HttpStatus.OK);
+    }
+
     @Operation(summary = "운동 루틴별 운동 등록")
     @PostMapping
     public ResponseEntity<ResponseInsertWorkoutPerRoutineVO> registerWorkoutPerRoutine(@RequestBody RequestInsertWorkoutPerRoutineVO requestInsertWorkoutPerRoutineVO) {

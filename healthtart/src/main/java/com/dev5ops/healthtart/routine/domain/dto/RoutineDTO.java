@@ -16,18 +16,6 @@ public class RoutineDTO {
     @JsonProperty("routine_code")
     private Long routineCode;
 
-    @JsonProperty("title")
-    private String title;
-
-    @JsonProperty("time")
-    private Integer time;
-
-    @JsonProperty("link")
-    private String link;
-
-    @JsonProperty("recommend_music")
-    private String recommendMusic;
-
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 

@@ -1,5 +1,6 @@
 package com.dev5ops.healthtart.user.domain.entity;
 
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,25 +22,24 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
-    private UserTypeEnum userType;
+    private UserTypeEnum userType = UserTypeEnum.MEMBER;
 
-    // 동명이인이 있을 수도 있으니까 unique = true는 없애는게 좋지 않을까?
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "user_email", nullable = false)
+    @Column(name = "user_email")
     private String userEmail;
 
     @Column(name = "user_password")
     private String userPassword;
 
-    @Column(name = "user_phone", nullable = false)
+    @Column(name = "user_phone")
     private String userPhone;
 
-    @Column(name = "user_nickname", nullable = false)
+    @Column(name = "user_nickname")
     private String userNickname;
 
-    @Column(name = "user_address", nullable = false)
+    @Column(name = "user_address")
     private String userAddress;
 
     @Column(name = "user_flag", nullable = false)
@@ -69,14 +69,15 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-//    @ManyToOne
-//    @JoinColumn(name = "gym_code", nullable = true)
-    @Column(name = "gym_code")
-    private Long gymCode;
+    @ManyToOne
+    @JoinColumn(name = "gym_code")
+    private Gym gym;
 
     public void removeRequest(UserEntity user) {
         this.userCode = user.getUserCode();
         this.userFlag = false;
         this.updatedAt = LocalDateTime.now();
     }
+
+
 }

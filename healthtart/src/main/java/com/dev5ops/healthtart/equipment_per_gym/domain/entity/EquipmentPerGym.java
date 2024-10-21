@@ -2,6 +2,7 @@ package com.dev5ops.healthtart.equipment_per_gym.domain.entity;
 
 import com.dev5ops.healthtart.exercise_equipment.domain.entity.ExerciseEquipment;
 import com.dev5ops.healthtart.gym.domain.entity.Gym;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,9 +24,11 @@ public class EquipmentPerGym {
     private Long equipmentPerGymCode;
 
     @Column(name = "created_at", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @ManyToOne

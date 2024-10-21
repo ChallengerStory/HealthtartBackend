@@ -1,24 +1,25 @@
 package com.dev5ops.healthtart.record_per_user.domain.vo.vo.response;
 
-import com.dev5ops.healthtart.user.domain.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class ResponseRecordPerUserVO {
     private Long userRecordCode;
     private LocalDate dayOfExercise;
-    private LocalTime exerciseDuration;
+    private Integer exerciseDuration;
     private boolean recordFlag;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String userCode;
-    private Long workoutPerRoutineCode;
+    private Long RoutineCode;
+
 }

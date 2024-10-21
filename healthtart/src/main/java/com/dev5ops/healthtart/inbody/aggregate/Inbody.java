@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.inbody.aggregate;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 public class Inbody {
 
     @Id
-    @Column(name = "inbody_code", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inbodyCode;
 
     @Column(name = "inbody_score")
@@ -42,15 +43,18 @@ public class Inbody {
     private double fatPercentage;
 
     @Column(name = "day_of_inbody", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dayOfInbody;
 
     @Column(name = "basal_metabolic_rate", nullable = false)
     private Integer basalMetabolicRate;
 
     @Column(name = "created_at", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
     @ManyToOne

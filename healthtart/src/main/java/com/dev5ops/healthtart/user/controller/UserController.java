@@ -1,22 +1,32 @@
 package com.dev5ops.healthtart.user.controller;
 
-import com.dev5ops.healthtart.user.domain.CustomUserDetails;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.CoolSmsException;
+import com.dev5ops.healthtart.common.exception.StatusEnum;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.security.JwtUtil;
+import com.dev5ops.healthtart.user.domain.vo.EmailVerificationVO;
+import com.dev5ops.healthtart.user.domain.vo.ResponseEmailMessageVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestEditPasswordVO;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseEditPasswordVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
+import com.dev5ops.healthtart.user.domain.vo.request.*;
 import com.dev5ops.healthtart.user.domain.vo.response.ResponseFindUserVO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.response.ResponseMypageVO;
+import com.dev5ops.healthtart.user.service.CoolSmsService;
+import com.dev5ops.healthtart.user.service.EmailVerificationService;
 import com.dev5ops.healthtart.user.service.UserService;
-//import io.swagger.v3.oas.annotations.Operation;
-import com.google.api.Http;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,149 +39,127 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController {
 
+    private final CoolSmsService coolSmsService;
     private JwtUtil jwtUtil;
     private Environment env;
     private ModelMapper modelMapper;
     private UserService userService;
+    private EmailVerificationService emailVerificationService;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService) {
+    public UserController(JwtUtil jwtUtil, Environment env, ModelMapper modelMapper, UserService userService, EmailVerificationService emailVerificationService, CoolSmsService coolSmsService) {
         this.jwtUtil = jwtUtil;
         this.env = env;
         this.modelMapper = modelMapper;
         this.userService = userService;
+        this.emailVerificationService = emailVerificationService;
+        this.coolSmsService = coolSmsService;
     }
 
+    //설명. 이메일 전송 API (회원가입전 실행)
+    @Operation(summary = "회원가입 전 이메일 전송 API")
+    @PostMapping("/verification-email")
+    public ResponseEmailDTO<?> sendVerificationEmail(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 중복체크
+        userService.findUserByEmail2(request.getEmail());
+
+        return getResponseEmailDTO(request);
+    }
+
+    //설명. 이메일 전송 API -> 비밀번호 재설정시 사용
+    @Operation(summary = "비밀번호 재설정시 이메일 전송 API")
+    @PostMapping("/verification-email/password")
+    public ResponseEmailDTO<?> sendVerificationEmailPassword(@RequestBody @Validated EmailVerificationVO request) {
+
+        // 이메일 존재 확인
+        UserDTO userByEmail = userService.findUserByEmail(request.getEmail());
+        if(userByEmail == null)
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.EMAIL_NOT_FOUND));
+
+        // 이메일로 인증번호 전송
+        return getResponseEmailDTO(request);
+    }
+
+    private ResponseEmailDTO<?> getResponseEmailDTO(EmailVerificationVO request) {
+        // 이메일로 인증번호 전송
+        try {
+            emailVerificationService.sendVerificationEmail(request.getEmail());
+
+            ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
+            responseEmailMessageVO.setMessage("인증 코드가 이메일로 전송되었습니다.");
+            return ResponseEmailDTO.ok(responseEmailMessageVO);
+        } catch (Exception e) {
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    //설명. 이메일 인증번호 검증 API (회원가입전 실행)
+    @Operation(summary = "회원가입 전 이메일 인증번호 검증")
+    @PostMapping("/verification-email/confirmation")
+    public ResponseEmailDTO<?> verifyEmail(@RequestBody @Validated EmailVerificationVO request) {
+        boolean isVerified = emailVerificationService.verifyCode(request.getEmail(), request.getCode());
+
+        ResponseEmailMessageVO responseEmailMessageVO =new ResponseEmailMessageVO();
+        responseEmailMessageVO.setMessage("이메일 인증이 완료되었습니다.");
+        if (isVerified) {
+            return ResponseEmailDTO.ok(responseEmailMessageVO);
+        } else {
+            return ResponseEmailDTO.fail(new CommonException(StatusEnum.INVALID_VERIFICATION_CODE));
+        }
+    }
+
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
-    public ResponseEntity<ResponseInsertUserVO> insertUser(@RequestBody RequestInsertUserVO request) {
-        ResponseInsertUserVO responseUser = userService.signUpUser(request);
-        log.info("여기 오긴 왔나요??");
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    public ResponseEntity<String> insertUser(@RequestBody RequestInsertUserVO request) {
+
+        // USER_TYPE이 없는 경우 MEMBER로 설정
+        if (request.getUserType() == null)
+                request.setUserType("MEMBER");
+
+        userService.signUpUser(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
 
-    // 근데 로그인에서 구글이랑 카카오밖에 없으면 그냥 로그인은 어케해요????
-
-    @GetMapping("/login/google")
-//    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
-    public ResponseEntity<?> handleGoogleLogin(@RequestParam String token, Authentication authentication) {
-        try {
-            // "Bearer " 접두사 제거
-//            String token = authHeader.substring(7);
-
-            // 토큰 유효성 검사
-            if (!jwtUtil.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-            }
-            // 토큰에서 이메일 추출
-            String email = jwtUtil.getEmailFromToken(token);
-            String userCode = jwtUtil.getUserCodeFromToken(token);
-            log.info("handle google controller code: {}", userCode);
-
-//            log.info("구글로 로그인 했을때에는 말이야?: {}", authentication.getPrincipal());
-            // 사용자 정보 조회
-            UserDTO userDTO = userService.findById(userCode);
-            UserDTO userDTO2 = userService.findUserByEmail(email);
-
-            log.info("findbyUserCode: {}, findByUserEmail: {}", userDTO, userDTO2);
-
-
-            if (userDTO == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-            }
-
-            // 로그인 성공 응답
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Google login successful");
-            response.put("user", userDTO);
-
-            return ResponseEntity.ok(response);
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has expired");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
-        }
-    }
-
-    @GetMapping("/login/kakao")
-//    public ResponseEntity<?> handleGoogleLogin(@RequestHeader("Authorization") String authHeader) {
-    public ResponseEntity<?> handleKakaoLogin(@RequestParam String token, Authentication authentication) {
-        try {
-//            log.info("authentication이 없어서 오류?? : {}", authentication.getPrincipal());
-            log.info("authentication 자체가 널인가??: {}", authentication);
-            // "Bearer " 접두사 제거
-//            String token = authHeader.substring(7);
-
-            // 토큰 유효성 검사 -> 유효성검사가 필요없음. -> 이미 jwtfilter를 거쳐서 나오기 때문
-//            if (!jwtUtil.validateToken(token)) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-//            }
-            log.info("jwt 토큰 값은: {} ", token);
-            // 토큰에서 이메일 추출
-//            String email = jwtUtil.getEmailFromToken(token);
-            String userCode = jwtUtil.getUserCodeFromToken(token);
-            log.info("handle kakao controller code: {}", userCode);
-//            log.info("카카오로 로그인 했을때에는 말이야?: {}", authentication.getPrincipal());
-
-            // 사용자 정보 조회
-            UserDTO userDTO = userService.findById(userCode);
-//            UserDTO userDTO2 = userService.findUserByEmail(email);
-
-//            log.info("findbyUserCode: {}, findByUserEmail: {}", userDTO, userDTO2);
-
-
-            if (userDTO == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-            }
-
-            // 로그인 성공 응답
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "kakao login successful");
-            response.put("user", userDTO);
-
-            return ResponseEntity.ok(response);
-        } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has expired");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
-        }
-    }
-
+    @Operation(summary = "유저 마이페이지 조회")
     @GetMapping("/mypage")
-    public ResponseEntity<?> getMyPage(Authentication authentication) {
-        log.info("Mypage request received");
-        log.info("mypage 시에 모든 authentication 정보 보기: {}", authentication.toString());
-            log.info(authentication.toString());
+    public ResponseEntity<ResponseMypageVO> getMypageInfo(){
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String userCode = userDetails.getUserDTO().getUserCode();  // CustomUserDetails에서 UserDTO로 접근하여 userCode 가져옴
-        log.info("userDetails: {}", userDetails.getUserDTO().toString());
-        log.info("userCode: {}", userCode);
-//            String userEmail = jwtUtil.getEmailFromToken(authentication.getName());
-//            log.info("Fetching mypage for user: {}", userEmail);
+        ResponseMypageDTO mypageInfo = userService.getMypageInfo();
 
-//            UserDTO userDTO = userService.findUserByEmail(userEmail);
-            UserDTO userDTO = userService.findById(userCode);
-            if (userDTO == null) {
-                log.warn("User not found for userCode: {}", userCode);
-                return ResponseEntity.notFound().build();
-            }
+        ResponseMypageVO response = modelMapper.map(mypageInfo, ResponseMypageVO.class);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("userCode", userDTO.getUserCode());
-            response.put("userName", userDTO.getUserName());
-            response.put("userEmail", userDTO.getUserEmail());
-            response.put("userType", userDTO.getUserType());
-            response.put("nickname", userDTO.getUserNickname());
-            // 필요한 추가 정보들...
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
-            log.info("Mypage data successfully retrieved for user: {}", userCode);
-            return ResponseEntity.ok(response);
+    @Operation(summary = "유저 마이페이지 비밀번호 수정")
+    @PatchMapping("/mypage/edit/password")
+    public ResponseEntity<ResponseEditPasswordVO> editPassword(@RequestBody RequestEditPasswordVO request) {
+        EditPasswordDTO editPasswordDTO = modelMapper.map(request, EditPasswordDTO.class);
+
+        userService.editPassword(editPasswordDTO);
+
+        ResponseEditPasswordVO response = new ResponseEditPasswordVO("비밀번호가 성공적으로 변경되었습니다.");
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(summary = "유저 키, 몸무게 수정")
+    @PatchMapping("/mypage/edit/userinfo")
+    public ResponseEntity<String> editUserInfo(@RequestBody RequestUserInfoVO request) {
+        UserDTO userDTO = modelMapper.map(request, UserDTO.class);
+
+        userService.editUserInfo(userDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("회원 정보가 성공적으로 변경되었습니다.");
     }
 
     // 회원 전체 조회
+    @Operation(summary = "회원 전체 조회")
     @GetMapping
     public ResponseEntity<List<ResponseFindUserVO>> getAllUsers() {
-        // service에서 DTO 형태로 찾은 애를 VO로 바꿔야한다
+
         List<UserDTO> userDTOList = userService.findAllUsers();
         List<ResponseFindUserVO> userVOList = userDTOList.stream()
                 .map(userDTO -> modelMapper.map(userDTO, ResponseFindUserVO.class))
@@ -181,6 +169,7 @@ public class UserController {
     }
 
     // 이메일로 회원 정보 조회
+    @Operation(summary = "이메일로 회원 단건 조회")
     @GetMapping("/email/{email}")
     public ResponseEntity<ResponseFindUserVO> findUserByEmail(@PathVariable String email) {
         UserDTO userDTO = userService.findUserByEmail(email);
@@ -190,6 +179,7 @@ public class UserController {
     }
 
     // 회원 코드로 회원 정보 조회
+    @Operation(summary = "회원코드로 회원 단건 조회")
     @GetMapping("/usercode/{userCode}")
     public ResponseEntity<ResponseFindUserVO> findUserById(@PathVariable String userCode) {
         UserDTO userDTO = userService.findById(userCode);
@@ -199,6 +189,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
+    @Operation(summary = "회원 탈퇴")
     @PatchMapping("/delete/{userCode}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userCode) {
         userService.deleteUser(userCode);
@@ -207,5 +198,90 @@ public class UserController {
     }
 
 
+    @Operation(summary = "닉네임 중복체크")
+    @GetMapping("/nickname/check") // users/nickname/check
+    public ResponseEntity<Map<String, Boolean>> checkDuplicateNickname(@RequestParam String userNickname){
 
+        Boolean isValid = userService.checkValideNickname(userNickname);
+
+        // JSON 형태로 반환할 Map 생성
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isValid", isValid);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response); // false면 사용 불가
+    }
+
+    // 여기서 회원가입 시킬 예정
+    @Operation(summary = "OAuth2 유저 회원가입")
+    @PostMapping("/oauth2")
+    public ResponseEntity<String> saveOauth2User(@RequestBody RequestOauth2VO requestOauth2VO){
+
+        // userCode는 여기서 생성해서 저장하자.
+        // member type도 여기서
+        // flag도 여기서
+        // 이것들 모두 oauth 로그인 과정에서 저장되어서 저걸 안해도 됨.
+        userService.saveOauth2User(requestOauth2VO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("잘 저장했습니다");
+    }
+
+    @Operation(summary = "회원 헬스장 등록")
+    @PostMapping("/register-gym")
+    public ResponseEntity<String> registerGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
+        try {
+            userService.updateUserGym(registerGymRequest);
+            return ResponseEntity.ok("헬스장 등록이 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("헬스장 등록에 실패했습니다.");
+        }
+    }
+
+    @Operation(summary = "회원 헬스장 삭제")
+    @PostMapping("/remove-gym")
+    public ResponseEntity<String> removeGym(@RequestBody RegisterGymPerUserRequest registerGymRequest) {
+        try {
+            userService.deleteUserGym(registerGymRequest);
+            return ResponseEntity.ok("헬스장이 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("헬스장 삭제에 실패했습니다.");
+        }
+    }
+
+    @Operation(summary = "비밀번호 재설정")
+    @PostMapping("/password")
+    public ResponseEntity<String> resetPassword(@RequestBody RequestResetPasswordVO request) {
+
+        userService.resetPassword(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body("잘 수정 됐습니다.");
+    }
+
+    // 핸드폰 인증번호 전송
+    @Operation(summary = "아이디(이메일) 찾기- 유저 핸드폰 인증번호 전송")
+    @PostMapping(value = "/send-sms", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<String> sendSmsVerification(@RequestBody SmsVerificationRequestVO smsVerificationRequestVO) {
+        String verificationCode = userService.sendSmsForVerification(smsVerificationRequestVO.getUserPhone());
+        return ResponseEntity.ok("[Healthtart] 다음 인증번호를 입력해주세요\n " + verificationCode);
+    }
+
+    // 인증번호 확인 후 이메일 반환
+    @Operation(summary = "아이디(이메일) 찾기 - 유저 이메일 반환")
+    @PostMapping("/verify-code")
+    public ResponseEntity<String> verifyCodeAndGetEmail(@RequestBody EmailRequestVO emailRequestVO) {
+        try {
+            String userEmail = userService.verifyCodeAndFindEmail(emailRequestVO.getUserPhone(), emailRequestVO.getVerificationCode());
+
+            // 성공 시 이메일 응답
+            Map<String, String> response = new HashMap<>();
+            response.put("userEmail", userEmail);
+            return ResponseEntity.ok("사용자의 이메일은 " + userEmail + " 입니다.");
+
+        } catch (CoolSmsException e) {
+
+            // 예외 발생 시 예외 메시지 반환
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("errorMessage", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

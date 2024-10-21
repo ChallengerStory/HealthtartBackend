@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 public class ResponseModifyWorkoutPerRoutineVO {
     private int workoutOrder;
+    private String workoutName;
+    private String link;
     private int weightSet;
     private int numberPerSet;
     private int weightPerSet;

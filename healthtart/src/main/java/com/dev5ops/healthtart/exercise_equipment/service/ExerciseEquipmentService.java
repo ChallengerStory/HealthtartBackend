@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -63,6 +64,11 @@ public class ExerciseEquipmentService {
         return modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class);
     }
 
+    public ExerciseEquipment getEquipmentByCode(Long exerciseEquipmentCode) {
+        return exerciseEquipmentRepository.findById(exerciseEquipmentCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.EQUIPMENT_NOT_FOUND));
+    }
+
     public List<ExerciseEquipmentDTO> findAllEquipment() {
         List<ExerciseEquipment> exerciseEquipments = exerciseEquipmentRepository.findAll();
 
@@ -70,6 +76,20 @@ public class ExerciseEquipmentService {
                 .map(exerciseEquipment -> modelMapper.map(exerciseEquipment, ExerciseEquipmentDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public ExerciseEquipment findByExerciseEquipmentName(String exerciseEquipmentName) {
+        if (exerciseEquipmentName == null || exerciseEquipmentName.trim().isEmpty()) {
+            System.out.println("운동 기구 이름이 null이거나 비어 있습니다.");
+            return null;
+        }
+
+        String formattedName = exerciseEquipmentName.trim().toLowerCase(); // 겁색할 운동기구 이름
+
+        Optional<ExerciseEquipment> exerciseEquipmentOptional = exerciseEquipmentRepository.findByExerciseEquipmentName(formattedName);
+        return exerciseEquipmentOptional.orElse(null);
+    }
+
+
 
     public List<ExerciseEquipmentDTO> findByBodyPart(String bodyPart) {
         List<ExerciseEquipment> equipmentList = exerciseEquipmentRepository.findByBodyPart(bodyPart);

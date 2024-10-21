@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/routines")
+@RequestMapping("/routines")
 @RequiredArgsConstructor
 public class RoutineController {
 
@@ -40,13 +40,6 @@ public class RoutineController {
         return new ResponseEntity<>(routine, HttpStatus.OK);
     }
 
-    @PostMapping
-    @Operation(summary = "운동 루틴 등록")
-    public ResponseEntity<ResponseInsertRoutineVO> registerRoutine(@RequestBody RequestInsertRoutineVO requestInsertRoutineVO) {
-        RoutineDTO routineDTO = modelMapper.map(requestInsertRoutineVO, RoutineDTO.class);
-        ResponseInsertRoutineVO response = routineService.registerRoutine(routineDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
     @PutMapping("/{routineCode}")
     @Operation(summary = "운동 루틴 수정")
@@ -59,9 +52,8 @@ public class RoutineController {
 
     @DeleteMapping("/{routineCode}")
     @Operation(summary = "운동 루틴 삭제")
-    public ResponseEntity<ResponseDeleteRoutineVO> deleteRoutine(@RequestBody RequestModifyRoutineVO requestModifyRoutineVO) {
-        RoutineDTO routineDTO = modelMapper.map(requestModifyRoutineVO, RoutineDTO.class);
-        ResponseDeleteRoutineVO response = routineService.deleteRoutine(routineDTO.getRoutineCode());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<String> deleteRoutine(@PathVariable("routineCode") Long routineCode) {
+        routineService.deleteRoutine(routineCode);
+        return ResponseEntity.ok("운동 루틴이 성공적으로 삭제되었습니다.");
     }
 }

@@ -1,54 +1,72 @@
 package com.dev5ops.healthtart.user.service;
 
 import com.dev5ops.healthtart.common.exception.CommonException;
+import com.dev5ops.healthtart.common.exception.CoolSmsException;
 import com.dev5ops.healthtart.common.exception.StatusEnum;
+import com.dev5ops.healthtart.gym.domain.entity.Gym;
+import com.dev5ops.healthtart.gym.repository.GymRepository;
 import com.dev5ops.healthtart.security.JwtUtil;
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
-import com.dev5ops.healthtart.user.domain.dto.UserDTO;
+import com.dev5ops.healthtart.user.domain.UserTypeEnum;
+import com.dev5ops.healthtart.user.domain.dto.*;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.dev5ops.healthtart.user.domain.vo.request.RegisterGymPerUserRequest;
 import com.dev5ops.healthtart.user.domain.vo.request.RequestInsertUserVO;
-import com.dev5ops.healthtart.user.domain.vo.response.ResponseInsertUserVO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestOauth2VO;
+import com.dev5ops.healthtart.user.domain.vo.request.RequestResetPasswordVO;
 import com.dev5ops.healthtart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService{
 
+    private GymRepository gymRepository;
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate stringRedisTemplate;  // StringRedisTemplate 사용
+    private final RestTemplate restTemplate;
+    private final CoolSmsService coolSmsService;
 
     @Autowired
-    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil) {
+    public UserServiceImpl(GymRepository gymRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, UserRepository userRepository, JwtUtil jwtUtil, StringRedisTemplate stringRedisTemplate, RestTemplate restTemplate, CoolSmsService coolSmsService) {
+        this.gymRepository = gymRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.restTemplate = restTemplate;
+        this.coolSmsService = coolSmsService;
     }
 
-    // 회원가입
     @Override
-    public ResponseInsertUserVO signUpUser(RequestInsertUserVO request) {
+    public void signUpUser(RequestInsertUserVO request) {
+        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(request.getUserEmail());
 
-        // Redis에서 이메일 인증 여부 확인
-//        String emailVerificationStatus = stringRedisTemplate.opsForValue().get(requestRegisterUserVO.getUserEmail());
-        // -> 레디스 이메일 인증 처리는 일반회원만 해야한다.
+        if (!"True".equals(emailVerificationStatus)) {
+            log.error("이메일 인증이 완료되지 않았습니다: {}", request.getUserEmail());
+            throw new CommonException(StatusEnum.EMAIL_VERIFICATION_REQUIRED);
+        }
+        if (userRepository.findByUserEmail(request.getUserEmail()) != null) throw new CommonException(StatusEnum.EMAIL_DUPLICATE);
+        if(!isValidAndUniqueNickname(request.getUserNickname())) throw new CommonException(StatusEnum.INVALID_NICKNAME_LENGTH);
 
         String curDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uuid = UUID.randomUUID().toString();
@@ -57,9 +75,9 @@ public class UserServiceImpl implements UserService{
 
         request.changePwd(bCryptPasswordEncoder.encode(request.getUserPassword()));
 
-        UserDTO userDTO = UserDTO.builder()
+        UserEntity.UserEntityBuilder userBuilder = UserEntity.builder()
                 .userCode(userCode)
-                .userType(request.getUserType())
+                .userType(UserTypeEnum.valueOf(request.getUserType()))
                 .userName(request.getUserName())
                 .userEmail(request.getUserEmail())
                 .userPassword(request.getUserPassword())
@@ -67,19 +85,22 @@ public class UserServiceImpl implements UserService{
                 .userNickname(request.getUserNickname())
                 .userAddress(request.getUserAddress())
                 .userFlag(true)
-                .userGender("M")
+                .userGender(request.getUserGender())
                 .userHeight(request.getUserHeight())
                 .userWeight(request.getUserWeight())
                 .userAge(request.getUserAge())
                 .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+                .updatedAt(LocalDateTime.now());
 
-        UserEntity insertUser = modelMapper.map(userDTO, UserEntity.class);
+        if (request.getGymCode() != null) {
+            Gym gym = gymRepository.findById(request.getGymCode())
+                    .orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+            userBuilder.gym(gym);
+        }
+
+        UserEntity insertUser = userBuilder.build();
 
         userRepository.save(insertUser);
-
-        return new ResponseInsertUserVO(userDTO);
     }
 
     // 회원 전체 조회
@@ -100,12 +121,36 @@ public class UserServiceImpl implements UserService{
     public UserDTO findUserByEmail(String userEmail) {
         UserEntity findUser = userRepository.findByUserEmail(userEmail);
 
+        if(findUser == null)
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
         return modelMapper.map(findUser, UserDTO.class);
+    }
+
+    // 회원 가입 전 중복 이메일 체크 메서드
+    @Override
+    public void findUserByEmail2(String userEmail){
+        UserEntity findUser = userRepository.findByUserEmail(userEmail);
+
+        if(findUser != null)
+            throw new CommonException(StatusEnum.USER_NOT_FOUND);
+    }
+
+    @Override
+    public void editUserInfo(UserDTO userDTO) {
+        String userCode = getUserCode();
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.setUserHeight(userDTO.getUserHeight());
+        user.setUserWeight(userDTO.getUserWeight());
+
+        userRepository.save(user);
     }
 
     @Override
     public UserDTO findById(String userCode) {
-        UserEntity user = userRepository.findById(userCode).get();
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         return modelMapper.map(user, UserDTO.class);
     }
@@ -115,35 +160,225 @@ public class UserServiceImpl implements UserService{
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUserEmail(userEmail);
 
-        log.info("여기");
+        if (user == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
-        // 사용자가 없을 경우 예외 발생
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        // 사용자의 권한 설정
+        // ADMIN인 경우 MEMBER 속성도 가짐.
+        List<GrantedAuthority> roles = new ArrayList<>();
+        if("MEMBER".equals(user.getUserType().name())){
+            roles.add(new SimpleGrantedAuthority("MEMBER"));
+        }else{
+            roles.add(new SimpleGrantedAuthority("MEMBER"));
+            roles.add(new SimpleGrantedAuthority("ADMIN"));
         }
 
-        // 사용자의 권한 설정 (예: ROLE_MEMBER)
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(user.getUserType().name())); // 권한 설정
-
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        if(userDTO.getUserFlag() == false) throw new CommonException(StatusEnum.USER_NOT_FOUND);
 
         return new CustomUserDetails(
-                                    userDTO,
-                                    roles,
-                                    true,
-                                    true,
-                                    true,
-                                    user.getUserFlag());
-
-//        return new User(user.getUserEmail(), user.getUserPassword(), true, true, true, true, roles);
+                                userDTO,
+                                roles,
+                                true,
+                                true,
+                                true,
+                                user.getUserFlag());
     }
 
     @Override
     public void deleteUser(String userCode) {
-        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        UserEntity user = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
 
         user.removeRequest(user);
         userRepository.save(user);
     }
+
+    // userNickname 유효성 검사하는 서비스코드 -> 회원가입, 마이페이지에서 사용
+    @Override
+    public Boolean checkValideNickname(String userNickname) {
+        return isValidAndUniqueNickname(userNickname);
+    }
+
+    @Override
+    public void saveOauth2User(RequestOauth2VO request) {
+
+        String userCode = getUserCode();
+        UserEntity findUser = userRepository.findById(userCode)
+                .orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        findUser.setUserPhone(request.getUserPhone());
+        findUser.setUserNickname(request.getUserNickname());
+        findUser.setUserAddress(request.getUserAddress());
+        findUser.setUserGender(request.getUserGender());
+        findUser.setUserHeight(request.getUserHeight());
+        findUser.setUserWeight(request.getUserWeight());
+        findUser.setUserAge(request.getUserAge());
+        findUser.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(findUser);
+    }
+
+    @Override
+    public ResponseMypageDTO getMypageInfo() {
+
+        String userCode = getUserCode();
+
+        ResponseMypageDTO responseMypageDTO = userRepository.findMypageInfo(userCode);
+        if(responseMypageDTO == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
+        return responseMypageDTO;
+    }
+
+    @Override
+    public void editPassword(EditPasswordDTO editPasswordDTO) {
+        String userCode = getUserCode();
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        if (!bCryptPasswordEncoder.matches(editPasswordDTO.getCurrentPassword(), user.getUserPassword())) {
+            throw new CommonException(StatusEnum.INVALID_PASSWORD);
+        }
+
+        user.setUserPassword(bCryptPasswordEncoder.encode(editPasswordDTO.getNewPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUserGym(RegisterGymPerUserRequest registerGymRequest) {
+        String userCode = registerGymRequest.getUserCode();
+        String businessNumber = registerGymRequest.getBusinessNumber().trim();
+
+        log.info(businessNumber);
+
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+        Gym gym = gymRepository.findByBusinessNumber(businessNumber).orElseThrow(() -> new CommonException(StatusEnum.GYM_NOT_FOUND));
+
+        log.info(businessNumber);
+
+        user.setGym(gym);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUserGym(RegisterGymPerUserRequest registerGymRequest) {
+        String userCode = registerGymRequest.getUserCode();
+
+        UserEntity user = userRepository.findById(userCode).orElseThrow(() -> new CommonException(StatusEnum.USER_NOT_FOUND));
+
+        user.setGym(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void resetPassword(RequestResetPasswordVO request) {
+
+        UserEntity findUser = userRepository.findByUserEmail(request.getUserEmail());
+        if(findUser == null) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
+        // 비밀번호 bCrypt 암호화.
+        findUser.setUserPassword(bCryptPasswordEncoder.encode(request.getUserPassword()));
+
+        userRepository.save(findUser);
+    }
+
+    public String getUserCode() {
+        // 현재 인증된 사용자 가져오기
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 인증된 사용자가 문자열(String)인 경우 (로그인하지 않은 상태)
+        if (principal instanceof String) throw new CommonException(StatusEnum.USER_NOT_FOUND);
+
+        // 인증된 사용자가 CustomUserDetails인 경우
+        CustomUserDetails userDetails = (CustomUserDetails) principal;
+
+        log.info("Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("userDetails: {}", userDetails.toString());
+
+        // 현재 로그인한 유저의 유저코드 반환
+        return userDetails.getUserDTO().getUserCode();
+    }
+
+    public boolean isValidAndUniqueNickname(String nickname) {
+        int maxAllowedLength = 15;  // 한글 7자, 영어 15자 기준 (혼합 시 한글은 2배로 계산)
+        int currentLength = 0;
+
+        // 특수기호 확인을 위한 정규표현식
+        String specialCharacters = "[!@#$%^&*()_+=|<>?{}\\[\\]~-]";
+
+        // 특수기호가 포함되어 있는지 확인
+        if (nickname.matches(".*" + specialCharacters + ".*")) {
+            return false;  // 특수기호가 포함되어 있으면 false 반환
+        }
+
+        // 닉네임의 길이 체크 (한글은 2글자, 영어는 1글자 계산)
+        for (int i = 0; i < nickname.length(); i++) {
+            char ch = nickname.charAt(i);
+
+            if (ch >= 0xAC00 && ch <= 0xD7A3) {
+                currentLength += 2;  // 한글은 2로 계산
+            } else {
+                currentLength += 1;  // 영어 및 기타 문자는 1로 계산
+            }
+
+            // 길이가 초과되면 false 반환
+            if (currentLength > maxAllowedLength) {
+                return false;
+            }
+        }
+
+        // 중복 확인
+        UserEntity user = userRepository.findByUserNickname(nickname);
+        if (user != null) {
+            return false;  // 중복된 닉네임이 있으면 false 반환
+        }
+
+        return true;  // 길이와 특수문자, 중복 체크를 모두 통과한 경우 true 반환
+    }
+
+    // userPhone으로 userEmail 조회
+    public String getUserEmailByUserPhone(String userPhone) {
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
+        if (userEmail == null) {
+            throw new IllegalArgumentException("해당 핸드폰 번호로 등록된 이메일이 없습니다.");
+        }
+        return userEmail;
+    }
+
+    // 인증 코드 저장을 위한 메모리 캐시
+    private final Map<String, String> phoneVerificationMap = new HashMap<>();
+
+    // SMS 인증번호 전송
+    public String sendSmsForVerification(String userPhone) {
+        String verificationCode = coolSmsService.generateRandomNumber();
+        String messageText = "[Healthtart] 아래 인증번호를 입력하세요\n" + verificationCode;
+        coolSmsService.sendSms(userPhone, messageText);
+
+        // 인증 번호를 캐시에 저장
+        phoneVerificationMap.put(userPhone, verificationCode);
+
+        return verificationCode;
+    }
+
+    // 인증 번호 확인 후 이메일 조회
+    public String verifyCodeAndFindEmail(String userPhone, String verificationCode) {
+        String storedCode = phoneVerificationMap.get(userPhone);
+
+        if (storedCode == null || !storedCode.equals(verificationCode)) {
+            throw new CoolSmsException("잘못된 인증번호입니다.");
+        }
+
+        // 핸드폰 번호로 이메일 조회
+        String userEmail = userRepository.findUserEmailByUserPhone(userPhone);
+        if (userEmail == null) {
+            throw new CoolSmsException("해당 번호로 등록된 이메일이 없습니다.");
+        }
+
+        // 인증이 성공했으면 캐시에서 삭제
+        phoneVerificationMap.remove(userPhone);
+
+        return userEmail;
+    }
+
+
 }

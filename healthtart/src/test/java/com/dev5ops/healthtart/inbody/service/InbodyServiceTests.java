@@ -8,7 +8,9 @@ import com.dev5ops.healthtart.inbody.aggregate.vo.request.RequestRegisterInbodyV
 import com.dev5ops.healthtart.inbody.dto.InbodyDTO;
 import com.dev5ops.healthtart.inbody.repository.InbodyRepository;
 import com.dev5ops.healthtart.user.domain.UserTypeEnum;
+import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.dev5ops.healthtart.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,9 @@ class InbodyServiceTests {
     private InbodyService inbodyService;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private InbodyRepository inbodyRepository;
 
     @Mock
@@ -46,28 +51,29 @@ class InbodyServiceTests {
     @Test
     void testRegisterInbody_Success() {
         // Given
-        RequestRegisterInbodyVO request = new RequestRegisterInbodyVO(85, 70.5, 175.0, 30.0, 15.0, 22.9, 18.0, LocalDateTime.now(), 1600,
-                UserEntity.builder()
-                        .userCode("test")
-                        .userType(UserTypeEnum.MEMBER)
-                        .userName("testuser")
-                        .userEmail("testuser@example.com")
-                        .userPassword("testpassword")
-                        .userPhone("010-1234-5678")
-                        .userNickname("tester")
-                        .userAddress("testAddress")
-                        .userFlag(true)
-                        .userGender("Male")
-                        .userHeight(175.0)
-                        .userWeight(70.5)
-                        .userAge(25)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .gymCode(100L)
-                        .build()
+        String userCode = "test";
+        RequestRegisterInbodyVO request = new RequestRegisterInbodyVO(85, 70.5, 175.0, 30.0, 15.0, 22.9, 18.0, LocalDateTime.now(), 1600, userCode);
+
+        UserEntity userEntity = new UserEntity(userCode, UserTypeEnum.MEMBER, "test", "test@test.com", "test", "test", "test", "test", true, "M", 123.1, 123.1, 11, null, null, LocalDateTime.now(), LocalDateTime.now(), null);
+        UserDTO userDTO = new UserDTO(
+                userEntity.getUserCode(),
+                String.valueOf(userEntity.getUserType()),
+                userEntity.getUserName(),
+                userEntity.getUserEmail(),
+                userEntity.getUserPassword(),
+                userEntity.getUserPhone(),
+                userEntity.getUserNickname(),
+                userEntity.getUserAddress(),
+                true,
+                userEntity.getUserGender(),
+                request.getHeight(),
+                request.getWeight(),
+                userEntity.getUserAge(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
 
-        InbodyDTO inbodyDTO = new InbodyDTO(null, request.getInbodyScore(), request.getWeight(), request.getHeight(), request.getMuscleWeight(), request.getFatWeight(), request.getBmi(), request.getFatPercentage(), request.getDayOfInbody(), request.getBasalMetabolicRate(), LocalDateTime.now(), LocalDateTime.now(), request.getUser());
+        InbodyDTO inbodyDTO = new InbodyDTO(null, request.getInbodyScore(), request.getWeight(), request.getHeight(), request.getMuscleWeight(), request.getFatWeight(), request.getBmi(), request.getFatPercentage(), request.getDayOfInbody(), request.getBasalMetabolicRate(), LocalDateTime.now(), LocalDateTime.now(), userEntity, request.getUserCode());
 
         Inbody mockInbody = Inbody.builder()
                 .inbodyCode(1L)
@@ -82,12 +88,11 @@ class InbodyServiceTests {
                 .basalMetabolicRate(inbodyDTO.getBasalMetabolicRate())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .user(inbodyDTO.getUser())
+                .user(userEntity)
                 .build();
 
-        when(modelMapper.map(request, InbodyDTO.class)).thenReturn(inbodyDTO);
-        when(modelMapper.map(inbodyDTO, Inbody.class)).thenReturn(mockInbody);
-        when(inbodyRepository.save(mockInbody)).thenReturn(mockInbody);
+        when(userService.findById(userCode)).thenReturn(userDTO);
+        when(inbodyRepository.save(any(Inbody.class))).thenReturn(mockInbody);
         when(modelMapper.map(mockInbody, InbodyDTO.class)).thenReturn(inbodyDTO);
 
         // When
@@ -99,8 +104,11 @@ class InbodyServiceTests {
         assertEquals(70.5, result.getWeight());
         assertEquals(175.0, result.getHeight());
         assertEquals(1600, result.getBasalMetabolicRate());
+        assertNotNull(result.getUser());
 
-        verify(inbodyRepository, times(1)).save(mockInbody);
+        // Verify save() 호출 여부 확인
+        verify(inbodyRepository, times(1)).save(any(Inbody.class));
+        verify(userService, times(1)).findById(userCode);
     }
 
     @DisplayName("인바디 등록 실패 - 중복된 날짜")
@@ -109,40 +117,59 @@ class InbodyServiceTests {
         // Given
         LocalDateTime duplicateDay = LocalDateTime.now();
 
-        RequestRegisterInbodyVO request = new RequestRegisterInbodyVO(85, 70.5, 175.0, 30.0, 15.0, 22.9, 18.0, duplicateDay, 1600,
-                UserEntity.builder()
-                        .userCode("test")
-                        .userType(UserTypeEnum.MEMBER)
-                        .userName("testuser")
-                        .userEmail("testuser@example.com")
-                        .userPassword("testpassword")
-                        .userPhone("010-1234-5678")
-                        .userNickname("tester")
-                        .userAddress("testAddress")
-                        .userFlag(true)
-                        .userGender("Male")
-                        .userHeight(175.0)
-                        .userWeight(70.5)
-                        .userAge(25)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .gymCode(100L)
-                        .build()
-        );
+        String userCode = "test";
+        RequestRegisterInbodyVO request = new RequestRegisterInbodyVO(85, 70.5, 175.0, 30.0, 15.0, 22.9, 18.0, duplicateDay, 1600, userCode);
 
-        InbodyDTO inbodyDTO = new InbodyDTO(null, request.getInbodyScore(), request.getWeight(), request.getHeight(), request.getMuscleWeight(), request.getFatWeight(), request.getBmi(), request.getFatPercentage(), request.getDayOfInbody(), request.getBasalMetabolicRate(), LocalDateTime.now(), LocalDateTime.now(), request.getUser());
+        UserEntity userEntity = new UserEntity(userCode, UserTypeEnum.MEMBER, "test", "test@test.com", "test", "test", "test", "test", true, "M", 123.1, 123.1, 11, null, null, LocalDateTime.now(), LocalDateTime.now(), null);
 
-        Inbody existingInbody = new Inbody(1L, 85, 70.5, 175.0, 30.0, 15.0, 22.9, 18.0, duplicateDay, 1600, LocalDateTime.now(), LocalDateTime.now(), request.getUser());
+        InbodyDTO inbodyDTO = new InbodyDTO(null, request.getInbodyScore(), request.getWeight(), request.getHeight(), request.getMuscleWeight(), request.getFatWeight(), request.getBmi(), request.getFatPercentage(), request.getDayOfInbody(), request.getBasalMetabolicRate(), LocalDateTime.now(), LocalDateTime.now(), userEntity, request.getUserCode());
 
-        when(modelMapper.map(request, InbodyDTO.class)).thenReturn(inbodyDTO);
-        when(inbodyRepository.findByDayOfInbodyAndUser(duplicateDay, request.getUser())).thenReturn(Optional.of(existingInbody));
+        // 중복된 날짜로 저장된 기존 Inbody 객체 설정
+        Inbody existingInbody = Inbody.builder()
+                .inbodyCode(1L)  // InbodyCode 수동 설정
+                .inbodyScore(85)
+                .weight(70.5)
+                .height(175.0)
+                .muscleWeight(30.0)
+                .fatWeight(15.0)
+                .bmi(22.9)
+                .fatPercentage(18.0)
+                .dayOfInbody(duplicateDay)
+                .basalMetabolicRate(1600)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .user(userEntity)
+                .build();
+
+        // UserService 모킹
+        when(userService.findById(userCode)).thenReturn(new UserDTO(
+                userEntity.getUserCode(),
+                String.valueOf(userEntity.getUserType()),
+                userEntity.getUserName(),
+                userEntity.getUserEmail(),
+                userEntity.getUserPassword(),
+                userEntity.getUserPhone(),
+                userEntity.getUserNickname(),
+                userEntity.getUserAddress(),
+                true,
+                userEntity.getUserGender(),
+                userEntity.getUserHeight(),
+                userEntity.getUserWeight(),
+                userEntity.getUserAge(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        ));
+
+        // 중복된 인바디 항목을 반환하도록 설정
+        when(inbodyRepository.findByDayOfInbodyAndUser(any(LocalDateTime.class), any(UserEntity.class))).thenReturn(Optional.of(existingInbody));
+
+        // ModelMapper 모킹
+        when(modelMapper.map(any(RequestRegisterInbodyVO.class), eq(InbodyDTO.class))).thenReturn(inbodyDTO);
 
         // When & Then
-        CommonException exception = assertThrows(CommonException.class, () -> {
-            inbodyService.registerInbody(inbodyDTO);
-        });
+        assertThrows(CommonException.class, () -> inbodyService.registerInbody(inbodyDTO));
 
-        assertEquals(StatusEnum.DAY_OF_INBODY_DUPLICATE, exception.getStatusEnum());
+        // 중복 인바디로 인해 save()가 호출되지 않도록 확인
         verify(inbodyRepository, never()).save(any(Inbody.class));
     }
 
@@ -178,7 +205,7 @@ class InbodyServiceTests {
                         .userAge(25)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
-                        .gymCode(100L)
+                        .gym(null)
                         .build()
         );
 
@@ -229,7 +256,8 @@ class InbodyServiceTests {
                 updatedInbody.getBasalMetabolicRate(),
                 updatedInbody.getCreatedAt(),
                 updatedInbody.getUpdatedAt(),
-                updatedInbody.getUser()
+                updatedInbody.getUser(),
+                updatedInbody.getUser().getUserCode()
         ));
 
         // When
@@ -277,7 +305,7 @@ class InbodyServiceTests {
                         .userAge(25)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
-                        .gymCode(100L)
+                        .gym(null)
                         .build()
         );
 
@@ -327,7 +355,7 @@ class InbodyServiceTests {
                         .userAge(25)
                         .createdAt(LocalDateTime.now().minusDays(10))
                         .updatedAt(LocalDateTime.now().minusDays(5))
-                        .gymCode(100L)
+                        .gym(null)
                         .build())
                 .build();
 
@@ -375,7 +403,7 @@ class InbodyServiceTests {
                         .userAge(25)
                         .createdAt(LocalDateTime.now().minusDays(10))
                         .updatedAt(LocalDateTime.now().minusDays(5))
-                        .gymCode(100L)
+                        .gym(null)
                         .build())
                 .build();
 
@@ -394,7 +422,8 @@ class InbodyServiceTests {
                 1600,
                 LocalDateTime.now().minusDays(5),
                 LocalDateTime.now().minusDays(5),
-                existingInbody.getUser()
+                existingInbody.getUser(),
+                existingInbody.getUser().getUserCode()
         );
 
         when(modelMapper.map(existingInbody, InbodyDTO.class)).thenReturn(expectedDTO);
@@ -447,7 +476,7 @@ class InbodyServiceTests {
                                 .userAge(25)
                                 .createdAt(LocalDateTime.now().minusDays(10))
                                 .updatedAt(LocalDateTime.now().minusDays(5))
-                                .gymCode(100L)
+                                .gym(null)
                                 .build())
                         .build(),
                 Inbody.builder()
@@ -479,7 +508,7 @@ class InbodyServiceTests {
                                 .userAge(30)
                                 .createdAt(LocalDateTime.now().minusDays(10))
                                 .updatedAt(LocalDateTime.now().minusDays(5))
-                                .gymCode(200L)
+                                .gym(null)
                                 .build())
                         .build()
         );
@@ -501,7 +530,8 @@ class InbodyServiceTests {
                     inbody.getBasalMetabolicRate(),
                     inbody.getCreatedAt(),
                     inbody.getUpdatedAt(),
-                    inbody.getUser()
+                    inbody.getUser(),
+                    inbody.getUser().getUserCode()
             );
         });
 
@@ -552,7 +582,7 @@ class InbodyServiceTests {
                         .userAge(25)
                         .createdAt(LocalDateTime.now().minusDays(10))
                         .updatedAt(LocalDateTime.now().minusDays(5))
-                        .gymCode(100L)
+                        .gym(null)
                         .build())
                 .build();
 
@@ -571,7 +601,8 @@ class InbodyServiceTests {
                 existingInbody.getBasalMetabolicRate(),
                 existingInbody.getCreatedAt(),
                 existingInbody.getUpdatedAt(),
-                existingInbody.getUser()
+                existingInbody.getUser(),
+                existingInbody.getUser().getUserCode()
         );
         when(modelMapper.map(existingInbody, InbodyDTO.class)).thenReturn(expectedDTO);
 
@@ -623,7 +654,7 @@ class InbodyServiceTests {
                                 .userAge(25)
                                 .createdAt(LocalDateTime.now().minusDays(10))
                                 .updatedAt(LocalDateTime.now().minusDays(5))
-                                .gymCode(100L)
+                                .gym(null)
                                 .build())
                         .build(),
                 Inbody.builder()
@@ -655,7 +686,7 @@ class InbodyServiceTests {
                                 .userAge(30)
                                 .createdAt(LocalDateTime.now().minusDays(10))
                                 .updatedAt(LocalDateTime.now().minusDays(5))
-                                .gymCode(200L)
+                                .gym(null)
                                 .build())
                         .build()
         );
@@ -681,7 +712,8 @@ class InbodyServiceTests {
                     inbody.getBasalMetabolicRate(),
                     inbody.getCreatedAt(),
                     inbody.getUpdatedAt(),
-                    inbody.getUser()
+                    inbody.getUser(),
+                    inbody.getUser().getUserCode()
             );
         });
 

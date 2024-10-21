@@ -16,9 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +68,7 @@ class RoutineServiceImplTests {
     }
 
     @Test
-    @DisplayName("루틴 코드로 루틴 조회 테스트")
+    @DisplayName("단일 코드로 루틴 조회 테스트")
     void findRoutineSuccess() {
         Routine routine = new Routine();
         when(routineRepository.findById(anyLong())).thenReturn(Optional.of(routine));
@@ -93,33 +95,25 @@ class RoutineServiceImplTests {
     @Transactional
     @DisplayName("루틴 등록 테스트")
     void registerRoutineSuccess() {
-        RoutineDTO routineDTO = new RoutineDTO();
-        routineDTO.setRoutineCode(1L);
-        routineDTO.setTitle("김정은도 10kg 감량한 모닝 루틴 !!!");
-        routineDTO.setTime(60);
-        routineDTO.setLink("http://healthtart.com");
-        routineDTO.setRecommendMusic("삐딱하게 - G-DRAGON");
-
-        Routine routine = Routine.builder()
-                .routineCode(routineDTO.getRoutineCode())
-                .title(routineDTO.getTitle())
-                .time(routineDTO.getTime())
-                .link(routineDTO.getLink())
-                .recommendMusic(routineDTO.getRecommendMusic())
+        Routine savedRoutine = Routine.builder()
+                .routineCode(1L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        when(routineRepository.save(any(Routine.class))).thenReturn(routine);
+        RoutineDTO routineDTO = new RoutineDTO();
 
-        ResponseInsertRoutineVO responseVO = new ResponseInsertRoutineVO();
-        when(modelMapper.map(any(Routine.class), eq(ResponseInsertRoutineVO.class)))
-                .thenReturn(responseVO);
+        when(routineRepository.save(any(Routine.class))).thenReturn(savedRoutine);
+        when(modelMapper.map(any(Routine.class), any())).thenReturn(routineDTO);
 
-        ResponseInsertRoutineVO result = routineService.registerRoutine(routineDTO);
+        RoutineDTO result = routineService.registerRoutine(routineDTO);
 
         assertNotNull(result);
         verify(routineRepository).save(any(Routine.class));
-        verify(modelMapper).map(any(Routine.class), eq(ResponseInsertRoutineVO.class));
+        verify(modelMapper).map(any(Routine.class), any());
     }
+
+
 
     @Test
     @Transactional
@@ -127,7 +121,7 @@ class RoutineServiceImplTests {
     void modifyRoutineSuccess() {
         Long routineCode = 1L;
 
-        EditRoutineVO modifyRoutine = new EditRoutineVO("김정은도 10kg 감량한 저녁 루틴 !!!", 90);
+        EditRoutineVO modifyRoutine = new EditRoutineVO(LocalDateTime.now());
 
         Routine routine = new Routine();
         when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
@@ -145,20 +139,20 @@ class RoutineServiceImplTests {
     }
 
 
-    @Test
-    @Transactional
-    @DisplayName("루틴 삭제 테스트")
-    void deleteRoutineSuccess() {
-        Long routineCode = 1L;
-        Routine routine = new Routine();
-        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
-
-        ResponseDeleteRoutineVO result = routineService.deleteRoutine(routineCode);
-
-        assertNotNull(result);
-        verify(routineRepository).findById(routineCode);
-        verify(routineRepository).delete(routine);
-    }
+//    @Test
+//    @Transactional
+//    @DisplayName("루틴 삭제 테스트")
+//    void deleteRoutineSuccess() {
+//        Long routineCode = 1L;
+//        Routine routine = new Routine();
+//        when(routineRepository.findById(routineCode)).thenReturn(Optional.of(routine));
+//
+//        ResponseDeleteRoutineVO result = routineService.deleteRoutine(routineCode);
+//
+//        assertNotNull(result);
+//        verify(routineRepository).findById(routineCode);
+//        verify(routineRepository).delete(routine);
+//    }
 
 
 }

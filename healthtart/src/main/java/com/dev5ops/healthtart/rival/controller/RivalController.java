@@ -2,14 +2,17 @@ package com.dev5ops.healthtart.rival.controller;
 
 import com.dev5ops.healthtart.rival.domain.dto.RivalDTO;
 import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyDTO;
-import com.dev5ops.healthtart.rival.domain.dto.RivalUserInbodyScoreDTO;
+import com.dev5ops.healthtart.rival.domain.vo.response.ResponseRivalVO;
 import com.dev5ops.healthtart.rival.service.RivalService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("rival")
 public class RivalController {
@@ -21,16 +24,29 @@ public class RivalController {
         this.rivalService = rivalService;
     }
 
-    // 1. 모든 라이벌 조회하는 기능
+    @Operation(summary = "내 라이벌 조회")
     @GetMapping
-    public ResponseEntity<List<RivalUserInbodyScoreDTO>> findRivalList(){
-        // VO로 변경해야 한다면 변경하기 DTO <-> VO -> 데이터는 둘이 똑같이 해서 하기. 원칙?
-        List<RivalUserInbodyScoreDTO> rivalList = rivalService.findRivalList();
-
-        return ResponseEntity.ok().body(rivalList);
+    public ResponseEntity<ResponseRivalVO> findRivalMatch() {
+        try {
+            RivalDTO rival = rivalService.findRivalMatch();
+            if (rival != null) {
+                ResponseRivalVO responseRivalVO = new ResponseRivalVO(
+                        rival.getRivalMatchCode(),
+                        rival.getUserCode(),
+                        rival.getRivalUserCode()
+                );
+                return ResponseEntity.ok().body(responseRivalVO);
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        } catch (Exception e) {
+            log.error("라이벌 조회 중 오류 발생", e);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // 2. 선택한 라이벌 조회하는 기능
+    @Operation(summary = "선택한 라이벌 조회")
     @GetMapping("/{rivalusercode}")
     public ResponseEntity<List<RivalUserInbodyDTO>> findRival(@PathVariable String rivalusercode){
 
@@ -40,6 +56,7 @@ public class RivalController {
     }
 
     // 3. 선택한 라이벌 삭제
+    @Operation(summary = "선택한 라이벌 삭제")
     @DeleteMapping("/{rivalMatchCode}")
     public ResponseEntity<String> deleteRival(@PathVariable Long rivalMatchCode){
 
@@ -49,6 +66,7 @@ public class RivalController {
     }
 
     // 4. 선택한 유저 라이벌 등록
+    @Operation(summary = "선택한 라이벌 등록")
     @PostMapping("/{rivalUserCode}")
     public ResponseEntity insertRival(@PathVariable String rivalUserCode){
         RivalDTO rivalDTO = rivalService.insertRival(rivalUserCode);
