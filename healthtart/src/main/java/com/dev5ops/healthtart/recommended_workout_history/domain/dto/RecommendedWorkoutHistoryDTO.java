@@ -27,8 +27,5 @@ public class RecommendedWorkoutHistoryDTO {
     private LocalDateTime updatedAt;
 
     @JsonProperty("workout_info_code")
-    private WorkoutInfo workoutInfoCode;
-
-
-
+    private Long workoutInfoCode;
 }
