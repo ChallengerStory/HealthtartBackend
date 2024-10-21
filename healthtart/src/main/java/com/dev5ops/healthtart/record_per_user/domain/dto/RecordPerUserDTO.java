@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.record_per_user.domain.dto;
 
 import com.dev5ops.healthtart.user.domain.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class RecordPerUserDTO {
     private LocalDate dayOfExercise;
 
     @JsonProperty("exercise_duration")
-    private LocalDateTime exerciseDuration;
+    private Integer exerciseDuration;
 
     @JsonProperty("record_flag")
     private boolean recordFlag;
@@ -40,7 +41,8 @@ public class RecordPerUserDTO {
     private String userCode;
 
     @JsonProperty("routine_code")
-    private Long routineCode;
+    private Long RoutineCode;
+
 
 
 }

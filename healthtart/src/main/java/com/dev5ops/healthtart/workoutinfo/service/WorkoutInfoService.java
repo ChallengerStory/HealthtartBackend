@@ -9,6 +9,7 @@ import com.dev5ops.healthtart.workoutinfo.domain.vo.response.ResponseModifyWorko
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface WorkoutInfoService {
     // 운동 루틴 전체 조회
@@ -16,7 +17,6 @@ public interface WorkoutInfoService {
 
     // 운동 루틴 단일 조회
     ResponseFindWorkoutInfoVO findWorkoutInfoByCode(Long WorkoutInfoCode);
-
 
     ResponseFindWorkoutInfoVO getWorkoutInfoByRoutineCode(Long routineCode);
 
@@ -29,4 +29,6 @@ public interface WorkoutInfoService {
     // 루틴 멈추기 누르면 운동루틴 삭제
     @Transactional
     ResponseDeleteWorkoutInfoVO deleteWorkoutInfo(Long WorkoutInfoCode);
+
+    Map<Long, List<Long>> groupingWorkoutInfoCodesByRoutineCode(List<ResponseFindWorkoutInfoVO> dtoList);
 }

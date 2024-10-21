@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WorkoutInfoRepository extends JpaRepository <WorkoutInfo, Long> {
+    WorkoutInfo findByRoutineCode_RoutineCode(Long routineCode);
 }

@@ -29,8 +29,7 @@ public class RecommendedWorkoutHistory {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name="workout_info_code")
-    private WorkoutInfo workoutInfoCode;
+    @Column(name="workout_info_code")
+    private Long workoutInfoCode;
 
 }

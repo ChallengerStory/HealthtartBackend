@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,11 +46,10 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
                 .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
         return modelMapper.map(workoutInfo, ResponseFindWorkoutInfoVO.class);
     }
-
+// findByRoutineCode_RoutineCode
     @Override
     public ResponseFindWorkoutInfoVO getWorkoutInfoByRoutineCode(Long routineCode) {
-        WorkoutInfo workoutInfo = workoutInfoRepository.findById(routineCode)
-                .orElseThrow(() -> new CommonException(StatusEnum.ROUTINE_NOT_FOUND));
+        WorkoutInfo workoutInfo = workoutInfoRepository.findByRoutineCode_RoutineCode(routineCode);
         return modelMapper.map(workoutInfo, ResponseFindWorkoutInfoVO.class);
     }
 
@@ -92,4 +92,12 @@ public class WorkoutInfoServiceImpl implements WorkoutInfoService {
         return new ResponseDeleteWorkoutInfoVO();
     }
 
+    @Override
+    public Map<Long, List<Long>> groupingWorkoutInfoCodesByRoutineCode(List<ResponseFindWorkoutInfoVO> dtoList) {
+        return dtoList.stream()
+                .collect(Collectors.groupingBy(
+                        ResponseFindWorkoutInfoVO::getRoutineCode,
+                        Collectors.mapping(ResponseFindWorkoutInfoVO::getWorkoutInfoCode, Collectors.toList())
+                ));
+    }
 }
