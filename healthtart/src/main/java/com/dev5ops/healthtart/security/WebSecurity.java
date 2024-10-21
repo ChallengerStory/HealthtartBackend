@@ -111,6 +111,7 @@ public class WebSecurity {
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**/edit", "PATCH")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/inbody/**", "DELETE")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/history/**", "GET")).hasRole("MEMBER")
+                                .requestMatchers(new AntPathRequestMatcher("/history/**", "POST")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/workoutInfos/**", "GET")).hasRole("MEMBER")
                                 .requestMatchers(new AntPathRequestMatcher("/routines/**", "DELETE")).hasRole("MEMBER")
 
