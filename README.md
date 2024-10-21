@@ -102,6 +102,11 @@
 
 <br><br>
 
+# 🚩 기능 테스트
+### [🔗 위키 바로가기](https://github.com/Dev5Oops/Healthtart/wiki/7.-%EA%B8%B0%EB%8A%A5-%EC%8B%9C%EC%97%B0)
+
+<br><br>
+
 # 🚩 Jenkins
 
 
