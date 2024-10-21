@@ -198,7 +198,8 @@ class UserServiceImplTests {
                 75.0,
                 30,
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
         ValueOperations<String, String> valueOperations = mock(ValueOperations.class);

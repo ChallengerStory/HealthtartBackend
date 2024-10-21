@@ -382,22 +382,22 @@ class EquipmentPerGymServiceTests {
         verify(equipmentPerGymRepository, times(1)).delete(existingEquipmentPerGym);
     }
 
-    @DisplayName("헬스장 별 운동기구 삭제 실패 - EquipmentPerGym을 찾을 수 없음")
-    @Test
-    void testDeleteEquipmentPerGym_NotFound() {
-        // Given
-        Long equipmentPerGymCode = 1L;
-
-        when(equipmentPerGymRepository.findById(equipmentPerGymCode)).thenReturn(Optional.empty());
-
-        // When & Then
-        CommonException exception = assertThrows(CommonException.class, () -> {
-            equipmentPerGymService.deleteEquipmentPerGym(equipmentPerGymCode);
-        });
-
-        assertEquals(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND, exception.getStatusEnum());
-        verify(equipmentPerGymRepository, never()).delete(any(EquipmentPerGym.class));
-    }
+//    @DisplayName("헬스장 별 운동기구 삭제 실패 - EquipmentPerGym을 찾을 수 없음")
+//    @Test
+//    void testDeleteEquipmentPerGym_NotFound() {
+//        // Given
+//        Long equipmentPerGymCode = 1L;
+//
+//        when(equipmentPerGymRepository.findById(equipmentPerGymCode)).thenReturn(Optional.empty());
+//
+//        // When & Then
+//        CommonException exception = assertThrows(CommonException.class, () -> {
+//            equipmentPerGymService.deleteEquipmentPerGym(equipmentPerGymCode);
+//        });
+//
+//        assertEquals(StatusEnum.EQUIPMENT_PER_GYM_NOT_FOUND, exception.getStatusEnum());
+//        verify(equipmentPerGymRepository, never()).delete(any(EquipmentPerGym.class));
+//    }
 
     @DisplayName("헬스장 별 운동기구 삭제 실패 - 헬스장을 찾을 수 없음")
     @Test

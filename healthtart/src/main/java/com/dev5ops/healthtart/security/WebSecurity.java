@@ -48,7 +48,7 @@ public class WebSecurity {
         // CSRF 비활성화
         http.csrf(csrf -> csrf.disable());
         // CORS 설정 적용
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         // 로그인 시 추가할 authenticationManager 설정
         AuthenticationManagerBuilder authenticationManagerBuilder =
@@ -142,20 +142,20 @@ public class WebSecurity {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // 프론트엔드 도메인 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // 허용할 HTTP 메서드 설정
-        configuration.setAllowCredentials(true); // 인증 정보 허용 (쿠키 등)
-        configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
-        configuration.setExposedHeaders(Arrays.asList("Authorization")); // 노출할 헤더 설정
-        configuration.setMaxAge(3600L); // 1시간 동안 캐시
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // 프론트엔드 도메인 허용
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // 허용할 HTTP 메서드 설정
+//        configuration.setAllowCredentials(true); // 인증 정보 허용 (쿠키 등)
+//        configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
+//        configuration.setExposedHeaders(Arrays.asList("Authorization")); // 노출할 헤더 설정
+//        configuration.setMaxAge(3600L); // 1시간 동안 캐시
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     // Authentication 용 메소드(인증 필터 반환)
     private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
