@@ -48,7 +48,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUser mockFirstRecordPerUser = RecordPerUser.builder()
                 .userRecordCode(1L)
-                .dayOfExercise(LocalDate.of(2024,10,9))
+                .dayOfExercise(LocalDateTime.of(2024,10,9,0,0,0))
                 .exerciseDuration(60)
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now())
@@ -59,7 +59,7 @@ class RecordPerUserServiceTests {
 
         RecordPerUser mockSecondRecordPerUser = RecordPerUser.builder()
                 .userRecordCode(2L)
-                .dayOfExercise(LocalDate.of(2024,10,10))
+                .dayOfExercise(LocalDateTime.of(2024,10,10,0,0,0))
                 .exerciseDuration(45)
                 .recordFlag(true)
                 .createdAt(LocalDateTime.now())
@@ -71,7 +71,7 @@ class RecordPerUserServiceTests {
         List<RecordPerUser> mockRecordsPerUser = Arrays.asList(mockFirstRecordPerUser, mockSecondRecordPerUser);
 
         RecordPerUserDTO mockFirstRecordPerUserDTO = new RecordPerUserDTO(1L,
-                LocalDate.of(2024, 10, 9),
+                LocalDateTime.of(2024,10,10,0,0,0),
                 1,
                 true,
                 LocalDateTime.now(),
@@ -80,7 +80,7 @@ class RecordPerUserServiceTests {
                 1L);
 
         RecordPerUserDTO mockSecondRecordPerUserDTO = new RecordPerUserDTO(2L,
-                LocalDate.of(2024, 10, 10),
+                LocalDateTime.of(2024,10,10,0,0,0),
                 1,
                 true,
                 LocalDateTime.now(),
@@ -109,7 +109,7 @@ class RecordPerUserServiceTests {
     void findRecordPerDate_Success() {
         // given
         String userCode = "testUserCode";
-        LocalDate dayOfExercise = LocalDate.of(2024, 10, 9);
+        LocalDateTime dayOfExercise = LocalDateTime.of(2024, 10, 9,0,0);
 
         RecordPerUser mockFirstRecordPerUser = RecordPerUser.builder()
                 .userRecordCode(1L)

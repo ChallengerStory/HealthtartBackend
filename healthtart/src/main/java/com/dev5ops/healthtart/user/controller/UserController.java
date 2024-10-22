@@ -115,7 +115,7 @@ public class UserController {
 
         // USER_TYPE이 없는 경우 MEMBER로 설정
         if (request.getUserType() == null)
-                request.setUserType("MEMBER");
+            request.setUserType("MEMBER");
 
         userService.signUpUser(request);
 
@@ -165,7 +165,7 @@ public class UserController {
                 .map(userDTO -> modelMapper.map(userDTO, ResponseFindUserVO.class))
                 .collect(Collectors.toList());
 
-                return new ResponseEntity<>(userVOList, HttpStatus.OK);
+        return new ResponseEntity<>(userVOList, HttpStatus.OK);
     }
 
     // 이메일로 회원 정보 조회
