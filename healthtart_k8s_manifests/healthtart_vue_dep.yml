@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: healthtart_vue_dep
+  name: vue002dep
 spec:
   selector:
     matchLabels:
-      app: healthtartvuekube
+      app: vue002kube
   template:
     metadata:
       labels:
-        app: healthtartvuekube
+        app: vue002kube
     spec:
       containers:
       - name: vue-container
-        image: dev5oops/healthtart_v_project:latest
-        imagePullPolicy: Always # 이거를 하는게 항상 docker hub에 있는 정보만 하게 해주는 문장
+        # image: ys0915/k8s_v_ing:latest
+        image: dev5oops/nine_v_proj:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80      # 5173이 아니라 80으로 바꿔야 한다.
