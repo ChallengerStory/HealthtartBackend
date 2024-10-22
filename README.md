@@ -30,8 +30,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F.svg?&logo=spring-boot&color=lightgreen)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F.svg?&logo=spring-data-JPA)
 ![Hibernate](https://img.shields.io/badge/Hibernate-59666C.svg?&logo=hibernate)
-<!--![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F.svg?&logo=spring-security&logoColor=white)-->
-<!--![JWT](https://img.shields.io/badge/JWT-000000.svg?&logo=json-web-token&logoColor=white)-->
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F.svg?&logo=spring-security&logoColor=white)<br>
+![JWT](https://img.shields.io/badge/JWT-000000.svg?&logo=json-web-token&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-02303A.svg?&logo=gradle)
 ![JUnit5](https://img.shields.io/badge/JUnit5-25A162.svg?&logo=junit5&logoColor=white&color=green)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-FFFFFF.svg?&logo=spring&logoColor=6DB33F&color=lightgrey)
@@ -62,11 +62,17 @@
 <img src="https://img.shields.io/badge/DA%23-0B6121.svg?style=flat&logo=draw.io&logoColor=white"> &nbsp; 
 <img src="https://img.shields.io/badge/IntelliJ%20IDEA-000000?style=flat&logo=IntelliJ%20IDEA&logoColor=white">&nbsp; 
 ![VSCode](https://img.shields.io/badge/VSCode-007ACC.svg?&logo=visual-studio-code&color=blue) &nbsp; <br>
-![ChatGPT](https://img.shields.io/badge/ChatGPT-00A67E.svg?&logo=openai&color=green) &nbsp; 
 ![Figma](https://img.shields.io/badge/Figma-F24E1E.svg?&logo=figma&logoColor=white) &nbsp; 
 ![Miro](https://img.shields.io/badge/Miro-00A67E.svg?&logo=miro&color=green) &nbsp; 
 ![Discord](https://img.shields.io/badge/Discord-5865F2.svg?&logo=discord&logoColor=white) &nbsp; 
 ![Slack](https://img.shields.io/badge/Slack-4A154B.svg?&logo=slack&logoColor=white)
+
+## 📡 API
+![Kakao](https://img.shields.io/badge/Kakao-FFCD00.svg?&logo=kakaotalk&logoColor=white) &nbsp; 
+![Google](https://img.shields.io/badge/Google-4285F4.svg?&logo=google&logoColor=white) &nbsp; 
+![SMS API](https://img.shields.io/badge/SMS%20API-FF3D00.svg?&logo=sendgrid&logoColor=white) &nbsp; 
+![GPT](https://img.shields.io/badge/GPT-00A67E.svg?&logo=openai&logoColor=white) &nbsp; 
+![Google Storage](https://img.shields.io/badge/Google%20Storage-4285F4.svg?&logo=googlecloud&logoColor=white)
 
 
 
