@@ -57,7 +57,16 @@
 <!-- ![Jasypt](https://img.shields.io/badge/Jasypt-0045B9?logo=Jasypt&logoColor=white) -->
 
 ## ⚙ Tool
-<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"> &nbsp; <img src="https://img.shields.io/badge/ERD%20cloud-%230000FF.svg?style=flat&logo=erlang&logoColor=white"> &nbsp; <img src="https://img.shields.io/badge/DA%23-0B6121.svg?style=flat&logo=draw.io&logoColor=white"> &nbsp; <!--<img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black"> &nbsp; <img src="https://img.shields.io/badge/Ubuntu-E95420?style=flat&logo=Ubuntu&logoColor=white">--><img src="https://img.shields.io/badge/IntelliJ%20IDEA-000000?style=flat&logo=IntelliJ%20IDEA&logoColor=white">&nbsp; ![VSCode](https://img.shields.io/badge/VSCode-007ACC.svg?&logo=visual-studio-code&color=blue) &nbsp; ![ChatGPT](https://img.shields.io/badge/ChatGPT-00A67E.svg?&logo=openai&color=green)
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"> &nbsp; 
+<img src="https://img.shields.io/badge/ERD%20cloud-%230000FF.svg?style=flat&logo=erlang&logoColor=white"> &nbsp; 
+<img src="https://img.shields.io/badge/DA%23-0B6121.svg?style=flat&logo=draw.io&logoColor=white"> &nbsp; 
+<img src="https://img.shields.io/badge/IntelliJ%20IDEA-000000?style=flat&logo=IntelliJ%20IDEA&logoColor=white">&nbsp; 
+![VSCode](https://img.shields.io/badge/VSCode-007ACC.svg?&logo=visual-studio-code&color=blue) &nbsp; <br>
+![ChatGPT](https://img.shields.io/badge/ChatGPT-00A67E.svg?&logo=openai&color=green) &nbsp; 
+![Figma](https://img.shields.io/badge/Figma-F24E1E.svg?&logo=figma&logoColor=white) &nbsp; 
+![Miro](https://img.shields.io/badge/Miro-00A67E.svg?&logo=miro&color=green) &nbsp; 
+![Discord](https://img.shields.io/badge/Discord-5865F2.svg?&logo=discord&logoColor=white) &nbsp; 
+![Slack](https://img.shields.io/badge/Slack-4A154B.svg?&logo=slack&logoColor=white)
 
 
 
