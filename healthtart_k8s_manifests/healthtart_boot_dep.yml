@@ -1,23 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: healthtart_boot_dep
+  name: boot002dep
 spec:
   selector:
     matchLabels:
-      app: healthtartbootkube
-  # replicas: 3
+      app: boot002kube
   replicas: 1
   template:
     metadata:
       labels:
-        app: healthtartbootkube
+        app: boot002kube
     spec:
       containers:
       - name: boot-container
         # image: ys0915/k8s_b_ing:latest
-        # image: kyeongseok/k8s_b_proj:latest
-        image: dev5oops/healthtart_b_project:latest        
+        image: dev5oops/nine_b_proj:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 7777
+        # - containerPort: 7777
+        - containerPort: 8080
+
+      - name: redis-container
+        # Redis 컨테이너
+        image: redis:latest
+        ports:
+        - containerPort: 6379
