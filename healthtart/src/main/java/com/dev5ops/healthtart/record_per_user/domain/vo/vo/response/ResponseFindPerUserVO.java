@@ -6,15 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class ResponseFindPerUserVO {
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dayOfExercise;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dayOfExercise;
     private Integer exerciseDuration;
-    private Long RoutineCode;
+    private Long routineCode;
 }
