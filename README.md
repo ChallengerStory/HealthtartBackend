@@ -16,7 +16,7 @@
 
 
 # 🛠️ Technical Stack
-## 🖌️ Frontend
+## 🎨 Frontend
 
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D.svg?&logo=vue.js&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?&logo=javascript&logoColor=black)
@@ -49,7 +49,7 @@
 <!-- ## ⛓️‍💥 Server
 <img src="https://img.shields.io/badge/Eureka%20Server-4D8FC9?style=flat&logo=Spring&logoColor=white"> -->
 
-## DevOps
+## 💾 DevOps
 
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939.svg?&logo=jenkins&color=lightgrey)
 ![Docker](https://img.shields.io/badge/Docker-2496ED.svg?&logo=docker&logoColor=white)
