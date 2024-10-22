@@ -1,23 +1,18 @@
 package com.dev5ops.healthtart.record_per_user.controller;
 
-
-import com.dev5ops.healthtart.common.exception.CommonException;
 import com.dev5ops.healthtart.record_per_user.domain.dto.RecordPerUserDTO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.request.RequestRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseFindPerUserVO;
 import com.dev5ops.healthtart.record_per_user.domain.vo.vo.response.ResponseRegisterRecordPerUserVO;
 import com.dev5ops.healthtart.record_per_user.service.RecordPerUserService;
-import com.dev5ops.healthtart.workout_per_routine.service.WorkoutPerRoutineService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +46,7 @@ public class RecordPerUserController {
     @GetMapping("/{userCode}/{dayOfExercise}")
     public ResponseEntity<List<ResponseFindPerUserVO>> getRecordPerDate(
             @PathVariable("userCode") String userCode,
-            @PathVariable("dayOfExercise") LocalDate dayOfExercise) {
+            @PathVariable("dayOfExercise") LocalDateTime dayOfExercise) {
 
         List<RecordPerUserDTO> recordPerUserDTO = recordPerUserService.findRecordPerDate(userCode, dayOfExercise);
         List<ResponseFindPerUserVO> response = recordPerUserDTO.stream()
@@ -64,12 +59,6 @@ public class RecordPerUserController {
 
         return ResponseEntity.ok(response);
     }
-
-
-
-
-
-
 
     @Operation(summary = "유저 - 운동 기록")
     @PostMapping("/register")

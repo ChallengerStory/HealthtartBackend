@@ -23,7 +23,7 @@ public class TestController {
     public TestController(RivalRepository rivalRepository, UserRepository userRepository) {
         this.rivalRepository = rivalRepository;
         this.userRepository = userRepository;
-    }////
+    }
 
     @PostMapping("/test")
     public ResponseEntity<String> test(){

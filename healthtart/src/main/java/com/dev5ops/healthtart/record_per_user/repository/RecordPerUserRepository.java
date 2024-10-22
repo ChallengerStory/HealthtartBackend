@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -14,7 +15,7 @@ public interface RecordPerUserRepository extends JpaRepository<RecordPerUser, Lo
     @Query("SELECT ru FROM RecordPerUser ru JOIN FETCH ru.user WHERE ru.user.userCode = :userCode")
     List<RecordPerUser> findUserByUserCode(@Param("userCode") String userCode);
 
-    List<RecordPerUser> findByUser_UserCodeAndDayOfExercise(String userCode, LocalDate dayOfExercise);
+    List<RecordPerUser> findByUser_UserCodeAndDayOfExercise(String userCode, LocalDateTime dayOfExercise);
 
     boolean existsByUser_UserCode(String userCode);
 }
