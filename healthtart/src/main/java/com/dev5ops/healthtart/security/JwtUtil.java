@@ -1,6 +1,7 @@
 package com.dev5ops.healthtart.security;
 
 import com.dev5ops.healthtart.user.domain.CustomUserDetails;
+import com.dev5ops.healthtart.user.domain.KakaoUserProfile;
 import com.dev5ops.healthtart.user.domain.dto.JwtTokenDTO;
 import com.dev5ops.healthtart.user.domain.dto.UserDTO;
 import io.jsonwebtoken.*;
@@ -60,9 +61,6 @@ public class JwtUtil {
         /* 설명. 토큰에서 claim들 추출 */
         Claims claims = parseClaims(token);
         log.info("넘어온 AccessToken claims 확인: {}", claims);
-
-        // JWT 토큰에서 subject를 가져와 사용자 ID로 사용
-//        String userId = claims.getSubject();
 
         Collection<? extends GrantedAuthority> authorities = null;
         if (claims.get("roles") == null) {
@@ -130,6 +128,28 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
+
+    public String generateTokenFromKakaoUser(KakaoUserProfile profile, String userCode) {
+        // 1. 카카오 사용자 정보 추출
+        Long kakaoId = profile.getId();
+        String email = profile.getKakao_account().getEmail();
+        String nickname = profile.getKakao_account().getProfile().getNickname();
+
+        // 3. DTO 구성
+        JwtTokenDTO tokenDTO = new JwtTokenDTO(
+                userCode,
+                email,
+                nickname
+        );
+
+        // 4. 기본 역할 설정
+        List<String> roles = List.of("MEMBER");
+
+        // 5. 토큰 생성 (provider는 "kakao" 명시)
+        return generateToken(tokenDTO, roles, "kakao");
+    }
+
+
 
     public String getEmailFromToken(String token) {
         return getClaimFromToken(token, claims -> claims.get("email", String.class));
