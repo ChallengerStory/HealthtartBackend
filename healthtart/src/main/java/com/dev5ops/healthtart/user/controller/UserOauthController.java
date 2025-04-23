@@ -20,7 +20,8 @@ public class UserOauthController {
     @PostMapping("/kakao")
     public Map<String, String> kakaoLogin(@RequestBody Map<String, String> body) {
         String code = body.get("code");
-        String jwt = kakaoOauthService.loginWithKakao(code);
+        String codeVerifier = body.get("codeVerifier");
+        String jwt = kakaoOauthService.loginWithKakao(code, codeVerifier);
 
         Map<String, String> response = new HashMap<>();
         response.put("token", jwt);

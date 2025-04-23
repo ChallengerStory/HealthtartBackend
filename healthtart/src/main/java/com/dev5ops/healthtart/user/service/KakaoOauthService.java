@@ -35,10 +35,10 @@ public class KakaoOauthService {
     private final RestTemplate restTemplate; // 또는 WebClient
     private final JwtUtil jwtUtil;
 
-    public String loginWithKakao(String code) {
+    public String loginWithKakao(String code, String codeVerifier) {
 
         // 1. 인가코드로 카카오 access_token 요청
-        String kakaoAccessToken = requestAccessToken(code);
+        String kakaoAccessToken = requestAccessToken(code, codeVerifier);
 
         // 2. access_token으로 사용자 정보 요청
         KakaoUserProfile profile = requestUserProfile(kakaoAccessToken);
@@ -62,7 +62,7 @@ public class KakaoOauthService {
     }
 
     // access_token 요청
-    private String requestAccessToken(String code) {
+    private String requestAccessToken(String code, String codeVerifier) {
         String tokenUri = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -74,6 +74,7 @@ public class KakaoOauthService {
         params.add("client_secret", kakaoClientSecret);
         params.add("redirect_uri", kakaoRedirectUri); // 프론트 redirect URI
         params.add("code", code);
+        params.add("code_verifier", codeVerifier);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
