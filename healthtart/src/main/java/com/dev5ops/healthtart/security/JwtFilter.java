@@ -24,7 +24,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final List<String> excludeUrl
             = Arrays.asList("/users/verification-email/**"
             , "/users/nickname/check", "/users/verification-email/password", "/swagger-ui.html", "/swagger-ui/index.html"
-            , "/users/password");
+            , "/users/password"
+            , "/api/oauth/kakao");
 
     public JwtFilter(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
@@ -34,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
     // security 이전에 실행되는 JwtFilter에서 제외할 url 설정
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String servletPath = request.getServletPath();
         return excludeUrl.stream()
                 .anyMatch(pattern -> new AntPathMatcher().match(pattern, request.getServletPath()));
     }

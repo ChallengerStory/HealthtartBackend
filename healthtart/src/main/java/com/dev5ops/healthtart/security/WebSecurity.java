@@ -61,6 +61,7 @@ public class WebSecurity {
         // HttpSecurity 설정
         http.authorizeHttpRequests((authz) ->
                         authz
+                                .requestMatchers(new AntPathRequestMatcher("/api/oauth/kakao", "POST")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/index.html", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**", "GET")).permitAll()
@@ -134,7 +135,9 @@ public class WebSecurity {
 //                        .failureHandler(new OAuth2AuthenticationFailureHandler())
                 )
 
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement((session)
+                        -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         // JWT 인증 필터 추가
         http.addFilter(getAuthenticationFilter(authenticationManager));
         http.addFilterBefore(new JwtFilter(userService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
