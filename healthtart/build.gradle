@@ -72,6 +72,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'net.nurigo:sdk:4.3.0'
+
+
+    // 테스트 코드에서도 롬복 적용(로그 기능 활용을 위한 추가)
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+
 }
 
 dependencyManagement {
